@@ -28,7 +28,10 @@ public class KewlConfig {
     private File configFile;
     private YamlConfiguration config;
 
+    @Setter
+    @Getter
     private KnockbackProfile currentKb;
+    @Getter
     private Set<KnockbackProfile> kbProfiles = new HashSet<>();
 
     private boolean hidePlayersFromTab;
@@ -148,14 +151,6 @@ public class KewlConfig {
         }
     }
 
-    public KnockbackProfile getCurrentKb() {
-        return this.currentKb;
-    }
-
-    public void setCurrentKb(KnockbackProfile kb) {
-        this.currentKb = kb;
-    }
-
     public KnockbackProfile getKbProfileByName(String name) {
         for (KnockbackProfile profile : this.kbProfiles) {
             if (profile.getName().equalsIgnoreCase(name)) {
@@ -164,10 +159,6 @@ public class KewlConfig {
         }
 
         return null;
-    }
-
-    public Set<KnockbackProfile> getKbProfiles() {
-        return this.kbProfiles;
     }
 
     public void save() {

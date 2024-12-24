@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class CraftKnockbackProfile implements KnockbackProfile {
 
+    @Getter
     private String name;
     private double horizontalFriction = 2.0D;
     private double verticalFriction = 2.0D;
@@ -20,10 +21,6 @@ public class CraftKnockbackProfile implements KnockbackProfile {
 
     public CraftKnockbackProfile(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

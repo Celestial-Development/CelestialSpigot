@@ -3,11 +3,8 @@ package org.bukkit.craftbukkit;
 import net.minecraft.server.*;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
-import org.eytril.spigot.chunk.CraftFakeMultiBlockChange;
-import org.eytril.spigot.chunk.FakeMultiBlockChange;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -18,7 +15,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class CraftChunk implements Chunk {
 	private static final byte[] emptyData = new byte[2048];

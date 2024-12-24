@@ -120,21 +120,18 @@ public class KnockbackCommand extends Command {
                 break;
             }
             case 3: {
-                switch (args[0].toLowerCase()) {
-                    case "set": {
-                        KnockbackProfile profile = KewlSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
-                        if (profile == null) {
-                            sender.sendMessage("§cA profile with that name could not be found.");
-                            return false;
-                        }
-                        Player target = Bukkit.getPlayer(args[2]);
-                        if (target == null) {
-                            sender.sendMessage("§cThat player is not online.");
-                            return false;
-                        }
-                        target.setKnockbackProfile(profile);
-                        break;
+                if (args[0].toLowerCase().equals("set")) {
+                    KnockbackProfile profile = KewlSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
+                    if (profile == null) {
+                        sender.sendMessage("§cA profile with that name could not be found.");
+                        return false;
                     }
+                    Player target = Bukkit.getPlayer(args[2]);
+                    if (target == null) {
+                        sender.sendMessage("§cThat player is not online.");
+                        return false;
+                    }
+                    target.setKnockbackProfile(profile);
                 }
                 break;
             }
@@ -235,7 +232,7 @@ public class KnockbackCommand extends Command {
     }
 
     private void knockbackCommandMain(CommandSender sender) {
-        sender.sendMessage("" + "\n" + "§3Knockback Profiles:\n\n"); // most people make this smaller/simpler but for a lot of people its easier to just see them all
+        sender.sendMessage("\n" + "§3Knockback Profiles:\n\n"); // most people make this smaller/simpler but for a lot of people its easier to just see them all
 
         for (KnockbackProfile profile : KewlSpigot.INSTANCE.getConfig().getKbProfiles()) {
             boolean current = KewlSpigot.INSTANCE.getConfig().getCurrentKb().getName().equals(profile.getName());
