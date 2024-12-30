@@ -7,7 +7,7 @@
     </build>
 
     <groupId>org.eytril.spigot</groupId>
-    <artifactId>kewlspigot-parent</artifactId>
+    <artifactId>celestialspigot-parent</artifactId>
     <version>dev-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -15,8 +15,8 @@
     <description>Parent project for all KewlSpigot modules.</description>
 
     <modules>
-        <module>kewlspigot-server</module>
-        <module>kewlspigot-api</module>
+        <module>celestialspigot-api</module>
+        <module>celestialspigot-server</module>
     </modules>
 
     <properties>
