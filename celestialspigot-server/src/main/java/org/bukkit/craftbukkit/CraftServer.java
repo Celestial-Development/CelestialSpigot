@@ -156,7 +156,7 @@ public final class CraftServer implements Server {
     private final List<CraftPlayer> playerView;
     public int reloadCount;
 
-    private final class BooleanWrapper {
+    private static final class BooleanWrapper {
         private boolean value = true;
     }
 
@@ -749,7 +749,7 @@ public final class CraftServer implements Server {
         int pollCount = 0;
 
         // Wait for at most 2.5 seconds for plugins to close their threads
-        while (pollCount < 50 && getScheduler().getActiveWorkers().size() > 0) {
+        while (pollCount < 50 && !getScheduler().getActiveWorkers().isEmpty()) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {}
@@ -760,7 +760,7 @@ public final class CraftServer implements Server {
         for (BukkitWorker worker : overdueWorkers) {
             Plugin plugin = worker.getOwner();
             String author = "<NoAuthorGiven>";
-            if (plugin.getDescription().getAuthors().size() > 0) {
+            if (!plugin.getDescription().getAuthors().isEmpty()) {
                 author = plugin.getDescription().getAuthors().get(0);
             }
             getLogger().log(Level.SEVERE, String.format(

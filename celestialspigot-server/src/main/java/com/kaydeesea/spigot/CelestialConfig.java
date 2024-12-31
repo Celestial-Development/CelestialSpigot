@@ -48,7 +48,9 @@ public class CelestialConfig {
     private boolean disableJoinMessage;
     private boolean disableLeaveMessage;
 
-    private float hitDelay;
+    private int hitDelay;
+
+
     private float potionThrowMultiplier;
     private float potionThrowOffset;
     private float potionFallSpeed;
@@ -102,8 +104,11 @@ public class CelestialConfig {
 
         this.kbProfiles = new HashSet<>();
         this.kbProfiles.add(defaultProfile);
-
-        for (String key : new ArrayList<>(this.getKeys("knockback.profiles"))) {
+        ArrayList<String> profiles = new ArrayList<>(this.getKeys("knockback.profiles"));
+        if(profiles.isEmpty()) {
+            profiles.add("default");
+        }
+        for (String key : profiles) {
             final String path = "knockback.profiles." + key;
             ProfileType type = ProfileType.NORMAL;
             try {
@@ -133,7 +138,7 @@ public class CelestialConfig {
                     if (value.equalsIgnoreCase("extra-vertical"))
                         profile.setExtraVertical(this.getDouble(a, 0.01));
                 }
-                profile.save();
+
             }
 
         }
@@ -156,8 +161,7 @@ public class CelestialConfig {
         this.disableJoinMessage = this.getBoolean("disable-join-message", true);
         this.disableLeaveMessage = this.getBoolean("disable-leave-message", true);
 
-        // todo make hitdelay
-        this.hitDelay = this.getFloat("hit-delay", 20);
+        this.hitDelay = this.getInt("hit-delay", 20);
         this.potionThrowMultiplier = this.getFloat("potion-throw-multiplier", 0.5f);
         this.potionThrowOffset = this.getFloat("potion-throw-offset", -10.0f);
         this.potionFallSpeed = this.getFloat("potion-fall-speed", 0.05f);

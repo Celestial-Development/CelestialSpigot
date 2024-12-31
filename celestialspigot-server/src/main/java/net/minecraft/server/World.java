@@ -17,7 +17,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.optimized.OptimizedWorldTileEntitySet;
-import com.kaydeesea.spigot.util.OptimizedRemoveUtil;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
 
@@ -34,26 +33,21 @@ public abstract class World implements IBlockAccess {
     private int a = 63;
     protected boolean e;
     // Spigot start - guard entity list from removals
-    public final List<Entity> entityList = new java.util.ArrayList<Entity>()
-    {
+    public final List<Entity> entityList = new java.util.ArrayList<>() {
         @Override
-        public Entity remove(int index)
-        {
+        public Entity remove(int index) {
             guard();
-            return super.remove( index );
+            return super.remove(index);
         }
 
         @Override
-        public boolean remove(Object o)
-        {
+        public boolean remove(Object o) {
             guard();
-            return super.remove( o );
+            return super.remove(o);
         }
 
-        private void guard()
-        {
-            if ( guardEntityList )
-            {
+        private void guard() {
+            if (guardEntityList) {
                 throw new java.util.ConcurrentModificationException();
             }
         }
@@ -66,7 +60,7 @@ public abstract class World implements IBlockAccess {
     private final Set<TileEntity> c = Sets.newHashSet(); // Paper
     public final List<EntityHuman> players = Lists.newArrayList();
     public final List<Entity> k = Lists.newArrayList();
-    protected final IntHashMap<Entity> entitiesById = new IntHashMap();
+    protected final IntHashMap<Entity> entitiesById = new IntHashMap<>();
     private long d = 16777215L;
     private int I;
     protected int m = (new Random()).nextInt();
@@ -106,18 +100,16 @@ public abstract class World implements IBlockAccess {
 
     public boolean captureBlockStates = false;
     public boolean captureTreeGeneration = false;
-    public ArrayList<BlockState> capturedBlockStates= new ArrayList<BlockState>(){
+    public ArrayList<BlockState> capturedBlockStates= new ArrayList<>() {
         @Override
-        public boolean add( BlockState blockState ) {
-            Iterator<BlockState> blockStateIterator = this.iterator();
-            while( blockStateIterator.hasNext() ) {
-                BlockState blockState1 = blockStateIterator.next();
-                if ( blockState1.getLocation().equals( blockState.getLocation() ) ) {
+        public boolean add(BlockState blockState) {
+            for (BlockState blockState1 : this) {
+                if (blockState1.getLocation().equals(blockState.getLocation())) {
                     return false;
                 }
             }
 
-            return super.add( blockState );
+            return super.add(blockState);
         }
     };
     public long ticksPerAnimalSpawns;
@@ -141,7 +133,7 @@ public abstract class World implements IBlockAccess {
 
     public static long chunkToKey(int x, int z)
     {
-        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ( ( ( (long) x ) & 0x0000FFFFL ) << 0 );
+        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ((((long) x) & 0x0000FFFFL));
         k |= ( ( ( (long) z ) & 0xFFFF0000L ) << 32 ) | ( ( ( (long) z ) & 0x0000FFFFL ) << 16 );
         return k;
     }
@@ -1003,7 +995,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean addEntity(Entity entity, SpawnReason spawnReason) { // Changed signature, added SpawnReason
-        org.spigotmc.AsyncCatcher.catchOp( "entity add"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp("entity add"); // Spigot
         if (entity == null) return false;
         // CraftBukkit end
         int i = MathHelper.floor(entity.locX / 16.0D);
@@ -1061,32 +1053,37 @@ public abstract class World implements IBlockAccess {
         if (!flag && !this.isChunkLoaded(i, j, true)) {
             entity.dead = true;
             return false;
-        } else {
-            if (entity instanceof EntityHuman) {
-                EntityHuman entityhuman = (EntityHuman) entity;
-
-                this.players.add(entityhuman);
-                this.everyoneSleeping();
-            }
-
-            this.getChunkAt(i, j).a(entity);
-            this.entityList.add(entity);
-            this.a(entity);
-            return true;
         }
+        if (entity instanceof EntityHuman) {
+            EntityHuman entityhuman = (EntityHuman) entity;
+
+            this.players.add(entityhuman);
+            this.everyoneSleeping();
+        }
+
+        this.getChunkAt(i, j).a(entity);
+        this.entityList.add(entity);
+        this.a(entity);
+        // ClubSpigot start - configurable entity hit delay
+        if (entity instanceof EntityLiving) {
+            ((EntityLiving) entity).maxNoDamageTicks = CelestialSpigot.INSTANCE.getConfig().getHitDelay();
+        }
+        // ClubSpigot stop
+        return true;
+
     }
 
     protected void a(Entity entity) {
-        for (int i = 0; i < this.u.size(); ++i) {
-            ((IWorldAccess) this.u.get(i)).a(entity);
+        for (IWorldAccess iWorldAccess : this.u) {
+            iWorldAccess.a(entity);
         }
 
         entity.valid = true; // CraftBukkit
     }
 
     protected void b(Entity entity) {
-        for (int i = 0; i < this.u.size(); ++i) {
-            ((IWorldAccess) this.u.get(i)).b(entity);
+        for (IWorldAccess iWorldAccess : this.u) {
+            iWorldAccess.b(entity);
         }
 
         entity.valid = false; // CraftBukkit

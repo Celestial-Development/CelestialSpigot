@@ -48,7 +48,6 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
 
     public void save() {
         final String path = "knockback.profiles." + this.name;
-
         CelestialSpigot.INSTANCE.getConfig().set(path + ".type", this.getType().name());
         CelestialSpigot.INSTANCE.getConfig().set(path + ".friction", this.friction);
         CelestialSpigot.INSTANCE.getConfig().set(path + ".horizontal", this.horizontal);

@@ -28,7 +28,7 @@ public class KnockbackCommand extends Command {
                     "§3Knockback Commands:",
                     " * §b/knockback §flist",
                     " * §b/knockback §finfo §7<profile>",
-                    " * §b/knockback §fcreate §7<profile>",
+                    " * §b/knockback §fcreate §7<profile> <type>",
                     " * §b/knockback §fdelete §7<profile>",
                     " * §b/knockback §fload §7<profile>",
                     " * §b/knockback §fview §7<profile>",
@@ -62,163 +62,159 @@ public class KnockbackCommand extends Command {
             return true;
         }
 
-        switch (args.length) {
-            case 2: {
-                switch (args[0].toLowerCase()) {
-                    case "delete": {
-                        if (CelestialSpigot.INSTANCE.getConfig().getCurrentKb().getName().equalsIgnoreCase(args[1])) {
-                            knockbackCommandMain(sender);
-                            sender.sendMessage("§cYou cannot delete the profile that is being used.");
-                            return false;
-                        }
-                        if (CelestialSpigot.INSTANCE.getConfig().getKbProfiles().removeIf(profile -> profile.getName().equalsIgnoreCase(args[1]))) {
-                            CelestialSpigot.INSTANCE.getConfig().set("knockback.profiles." + args[1], null);
-                            CelestialSpigot.INSTANCE.getConfig().save();
-                            knockbackCommandMain(sender);
-                            sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been removed.");
-                            return true;
-                        } else {
-                            sender.sendMessage("§cThis profile doesn't exist.");
-                        }
-                        break;
-                    }
-                    case "load": {
-                        KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
-                        if (profile != null) {
-                            if (CelestialSpigot.INSTANCE.getConfig().getCurrentKb().getName().equalsIgnoreCase(args[1])) {
-                                sender.sendMessage("§cThis profile is loaded.");
-                                return false;
-                            }
-                            CelestialSpigot.INSTANCE.getConfig().setCurrentKb(profile);
-                            CelestialSpigot.INSTANCE.getConfig().set("knockback.current", profile.getName());
-                            CelestialSpigot.INSTANCE.getConfig().save();
-                            knockbackCommandMain(sender);
-                            sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been loaded.");
-                            return true;
-                        } else {
-                            sender.sendMessage("§cThis profile doesn't exist.");
-                        }
-                        break;
-                    }
-                    case "info": {
-                        KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
-                        if (profile != null) {
-                            sendKnockbackInfo(sender, profile);
-                        } else {
-                            sender.sendMessage("§cThis profile doesn't exist.");
-                        }
-                        break;
-                    }
-                    default: {
-                        knockbackCommandMain(sender);
-                    }
-                }
-                break;
+        String command = args[0].toLowerCase();
+
+        if (command.equals("delete")) {
+            if (args.length < 2) {
+                sender.sendMessage("§cUsage: /command delete <profile_name>");
+                return true;
             }
-            case 3: {
-                if (args[0].equalsIgnoreCase("set")) {
-                    KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
-                    if (profile == null) {
-                        sender.sendMessage("§cA profile with that name could not be found.");
-                        return false;
-                    }
-                    Player target = Bukkit.getPlayer(args[2]);
-                    if (target == null) {
-                        sender.sendMessage("§cThat player is not online.");
-                        return false;
-                    }
-                    target.setKnockbackProfile(profile);
-                }
-                if (args[0].equalsIgnoreCase("create")) {
-                    if (!isProfileName(args[1])) {
-                        if(args[2].equalsIgnoreCase("normal")) {
-                            NormalTypeKnockbackProfile profile = new NormalTypeKnockbackProfile(args[1]);
-                            CelestialSpigot.INSTANCE.getConfig().getKbProfiles().add(profile);
-                            profile.save();
-                            sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
-                            sendKnockbackInfo(sender, profile);
-                        } else {
-                            String types = "";
-                            for (ProfileType value : ProfileType.values()) {
-                                types += value.name()+" ";
-                            }
-                            sender.sendMessage("§cSpecify a type of knockback, Types: "+types);
-                        }
-                        return true;
-                    } else {
-                        sender.sendMessage("§cA knockback profile with that name already exists.");
-                    }
-                    break;
-                }
-                break;
-            }
-            case 4: {
-                if (args[0].equalsIgnoreCase("edit")) {
-                    KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1].toLowerCase());
-                    if (profile == null) {
-                        sender.sendMessage("§cThis profile doesn't exist.");
-                        return false;
-                    }
-                    if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
-                        sender.sendMessage("§f" + args[3] + " §c is not a number.");
-                        return false;
-                    }
-                    double value = Double.parseDouble(args[3]);
-                    String f = args[2].toLowerCase();
-                    switch (f) {
-                        case "horfriction": {
-                            f = "horizontalfriction";
-                            break;
-                        }
-                        case "verfriction": {
-                            f = "verticalfriction";
-                            break;
-                        }
-                        case "fri": {
-                            f = "friction";
-                            break;
-                        }
-                        case "hor": {
-                            f = "horizontal";
-                            break;
-                        }
-                        case "vert": {
-                            f = "vertical";
-                            break;
-                        }
-                        case "extrahor": {
-                            f = "extrahorizontal";
-                            break;
-                        }
-                        case "extravert": {
-                            f = "extravertical";
-                            break;
-                        }
-                        case "vertmax": case "verticalmax": case "verticallimit": {
-                            f = "vertical-limit";
-                            break;
-                        }
-                    }
-                    String s = "";
-                    for (String a : profile.getValues()) {
-                        if(a.contains(f)) s = a;
-                    }
-                    if(!s.isEmpty()) {
-                        if(profile.getType() == ProfileType.NORMAL) {
-                            modifyNormalTypeProfile((NormalTypeKnockbackProfile) profile, s, value);
-                            sender.sendMessage("§aChanged §f\"" + profile.getName() + "\"§a's §f"+s+" §asetting to §f" + args[3] + "§a.");
-                        } // todo
-                    } else {
-                        sender.sendMessage("§cCouldn't find a §4"+f+" §cproprety in knockback profile "+profile.getName()+".");
-                    }
-                }
-                break;
-            }
-            default: {
+            if (CelestialSpigot.INSTANCE.getConfig().getCurrentKb().getName().equalsIgnoreCase(args[1])) {
                 knockbackCommandMain(sender);
+                sender.sendMessage("§cYou cannot delete the profile that is being used.");
+                return true;
             }
+            if (CelestialSpigot.INSTANCE.getConfig().getKbProfiles().removeIf(profile -> profile.getName().equalsIgnoreCase(args[1]))) {
+                CelestialSpigot.INSTANCE.getConfig().set("knockback.profiles." + args[1], null);
+                CelestialSpigot.INSTANCE.getConfig().save();
+                knockbackCommandMain(sender);
+                sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been removed.");
+                return true;
+            } else {
+                sender.sendMessage("§cThis profile doesn't exist.");
+            }
+        } else if (command.equals("load")) {
+            if (args.length < 2) {
+                sender.sendMessage("§cUsage: /command load <profile_name>");
+                return true;
+            }
+            KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
+            if (profile != null) {
+                if (CelestialSpigot.INSTANCE.getConfig().getCurrentKb().getName().equalsIgnoreCase(args[1])) {
+                    sender.sendMessage("§cThis profile is loaded.");
+                    return true;
+                }
+                CelestialSpigot.INSTANCE.getConfig().setCurrentKb(profile);
+                CelestialSpigot.INSTANCE.getConfig().set("knockback.current", profile.getName());
+                CelestialSpigot.INSTANCE.getConfig().save();
+                knockbackCommandMain(sender);
+                sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been loaded.");
+                return true;
+            } else {
+                sender.sendMessage("§cThis profile doesn't exist.");
+            }
+        } else if (command.equals("info")) {
+            if (args.length < 2) {
+                sender.sendMessage("§cUsage: /command info <profile_name>");
+                return true;
+            }
+            KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
+            if (profile != null) {
+                sendKnockbackInfo(sender, profile);
+            } else {
+                sender.sendMessage("§cThis profile doesn't exist.");
+            }
+        } else if (command.equals("set")) {
+            if (args.length < 3) {
+                sender.sendMessage("§cUsage: /command set <profile_name> <player>");
+                return true;
+            }
+            KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1]);
+            if (profile == null) {
+                sender.sendMessage("§cA profile with that name could not be found.");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[2]);
+            if (target == null) {
+                sender.sendMessage("§cThat player is not online.");
+                return true;
+            }
+            target.setKnockbackProfile(profile);
+        } else if (command.equals("create")) {
+            if (args.length < 3) {
+                sender.sendMessage("§cUsage: /command create <profile_name> <type>");
+                return true;
+            }
+            if (!isProfileName(args[1])) {
+                if (args[2].equalsIgnoreCase("normal")) {
+                    NormalTypeKnockbackProfile profile = new NormalTypeKnockbackProfile(args[1]);
+                    CelestialSpigot.INSTANCE.getConfig().getKbProfiles().add(profile);
+                    profile.save();
+                    sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
+                    sendKnockbackInfo(sender, profile);
+                } else {
+                    StringBuilder types = new StringBuilder();
+                    for (ProfileType value : ProfileType.values()) {
+                        types.append(value.name()).append(" ");
+                    }
+                    sender.sendMessage("§cSpecify a type of knockback. Types: " + types);
+                }
+                return true;
+            } else {
+                sender.sendMessage("§cA knockback profile with that name already exists.");
+            }
+        } else if (command.equals("edit")) {
+            if (args.length < 4) {
+                sender.sendMessage("§cUsage: /command edit <profile_name> <property> <value>");
+                return true;
+            }
+            KnockBackProfile profile = CelestialSpigot.INSTANCE.getConfig().getKbProfileByName(args[1].toLowerCase());
+            if (profile == null) {
+                sender.sendMessage("§cThis profile doesn't exist.");
+                return true;
+            }
+            if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
+                sender.sendMessage("§f" + args[3] + " §c is not a number.");
+                return true;
+            }
+            double value = Double.parseDouble(args[3]);
+            String f = args[2].toLowerCase();
+            switch (f) {
+                case "horfriction":
+                    f = "horizontalfriction";
+                    break;
+                case "verfriction":
+                    f = "verticalfriction";
+                    break;
+                case "fri":
+                    f = "friction";
+                    break;
+                case "hor":
+                    f = "horizontal";
+                    break;
+                case "vert":
+                    f = "vertical";
+                    break;
+                case "extrahor":
+                    f = "extrahorizontal";
+                    break;
+                case "extravert":
+                    f = "extravertical";
+                    break;
+                case "vertmax":
+                case "verticalmax":
+                case "verticallimit":
+                    f = "vertical-limit";
+                    break;
+            }
+            String s = "";
+            for (String a : profile.getValues()) {
+                if (a.contains(f)) s = a;
+            }
+            if (!s.isEmpty()) {
+                if (profile.getType() == ProfileType.NORMAL) {
+                    modifyNormalTypeProfile((NormalTypeKnockbackProfile) profile, s, value);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+                }
+            } else {
+                sender.sendMessage("§cCouldn't find a §4" + f + " §cproperty in knockback profile " + profile.getName() + ".");
+            }
+        } else {
+            knockbackCommandMain(sender);
         }
-        return false;
+
+        return true;
+
     }
 
     private static NormalTypeKnockbackProfile modifyNormalTypeProfile(NormalTypeKnockbackProfile profile, String s, double value) {
