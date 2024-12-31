@@ -39,6 +39,7 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
     }
 
 
+
     @Override
     public ArrayList<String> getValues() {
         String[] a = new String[] {"friction", "horizontal", "vertical", "vertical-limit", "extra-horizontal", "extra-vertical"};

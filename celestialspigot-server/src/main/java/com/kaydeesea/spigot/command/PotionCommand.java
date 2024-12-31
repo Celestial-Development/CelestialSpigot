@@ -5,7 +5,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.kaydeesea.spigot.CelestialSpigot;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 
 import java.util.Arrays;
 import java.util.Collections;

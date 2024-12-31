@@ -27,6 +27,7 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
 
     double getExtraVertical();
 
+
     default void handleEntityLiving(EntityLiving entityLiving, float f, double d0, double d1) {
         // cSpigot start
         double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);

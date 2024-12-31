@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
+import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.mojang.authlib.GameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
@@ -14,7 +15,6 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.inventory.EquipmentSetEvent;
 import org.bukkit.event.player.*;
 import com.kaydeesea.spigot.CelestialSpigot;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 
 import java.util.*;
 // CraftBukkit end
@@ -1021,7 +1021,9 @@ public abstract class EntityHuman extends EntityLiving {
                     if (i > 0) {
                         KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
 
-                        profile.handleEntityHuman(this, i);
+                        if(profile instanceof NormalKnockbackProfile) {
+                            ((NormalKnockbackProfile)profile).handleEntityHuman(this, i);
+                        }
 
                         this.motX *= 0.6D;
                         this.motZ *= 0.6D;

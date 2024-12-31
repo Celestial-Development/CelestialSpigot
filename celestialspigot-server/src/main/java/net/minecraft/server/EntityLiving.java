@@ -6,6 +6,8 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
+import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
+import com.kaydeesea.spigot.knockback.ProfileType;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
@@ -19,7 +21,6 @@ import org.bukkit.event.potion.PotionEffectAddEvent;
 import org.bukkit.event.potion.PotionEffectExpireEvent;
 import org.bukkit.event.potion.PotionEffectExtendEvent;
 import org.bukkit.event.potion.PotionEffectRemoveEvent;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.kaydeesea.spigot.util.CraftPotionUtil;
 import org.spigotmc.AsyncCatcher;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -918,7 +919,9 @@ public abstract class EntityLiving extends Entity {
 
             KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
 
-            profile.handleEntityLiving(this ,f, d0, d1);
+            if(profile instanceof NormalKnockbackProfile) {
+                ((NormalKnockbackProfile)profile).handleEntityLiving(this, f, d0, d1);
+            }
         }
     }
 
