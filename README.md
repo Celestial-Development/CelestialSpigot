@@ -1,4 +1,4 @@
-# Kewl Spigot
+# Celestial Spigot
 A fork of SpigotX (based on ClubSpigot)
 
 This is a spigot built to be performant and optimized while allowing customizability over kb and smoother pots.
@@ -24,7 +24,7 @@ This is a spigot built to be performant and optimized while allowing customizabi
 Contributions of all sorts are welcome. We use GitHub's pull requests to add in your code!<br>
 Simply make a pull request and after reviewing it and testing it on a demo server it will be added to the repo!
 
-### Servers that use KewlSpigot
+### Servers that use CelestialSpigot
  - Sarefine (sarefine.us)
  - MineOrigins (mineorigins.net)
 

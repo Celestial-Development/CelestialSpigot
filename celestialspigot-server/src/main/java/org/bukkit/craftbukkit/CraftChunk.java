@@ -314,9 +314,9 @@ public class CraftChunk implements Chunk {
 	}
 
 	@Override
-	public org.eytril.spigot.chunksnapshot.ChunkSnapshot takeSnapshot() {
+	public com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot takeSnapshot() {
 		net.minecraft.server.Chunk handle = getHandle();
-		org.eytril.spigot.chunksnapshot.CraftChunkSnapshot snap = new org.eytril.spigot.chunksnapshot.CraftChunkSnapshot();
+		com.kaydeesea.spigot.chunksnapshot.CraftChunkSnapshot snap = new com.kaydeesea.spigot.chunksnapshot.CraftChunkSnapshot();
 
 		// save chunk sections to snapshot
 		for (int i = 0; i < 16; i++) {
@@ -331,12 +331,12 @@ public class CraftChunk implements Chunk {
 			entry.getValue().b(nbt); // writeToNBT
 			snap.getTileEntities().add(nbt);
 		}
-		return (org.eytril.spigot.chunksnapshot.ChunkSnapshot) snap;
+		return (com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot) snap;
 	}
 
 	@Override
-	public void restoreSnapshot(org.eytril.spigot.chunksnapshot.ChunkSnapshot snapshot) {
-		org.eytril.spigot.chunksnapshot.CraftChunkSnapshot snap = (org.eytril.spigot.chunksnapshot.CraftChunkSnapshot) snapshot;
+	public void restoreSnapshot(com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot snapshot) {
+		com.kaydeesea.spigot.chunksnapshot.CraftChunkSnapshot snap = (com.kaydeesea.spigot.chunksnapshot.CraftChunkSnapshot) snapshot;
 		net.minecraft.server.Chunk handle = getHandle();
 
 		// add chunk sections from snapshot

@@ -6,7 +6,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
@@ -471,7 +471,7 @@ public abstract class EntityInsentient extends EntityLiving {
             return;
         }
         // Spigot End
-        if(KewlSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
+        if(CelestialSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
             this.world.methodProfiler.a("sensing");
             this.bk.a();
             this.world.methodProfiler.b();
@@ -488,7 +488,7 @@ public abstract class EntityInsentient extends EntityLiving {
         this.world.methodProfiler.a("mob tick");
         this.E();
         this.world.methodProfiler.b();
-        if(KewlSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
+        if(CelestialSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
             this.world.methodProfiler.a("controls");
             this.world.methodProfiler.a("move");
             this.moveController.c();

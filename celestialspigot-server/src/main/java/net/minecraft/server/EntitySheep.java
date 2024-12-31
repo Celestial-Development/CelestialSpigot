@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import org.bukkit.event.entity.SheepRegrowWoolEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.InventoryView;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.util.Map;
 import java.util.Random;
@@ -79,7 +79,7 @@ public class EntitySheep extends EntityAnimal {
             this.a(new ItemStack(Item.getItemOf(Blocks.WOOL), 1, this.getColor().getColorIndex()), 0.0F);
         }
 
-        if(KewlSpigot.INSTANCE.getConfig().isBaseVersionEnabled()) {
+        if(CelestialSpigot.INSTANCE.getConfig().isBaseVersionEnabled()) {
             int j = this.random.nextInt(2) + 1 + this.random.nextInt(1 + i);
 
             for (int k = 0; k < j; ++k) {

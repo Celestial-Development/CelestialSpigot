@@ -4,7 +4,7 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.potion.PotionSplashEvent;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,15 +35,15 @@ public class EntityPotion extends EntityProjectile {
     }
 
     protected float m() {
-        return KewlSpigot.INSTANCE.getConfig().getPotionFallSpeed();
+        return CelestialSpigot.INSTANCE.getConfig().getPotionFallSpeed();
     }
 
     protected float j() {
-        return KewlSpigot.INSTANCE.getConfig().getPotionThrowMultiplier();
+        return CelestialSpigot.INSTANCE.getConfig().getPotionThrowMultiplier();
     }
 
     protected float l() {
-        return KewlSpigot.INSTANCE.getConfig().getPotionThrowOffset();
+        return CelestialSpigot.INSTANCE.getConfig().getPotionThrowOffset();
     }
 
     public void setPotionValue(int i) {

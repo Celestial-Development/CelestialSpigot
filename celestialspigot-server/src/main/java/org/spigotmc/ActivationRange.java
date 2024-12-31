@@ -1,6 +1,6 @@
 package org.spigotmc;
 
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class ActivationRange
      * @param world
      */
     public static void activateEntities(World world) {
-        if (!KewlSpigot.INSTANCE.getConfig().isEntityActivation()) {
+        if (!CelestialSpigot.INSTANCE.getConfig().isEntityActivation()) {
             return;
         }
 

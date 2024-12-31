@@ -7,9 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import org.bukkit.event.player.PlayerHealthChangeEvent;
-import org.eytril.spigot.knockback.KnockbackProfile;
 import net.minecraft.server.DamageSource;
 import net.minecraft.server.EntityArmorStand;
 import net.minecraft.server.EntityArrow;
@@ -69,12 +68,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
     // SpigotX start
     @Override
-    public KnockbackProfile getKnockbackProfile() {
+    public KnockBackProfile getKnockbackProfile() {
         return getHandle().getKnockbackProfile();
     }
 
     @Override
-    public void setKnockbackProfile(KnockbackProfile profile) {
+    public void setKnockbackProfile(KnockBackProfile profile) {
         getHandle().setKnockbackProfile(profile);
     }
     // SpigotX end

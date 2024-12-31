@@ -11,7 +11,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.util.HashTreeSet;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -237,7 +237,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         timings.doChunkUnload.startTiming();
 
-        if (KewlSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (CelestialSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
             this.methodProfiler.c("chunkSource");
             this.chunkProvider.unloadChunks();
         }
@@ -478,7 +478,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
                 this.methodProfiler.c("tickBlocks");
 
-                if (KewlSpigot.INSTANCE.getConfig().isBlockOperations()) {
+                if (CelestialSpigot.INSTANCE.getConfig().isBlockOperations()) {
                     timings.chunkTicksBlocks.startTiming();
 
                     i1 = this.getGameRules().c("randomTickSpeed");

@@ -4,8 +4,8 @@ import net.minecraft.server.WorldType;
 import org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.inventory.*;
-import org.eytril.spigot.KewlSpigot;
-import org.eytril.spigot.KewlConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.CelestialConfig;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -117,7 +117,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
-    private final String serverName = "KewlSpigot"; // kewler
+    private final String serverName = "CelestialSpigot"; // celestialer
     private final String serverVersion;
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
@@ -717,8 +717,8 @@ public final class CraftServer implements Server {
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("paper-settings")); // PaperSpigot
 
         // SpigotX
-        KewlSpigot.INSTANCE.setConfig(new KewlConfig());
-        KewlSpigot.INSTANCE.registerCommands();
+        CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
+        CelestialSpigot.INSTANCE.registerCommands();
 
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);

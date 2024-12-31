@@ -6,13 +6,13 @@
         <defaultGoal>clean install</defaultGoal>
     </build>
 
-    <groupId>org.eytril.spigot</groupId>
+    <groupId>com.kaydeesea.spigot</groupId>
     <artifactId>celestialspigot-parent</artifactId>
     <version>dev-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>kewlspigot-parent</name>
-    <description>Parent project for all KewlSpigot modules.</description>
+    <name>celestialspigot-parent</name>
+    <description>Parent project for all CelestialSpigot modules.</description>
 
     <modules>
         <module>celestialspigot-api</module>

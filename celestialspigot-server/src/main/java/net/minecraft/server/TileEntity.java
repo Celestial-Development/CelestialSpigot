@@ -6,7 +6,7 @@ import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.inventory.InventoryHolder;
-import org.eytril.spigot.util.OptimizedRemoveUtil;
+import com.kaydeesea.spigot.util.OptimizedRemoveUtil;
 import org.github.paperspigot.exception.ServerInternalException;
 
 import java.util.Map;

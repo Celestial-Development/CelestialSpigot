@@ -1,5 +1,6 @@
 package org.bukkit.entity;
 
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -7,7 +8,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.eytril.spigot.knockback.KnockbackProfile;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,13 +23,13 @@ public interface LivingEntity extends Entity, Damageable, ProjectileSource {
     /**
      * Gets the knockback profile of this player.
      */
-    public KnockbackProfile getKnockbackProfile();
+    public KnockBackProfile getKnockbackProfile();
 
     /**
      * Sets the knockback profile of this player. The player's knockback
      * profile overrides the global knockback profile.
      */
-    public void setKnockbackProfile(KnockbackProfile profile);
+    public void setKnockbackProfile(KnockBackProfile profile);
     //RageSpigot end
 
     /**

@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.eytril.spigot.chunksnapshot.ChunkSectionSnapshot;
+import com.kaydeesea.spigot.chunksnapshot.ChunkSectionSnapshot;
 
 public class ChunkSection {
 

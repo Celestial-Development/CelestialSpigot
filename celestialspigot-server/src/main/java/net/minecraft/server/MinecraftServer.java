@@ -20,8 +20,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.Main;
-import org.eytril.spigot.tick.ReentrantIAsyncHandler;
-import org.eytril.spigot.tick.TasksPerTick;
+import com.kaydeesea.spigot.tick.ReentrantIAsyncHandler;
+import com.kaydeesea.spigot.tick.TasksPerTick;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -1051,7 +1051,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     }
 
     public String getServerModName() {
-        return "KewlSpigot"; // TacoSpigot - TacoSpigot // PaperSpigot - PaperSpigot > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
+        return "CelestialSpigot"; // TacoSpigot - TacoSpigot // PaperSpigot - PaperSpigot > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
     }
 
     public CrashReport b(CrashReport crashreport) {

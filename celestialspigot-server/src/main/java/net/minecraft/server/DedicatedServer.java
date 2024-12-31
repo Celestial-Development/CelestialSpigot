@@ -10,8 +10,8 @@ import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.eytril.spigot.KewlConfig;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,8 +170,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // PaperSpigot end
 
         // Load Duels
-        KewlSpigot.INSTANCE.setConfig(new KewlConfig());
-        KewlSpigot.INSTANCE.registerCommands();
+        CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
+        CelestialSpigot.INSTANCE.registerCommands();
 
         this.a(MinecraftEncryption.b());
         DedicatedServer.LOGGER.info("Starting Minecraft server on " + (this.getServerIp().isEmpty() ? "*" : this.getServerIp()) + ":" + this.R());

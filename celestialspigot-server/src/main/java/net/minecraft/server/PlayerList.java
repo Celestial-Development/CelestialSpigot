@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.Vector;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.io.File;
@@ -305,7 +305,7 @@ public abstract class PlayerList {
 
         joinMessage = playerJoinEvent.getJoinMessage();
 
-        if (joinMessage != null && joinMessage.length() > 0) {
+        if (joinMessage != null && !joinMessage.isEmpty()) {
             for (IChatBaseComponent line : org.bukkit.craftbukkit.util.CraftChatMessage.fromString(joinMessage)) {
                 server.getPlayerList().sendAll(new PacketPlayOutChat(line));
             }
@@ -317,14 +317,13 @@ public abstract class PlayerList {
         // CraftBukkit start - sendAll above replaced with this loop
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityplayer);
 
-        for (int i = 0; i < this.players.size(); ++i) {
-            EntityPlayer entityplayer1 = (EntityPlayer) this.players.get(i);
+        for (EntityPlayer player : this.players) {
 
-            if (!KewlSpigot.INSTANCE.getConfig().isHidePlayersFromTab() || entityplayer1.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
-                entityplayer1.playerConnection.sendPacket(packet);
+            if (player.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
+                player.playerConnection.sendPacket(packet);
             }
-            if (!KewlSpigot.INSTANCE.getConfig().isHidePlayersFromTab() || entityplayer.getBukkitEntity().canSee(entityplayer1.getBukkitEntity())) {
-                entityplayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityplayer1));
+            if (entityplayer.getBukkitEntity().canSee(player.getBukkitEntity())) {
+                entityplayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player));
             }
         }
         // CraftBukkit end

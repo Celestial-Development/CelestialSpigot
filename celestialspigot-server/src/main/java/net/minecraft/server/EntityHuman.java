@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.mojang.authlib.GameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
@@ -12,8 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.inventory.EquipmentSetEvent;
 import org.bukkit.event.player.*;
-import org.eytril.spigot.KewlSpigot;
-import org.eytril.spigot.knockback.KnockbackProfile;
+import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 
 import java.util.*;
 // CraftBukkit end
@@ -1018,12 +1019,9 @@ public abstract class EntityHuman extends EntityLiving {
 
                 if (damaged) {
                     if (i > 0) {
-                        KnockbackProfile profile = this.getKnockbackProfile() == null ? KewlSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
+                        KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
 
-                        entity.g(
-                                (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal()), profile.getExtraVertical(),
-                                (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal())
-                        );
+                        profile.handleEntityHuman(this, i);
 
                         this.motX *= 0.6D;
                         this.motZ *= 0.6D;

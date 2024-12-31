@@ -10,7 +10,7 @@ import org.bukkit.craftbukkit.util.LongHashSet;
 import org.bukkit.craftbukkit.util.LongObjectHashMap;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.PreChunkLoadEvent;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
 
@@ -53,7 +53,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public void queueUnload(int i, int j) {
         // PaperSpigot start - Asynchronous lighting updates
-        if (KewlSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (CelestialSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
             return;
         }
         Chunk chunk = chunks.get(LongHash.toLong(i, j));

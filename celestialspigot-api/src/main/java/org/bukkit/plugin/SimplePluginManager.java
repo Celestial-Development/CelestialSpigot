@@ -1,9 +1,5 @@
 package org.bukkit.plugin;
 
-import com.avaje.ebean.enhance.asm.ClassWriter;
-import com.avaje.ebean.enhance.asm.MethodVisitor;
-import com.avaje.ebean.enhance.asm.Opcodes;
-import com.avaje.ebean.enhance.asm.Type;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
@@ -15,10 +11,9 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.FileUtil;
-import org.eytril.spigot.asm.ASMEventBus;
-import org.eytril.spigot.asm.ASMEventHandler;
-import org.eytril.spigot.asm.CustomClassLoader;
-import org.eytril.spigot.util.JavaUtil;
+import com.kaydeesea.spigot.asm.ASMEventBus;
+import com.kaydeesea.spigot.asm.ASMEventHandler;
+import com.kaydeesea.spigot.util.JavaUtil;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerEventException;
 import org.github.paperspigot.exception.ServerPluginEnableDisableException;

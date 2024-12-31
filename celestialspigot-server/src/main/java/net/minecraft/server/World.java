@@ -15,9 +15,9 @@ import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
-import org.eytril.spigot.KewlSpigot;
-import org.eytril.spigot.optimized.OptimizedWorldTileEntitySet;
-import org.eytril.spigot.util.OptimizedRemoveUtil;
+import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.optimized.OptimizedWorldTileEntitySet;
+import com.kaydeesea.spigot.util.OptimizedRemoveUtil;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
 
@@ -1638,7 +1638,7 @@ public abstract class World implements IBlockAccess {
         int j = MathHelper.floor(entity.locZ);
 
         // Spigot start
-        if (KewlSpigot.INSTANCE.getConfig().isEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
+        if (CelestialSpigot.INSTANCE.getConfig().isEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
             entity.ticksLived++;
             entity.inactiveTick();
             // PaperSpigot start - Remove entities in unloaded chunks

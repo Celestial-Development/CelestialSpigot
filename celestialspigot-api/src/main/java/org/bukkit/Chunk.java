@@ -1,6 +1,6 @@
 package org.bukkit;
 
-import org.eytril.spigot.chunk.FakeMultiBlockChange;
+import com.kaydeesea.spigot.chunk.FakeMultiBlockChange;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -126,7 +126,7 @@ public interface Chunk {
 	boolean unload();
 
 	// ForestBukkit start - chunk snapshot api
-	org.eytril.spigot.chunksnapshot.ChunkSnapshot takeSnapshot();
-	void restoreSnapshot(org.eytril.spigot.chunksnapshot.ChunkSnapshot snapshot);
+	com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot takeSnapshot();
+	void restoreSnapshot(com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot snapshot);
 	// ForestBukkit end
 }

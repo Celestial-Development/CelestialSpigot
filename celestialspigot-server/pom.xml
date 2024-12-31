@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.eytril.spigot</groupId>
+        <groupId>com.kaydeesea.spigot</groupId>
         <artifactId>celestialspigot-parent</artifactId>
         <version>dev-SNAPSHOT</version>
     </parent>
@@ -43,7 +43,7 @@
             <version>3.0.3</version>
         </dependency>
         <dependency>
-            <groupId>org.eytril.spigot</groupId>
+            <groupId>com.kaydeesea.spigot</groupId>
             <artifactId>celestialspigot-api</artifactId>
             <version>${project.version}</version>
             <type>jar</type>

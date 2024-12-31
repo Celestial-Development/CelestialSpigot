@@ -6,7 +6,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.eytril.spigot.event.WitherShootEvent;
+import com.kaydeesea.spigot.event.WitherShootEvent;
 
 import java.util.Iterator;
 import java.util.List;

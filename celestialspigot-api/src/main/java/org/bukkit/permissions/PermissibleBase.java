@@ -1,6 +1,6 @@
 package org.bukkit.permissions;
 
-import org.eytril.spigot.KewlBridge;
+import com.kaydeesea.spigot.CelestialBridge;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,7 +78,7 @@ public class PermissibleBase implements Permissible {
 
             boolean isOp = isOp();
 
-            if (KewlBridge.disableOpPermissions) {
+            if (CelestialBridge.disableOpPermissions) {
                 isOp = false;
             }
 
@@ -103,7 +103,7 @@ public class PermissibleBase implements Permissible {
 
         boolean isOp = isOp();
 
-        if (KewlBridge.disableOpPermissions) {
+        if (CelestialBridge.disableOpPermissions) {
             isOp = false;
         }
 

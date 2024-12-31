@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.Setter;
-import org.eytril.spigot.util.MoreObjects;
+import com.kaydeesea.spigot.util.MoreObjects;
 
 import java.io.IOException;
 import java.util.List;

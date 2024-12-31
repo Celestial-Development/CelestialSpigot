@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
@@ -13,13 +14,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.event.potion.PotionEffectAddEvent;
 import org.bukkit.event.potion.PotionEffectExpireEvent;
 import org.bukkit.event.potion.PotionEffectExtendEvent;
 import org.bukkit.event.potion.PotionEffectRemoveEvent;
-import org.eytril.spigot.knockback.KnockbackProfile;
-import org.eytril.spigot.util.CraftPotionUtil;
+import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
+import com.kaydeesea.spigot.util.CraftPotionUtil;
 import org.spigotmc.AsyncCatcher;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
@@ -32,14 +33,14 @@ public abstract class EntityLiving extends Entity {
     private static final AttributeModifier b = (new AttributeModifier(EntityLiving.a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
 
     // SpigotX start
-    private KnockbackProfile knockbackProfile;
+    private KnockBackProfile normalKnockbackProfile;
 
-    public KnockbackProfile getKnockbackProfile() {
-        return knockbackProfile;
+    public KnockBackProfile getKnockbackProfile() {
+        return normalKnockbackProfile;
     }
 
-    public void setKnockbackProfile(KnockbackProfile profile) {
-        this.knockbackProfile = profile;
+    public void setKnockbackProfile(KnockBackProfile profile) {
+        this.normalKnockbackProfile = profile;
     }
     // SpigotX end
 
@@ -915,23 +916,9 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
-            KnockbackProfile profile = this.getKnockbackProfile() == null ? KewlSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
+            KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
 
-            // Kohi start - configurable knockback
-            double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
-
-            this.motX /= profile.getHorizontalFriction();
-            this.motY /= profile.getVerticalFriction();
-            this.motZ /= profile.getHorizontalFriction();
-
-            this.motX -= d0 / magnitude * profile.getHorizontal();
-            this.motY += profile.getVertical();
-            this.motZ -= d1 / magnitude * profile.getHorizontal();
-
-            if (this.motY > profile.getVerticalLimit()) {
-                this.motY = profile.getVerticalLimit();
-            }
-            // Kohi end
+            profile.handleEntityLiving(this ,f, d0, d1);
         }
     }
 

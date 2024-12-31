@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.eytril.spigot</groupId>
+        <groupId>com.kaydeesea.spigot</groupId>
         <artifactId>celestialspigot-parent</artifactId>
         <version>dev-SNAPSHOT</version>
     </parent>
@@ -13,7 +13,7 @@
     <version>1.8.8-R0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>KewlSpigot-API</name>
+    <name>CelestialSpigot-API</name>
     <description>An enhanced plugin API for Minecraft servers.</description>
 
     <properties>

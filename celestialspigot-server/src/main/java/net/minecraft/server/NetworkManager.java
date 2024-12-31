@@ -19,8 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.eytril.spigot.KewlSpigot;
-import org.eytril.spigot.handler.PacketHandler;
+import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.handler.PacketHandler;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -151,7 +151,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             }
             if (this.m instanceof PlayerConnection) {
                 try {
-                    for (PacketHandler handler : KewlSpigot.INSTANCE.getPacketHandlers()) {
+                    for (PacketHandler handler : CelestialSpigot.INSTANCE.getPacketHandlers()) {
                         handler.handleReceivedPacket((PlayerConnection) this.m, packet);
                     }
                 } catch (Exception e) {

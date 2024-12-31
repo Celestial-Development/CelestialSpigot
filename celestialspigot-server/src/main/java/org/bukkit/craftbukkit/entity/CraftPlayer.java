@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import org.bukkit.*;
-import org.eytril.spigot.KewlSpigot;
+import com.kaydeesea.spigot.CelestialSpigot;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
@@ -97,7 +97,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
-import org.eytril.spigot.event.PlayerHealthChangeEvent;
+import com.kaydeesea.spigot.event.PlayerHealthChangeEvent;
 import org.github.paperspigot.Title;
 
 // PaperSpigot start
@@ -347,7 +347,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		}
 		getHandle().listName = name.equals(getName()) ? null : CraftChatMessage.fromString(name)[0];
 		for (EntityPlayer player : server.getHandle().players) {
-			if (!KewlSpigot.INSTANCE.getConfig().isHidePlayersFromTab() || player.getBukkitEntity().canSee(this)) {
+			if (player.getBukkitEntity().canSee(this)) {
 				player.playerConnection.sendPacket(
 						new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
 								this.getHandle()));
@@ -1105,10 +1105,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 //		if (!SpigotX.INSTANCE.getConfig().isHidePlayersFromTab()) {
 //			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, other));
 //		}
-
-		if (KewlSpigot.INSTANCE.getConfig().isHidePlayersFromTab()) {
-			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, other));
-		}
 	}
 
 	@Override
