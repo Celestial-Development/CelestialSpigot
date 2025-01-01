@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import co.aikar.timings.SpigotTimings;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsManager;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -1488,6 +1489,38 @@ public abstract class Entity implements ICommandListener {
 		return nbttaglist;
 	}
 
+	// ClubSpigot start
+	public double distanceSqrdAccurate(Entity entity) {
+		// Nacho start - improved hit reg
+		if (CelestialSpigot.INSTANCE.getConfig().isImprovedHitDetection() && entity instanceof EntityPlayer && this instanceof EntityPlayer) {
+
+			EntityPlayer entityPlayer = (EntityPlayer) entity;
+			EntityPlayer player = (EntityPlayer) this;
+
+			Location loc;
+			if (entityPlayer.playerConnection.getClass().equals(PlayerConnection.class)
+					&& player.playerConnection.getClass().equals(PlayerConnection.class)) {
+				loc = CelestialSpigot.INSTANCE.getLagCompensator().getHistoryLocation(entityPlayer.getBukkitEntity(),
+						player.ping);
+			} else {
+				loc = entityPlayer.getBukkitEntity().getLocation();
+			}
+			// Nacho end
+
+			double d0 = this.locX - loc.getX();
+			double d1 = this.locY - loc.getY();
+			double d2 = this.locZ - loc.getZ();
+
+			return d0 * d0 + d1 * d1 + d2 * d2;
+		} else {
+			double d0 = this.locX - entity.locX;
+			double d1 = this.locY - entity.locY;
+			double d2 = this.locZ - entity.locZ;
+
+			return d0 * d0 + d1 * d1 + d2 * d2;
+		}
+	}
+	// ClubSpigot end
 	public EntityItem a(Item item, int i) {
 		return this.a(item, i, 0.0F);
 	}

@@ -199,7 +199,7 @@ public class KnockbackCommand extends Command {
             }
             String s = "";
             for (String a : profile.getValues()) {
-                if (a.contains(f)) s = a;
+                if (a.equalsIgnoreCase(f)) s = a;
             }
             if (!s.isEmpty()) {
                 if (profile.getType() == ProfileType.NORMAL) {

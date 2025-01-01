@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 
+import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
@@ -36,6 +37,10 @@ public class CelestialConfig {
     @Getter
     private Set<KnockBackProfile> kbProfiles = new HashSet<>();
 
+    private boolean enablePluginsCommand;
+    private boolean enableVersionCommand;
+    private boolean enableReloadCommand;
+    private boolean improvedHitDetection;
     private boolean firePlayerMoveEvent;
     private boolean fireLeftClickAir;
     private boolean fireLeftClickBlock;
@@ -81,6 +86,7 @@ public class CelestialConfig {
             }
         }
 
+        CelestialSpigot.INSTANCE.setLagCompensator(new LagCompensator());
         this.configFile = new File("settings.yml");
         this.config = new YamlConfiguration();
 
@@ -149,6 +155,10 @@ public class CelestialConfig {
             this.currentKb = defaultProfile;
         }
 
+        this.enableVersionCommand = this.getBoolean("enable-version-command", true);
+        this.enableReloadCommand = this.getBoolean("enable-reload-command", true);
+        this.enablePluginsCommand = this.getBoolean("enable-plugins-command", true);
+        this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
         this.firePlayerMoveEvent = this.getBoolean("fire-player-move-event", true);
         this.fireLeftClickAir = this.getBoolean("fire-left-click-air", false);
         this.fireLeftClickBlock = this.getBoolean("fire-left-click-block", false);

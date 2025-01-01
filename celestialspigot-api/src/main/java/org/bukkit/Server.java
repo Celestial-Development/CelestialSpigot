@@ -955,6 +955,14 @@ public interface Server extends PluginMessageRecipient {
     CommandMap getCommandMap();
     // Paper end
 
+    // CelestialSpigot start
+    boolean versionCommandEnabled();
+
+    boolean reloadCommandEnabled();
+
+    boolean pluginsCommandEnabled();
+    // CelestialSpigot end
+
     public class Spigot
     {
         @Deprecated

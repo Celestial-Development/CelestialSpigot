@@ -13,7 +13,7 @@ public final class Versioning {
 		String result = "Unknown-Version";
 
 		InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream(
-				"META-INF/maven/com.kaydeesea.spigot/CelestialSpigot-api/pom.properties");
+				"META-INF/maven/com.kaydeesea.spigot/celestialspigot-api/pom.properties");
 		Properties properties = new Properties();
 
 		if (stream != null) {

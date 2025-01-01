@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.kaydeesea.spigot.chunksnapshot.ChunkSectionSnapshot;
 
 public class ChunkSection {
 
@@ -148,21 +147,4 @@ public class ChunkSection {
         this.skyLight = nibblearray;
     }
 
-    // Kab -- ChunkSnapshot
-    public ChunkSectionSnapshot createSnapshot() {
-        return new ChunkSectionSnapshot(
-                nonEmptyBlockCount,
-                tickingBlockCount,
-                blockIds.clone(),
-                new NibbleArray(),
-                new NibbleArray()
-        );
-    }
-
-    public void restoreSnapshot(ChunkSectionSnapshot snap) {
-        nonEmptyBlockCount = snap.getNonEmptyBlockCount();
-        tickingBlockCount = snap.getTickingBlockCount();
-        blockIds = snap.getBlockIds().clone();
-        isDirty = true;
-    }
 }

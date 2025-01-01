@@ -31,9 +31,19 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     private void setDefaultCommands() {
-        this.register("bukkit", new ReloadCommand("reload"));
-        this.register("bukkit", new PluginsCommand("plugins"));
-        this.register("bukkit", new VersionCommand("version"));
+        try { // You might ask; "why?". Well, unit testing doesn't like this so I'll have to
+            // do it the ugly way. If anyone knows a better way to do this, please PR.
+            if (server.versionCommandEnabled())
+                register("bukkit", new VersionCommand("version"));
+            if (server.reloadCommandEnabled())
+                register("bukkit", new ReloadCommand("reload"));
+            if (server.pluginsCommandEnabled())
+                register("bukkit", new PluginsCommand("plugins"));
+        } catch (Exception e) {
+            register("bukkit", new VersionCommand("version"));
+            register("bukkit", new ReloadCommand("reload"));
+            register("bukkit", new PluginsCommand("plugins"));
+        }
     }
 
     public void setFallbackCommands() {

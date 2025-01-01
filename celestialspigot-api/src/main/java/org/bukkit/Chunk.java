@@ -1,11 +1,8 @@
 package org.bukkit;
 
-import com.kaydeesea.spigot.chunk.FakeMultiBlockChange;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a chunk of blocks
@@ -125,8 +122,4 @@ public interface Chunk {
 	 */
 	boolean unload();
 
-	// ForestBukkit start - chunk snapshot api
-	com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot takeSnapshot();
-	void restoreSnapshot(com.kaydeesea.spigot.chunksnapshot.ChunkSnapshot snapshot);
-	// ForestBukkit end
 }

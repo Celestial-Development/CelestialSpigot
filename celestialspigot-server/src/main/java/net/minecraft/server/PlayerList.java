@@ -398,6 +398,8 @@ public abstract class PlayerList {
         if (lastView != null && lastView.getHandle() instanceof ContainerPlayer && lastView.getPlayer() == bukkit) craftingManager.lastCraftView = null;
         // KigPaper end
 
+        CelestialSpigot.INSTANCE.getLagCompensator().clearCache(bukkit); // Nacho
+
         return playerQuitEvent.getQuitMessage(); // CraftBukkit
     }
 
@@ -583,6 +585,7 @@ public abstract class PlayerList {
             }
             // Spigot End
 
+            CelestialSpigot.INSTANCE.getLagCompensator().clearCache(respawnPlayer); // Nacho
             location = respawnEvent.getRespawnLocation();
             entityplayer.reset();
         } else {
@@ -635,6 +638,7 @@ public abstract class PlayerList {
         // CraftBukkit start
         // Don't fire on respawn
         if (fromWorld != location.getWorld()) {
+            CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), entityplayer.getBukkitEntity().getLocation());
             PlayerChangedWorldEvent event = new PlayerChangedWorldEvent(entityplayer.getBukkitEntity(), fromWorld);
             server.server.getPluginManager().callEvent(event);
         }
@@ -692,6 +696,8 @@ public abstract class PlayerList {
             return;
         }
         exitWorld = ((CraftWorld) exit.getWorld()).getHandle();
+
+        CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), exit); // Nacho
 
         org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent(entityplayer.getBukkitEntity(), enter, exit, cause);
         Bukkit.getServer().getPluginManager().callEvent(tpEvent);

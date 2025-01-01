@@ -257,12 +257,13 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					this.lastYaw = to.getYaw();
 					this.lastPitch = to.getPitch();
 
-					if (CelestialSpigot.INSTANCE.getConfig().isFirePlayerMoveEvent()) {
+					if (CelestialSpigot.INSTANCE.getConfig().isFirePlayerMoveEvent() && PlayerMoveEvent.getHandlerList().getRegisteredListeners().length != 0) {
 						Location oldTo = to.clone();
 						PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
 						this.server.getPluginManager().callEvent(event);
 
 						if (event.isCancelled()) {
+							CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(player, to); // Nacho
 							this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
 							return;
 						}
@@ -277,6 +278,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 							return;
 						}
 					}
+					CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(player, to); // Nacho - register movement
+
 				}
 
 				if (this.checkMovement && !this.player.dead) {
@@ -497,7 +500,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			f = to.getYaw();
 			f1 = to.getPitch();
 		}
-
+		CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(player, to); // Nacho
 		this.internalTeleport(d0, d1, d2, f, f1, set);
 	}
 
@@ -1288,7 +1291,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		if (entity != null) {
 			double d0 = 36.0D;
 
-			if (this.player.h(entity) < d0) {
+			if (this.player.distanceSqrdAccurate(entity) <= d0) { // Nacho - <  ->  <=
 				ItemStack itemInHand = this.player.inventory.getItemInHand();
 
 				if (packetplayinuseentity.a() == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT || packetplayinuseentity.a() == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {

@@ -1,5 +1,6 @@
 package com.kaydeesea.spigot;
 
+import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import lombok.Getter;
 import lombok.Setter;
 import com.kaydeesea.spigot.command.PotionCommand;
@@ -25,7 +26,14 @@ public enum CelestialSpigot {
     @Setter
     private CelestialConfig config;
 
-    public static String version = "1.2.0";
+	@Setter
+	private LagCompensator lagCompensator;
+
+	public LagCompensator getLagCompensator() {
+		return lagCompensator;
+	}
+
+	public static String version = "1.2.0";
     private Set<PacketHandler> packetHandlers = new HashSet<>();
     private Set<MovementHandler> movementHandlers = new HashSet<>();
 

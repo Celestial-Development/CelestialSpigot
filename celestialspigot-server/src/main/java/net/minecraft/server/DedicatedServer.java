@@ -227,7 +227,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             String s2 = this.propertyManager.getString("generator-settings", "");
             long k = (new Random()).nextLong();
 
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 try {
                     long l = Long.parseLong(s);
 
@@ -257,7 +257,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             DedicatedServer.LOGGER.info("Loading world: \"" + this.U() + "\""); // actually very useful
             this.a(this.U(), this.U(), k, worldtype, s2);
             long i1 = System.nanoTime() - j;
-            String s3 = String.format("%.3fs", Double.valueOf((double) i1 / 1.0E9D));
+            String s3 = String.format("%.3fs", (double) i1 / 1.0E9D);
 
             DedicatedServer.LOGGER.info("Done (" + s3 + ")! For help, type \"help\" or \"?\"");
             if (this.propertyManager.getBoolean("enable-query", false)) {
@@ -292,14 +292,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                     DedicatedServer.LOGGER.warn("Perhaps a server is already running on that port?");
                     return false;
                 }
-            }
-
-            if (false) {  // Spigot - disable
-                Thread thread1 = new Thread(new ThreadWatchdog(this));
-
-                thread1.setName("Server Watchdog");
-                thread1.setDaemon(true);
-                thread1.start();
             }
 
             return true;

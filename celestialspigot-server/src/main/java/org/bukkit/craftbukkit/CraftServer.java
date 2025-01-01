@@ -1008,9 +1008,11 @@ public final class CraftServer implements Server {
             }
         } else { // KigPaper start
             ChunkProviderServer cps = handle.chunkProviderServer;
-            ChunkRegionLoader loader = (ChunkRegionLoader) cps.chunkLoader;
-            loader.b.clear();
-            loader.c.clear();
+            IChunkLoader loader = cps.chunkLoader;
+            if(loader instanceof ChunkRegionLoader) {
+                ((ChunkRegionLoader) loader).b.clear();
+                ((ChunkRegionLoader) loader).c.clear();
+            }
             try {
                 FileIOThread.a().b();
             } catch (InterruptedException ex) {
@@ -1624,6 +1626,21 @@ public final class CraftServer implements Server {
     public int getAmbientSpawnLimit() {
         return ambientSpawn;
     }
+    @Override
+    public boolean versionCommandEnabled() {
+        return CelestialSpigot.INSTANCE.getConfig().isEnableVersionCommand();
+    }
+
+    @Override
+    public boolean reloadCommandEnabled() {
+        return CelestialSpigot.INSTANCE.getConfig().isEnableReloadCommand();
+    }
+
+    @Override
+    public boolean pluginsCommandEnabled() {
+        return CelestialSpigot.INSTANCE.getConfig().isEnablePluginsCommand();
+    }
+
 
     @Override
     public boolean isPrimaryThread() {

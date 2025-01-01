@@ -642,6 +642,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		if (event.isCancelled()) {
 			return false;
 		}
+		CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(this, to); // Nacho
 
 		// If this player is riding another entity, we must dismount before teleporting.
 		entity.mount(null);
