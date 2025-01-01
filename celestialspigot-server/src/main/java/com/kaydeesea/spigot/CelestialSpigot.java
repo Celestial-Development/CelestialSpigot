@@ -1,5 +1,6 @@
 package com.kaydeesea.spigot;
 
+import com.kaydeesea.spigot.command.PingCommand;
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +52,7 @@ public enum CelestialSpigot {
 		commands.put("knockback", new KnockbackCommand());
         commands.put("potion", new PotionCommand());
         commands.put("tps", new TPSCommand());
+		commands.put("ping", new PingCommand());
 
 		for (Map.Entry<String, Command> entry : commands.entrySet()) {
 			MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());

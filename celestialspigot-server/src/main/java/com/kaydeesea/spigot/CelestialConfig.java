@@ -37,6 +37,10 @@ public class CelestialConfig {
     @Getter
     private Set<KnockBackProfile> kbProfiles = new HashSet<>();
 
+
+    private String pingCommandSelf;
+    private String pingCommandOther;
+
     private boolean enablePluginsCommand;
     private boolean enableVersionCommand;
     private boolean enableReloadCommand;
@@ -54,7 +58,6 @@ public class CelestialConfig {
     private boolean disableLeaveMessage;
 
     private int hitDelay;
-
 
     private float potionThrowMultiplier;
     private float potionThrowOffset;
@@ -154,6 +157,9 @@ public class CelestialConfig {
         if (this.currentKb == null) {
             this.currentKb = defaultProfile;
         }
+
+        this.pingCommandSelf = this.getString("ping-command-self", "&bYour ping is: §3%ping%");
+        this.pingCommandOther = this.getString("ping-command-other", "&b%player%'s ping is: §3%ping%");
 
         this.enableVersionCommand = this.getBoolean("enable-version-command", true);
         this.enableReloadCommand = this.getBoolean("enable-reload-command", true);
