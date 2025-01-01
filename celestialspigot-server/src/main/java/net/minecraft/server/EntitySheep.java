@@ -79,15 +79,13 @@ public class EntitySheep extends EntityAnimal {
             this.a(new ItemStack(Item.getItemOf(Blocks.WOOL), 1, this.getColor().getColorIndex()), 0.0F);
         }
 
-        if(CelestialSpigot.INSTANCE.getConfig().isBaseVersionEnabled()) {
-            int j = this.random.nextInt(2) + 1 + this.random.nextInt(1 + i);
+        int j = this.random.nextInt(2) + 1 + this.random.nextInt(1 + i);
 
-            for (int k = 0; k < j; ++k) {
-                if (this.isBurning()) {
-                    this.a(Items.COOKED_MUTTON, 1);
-                } else {
-                    this.a(Items.MUTTON, 1);
-                }
+        for (int k = 0; k < j; ++k) {
+            if (this.isBurning()) {
+                this.a(Items.COOKED_MUTTON, 1);
+            } else {
+                this.a(Items.MUTTON, 1);
             }
         }
 

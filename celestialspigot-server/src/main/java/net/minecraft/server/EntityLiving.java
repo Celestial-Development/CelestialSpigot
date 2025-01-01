@@ -5,9 +5,9 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
-import com.kaydeesea.spigot.knockback.ProfileType;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
@@ -821,7 +821,7 @@ public abstract class EntityLiving extends Entity {
                         }
 
                         this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
-                        this.a(entity, f, d0, d1);
+                        this.a(entity, f, d0, d1, damagesource);
                     } else {
                         this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
                     }
@@ -913,14 +913,15 @@ public abstract class EntityLiving extends Entity {
     protected void dropEquipment(boolean flag, int i) {
     }
 
-    public void a(Entity entity, float f, double d0, double d1) {
+    public void a(Entity entity, float f, double d0, double d1, DamageSource source) {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
-            this.ai = true;
+            if(getKnockbackProfile() == null) setKnockbackProfile(CelestialSpigot.INSTANCE.getConfig().getCurrentKb());
 
-            KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
-
+            KnockBackProfile profile = getKnockbackProfile();
             if(profile instanceof NormalKnockbackProfile) {
-                ((NormalKnockbackProfile)profile).handleEntityLiving(this, f, d0, d1);
+                ((NormalKnockbackProfile)profile).handleEntityLiving(this, d0, d1, source);
+            } else if(profile instanceof BedWarsKnockbackProfile) {
+                ((BedWarsKnockbackProfile)profile).handleEntityLiving(this, d0, d1, source);
             }
         }
     }

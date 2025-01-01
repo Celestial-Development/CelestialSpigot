@@ -50,25 +50,25 @@ public class PotionCommand extends Command {
             } else if(args.length >= 2) {
                 switch (args[0].toLowerCase()) {
                     case "multiplier": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potion-throw-multiplier", Float.valueOf(args[1]));
+                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-throw-multiplier", Float.valueOf(args[1]));
                         CelestialSpigot.INSTANCE.getConfig().setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw multiplier to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "offset": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potion-throw-offset", Float.valueOf(args[1]));
+                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-throw-offset", Float.valueOf(args[1]));
                         CelestialSpigot.INSTANCE.getConfig().setPotionThrowOffset(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw offset to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "speed": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potion-fall-speed", Float.valueOf(args[1]));
+                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-fall-speed", Float.valueOf(args[1]));
                         CelestialSpigot.INSTANCE.getConfig().setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion fall speed to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "smooth": {
-                        CelestialSpigot.INSTANCE.getConfig().set("smooth-heal-potions", Boolean.valueOf(args[1]));
+                        CelestialSpigot.INSTANCE.getConfig().set("potions.smooth-heal-potions", Boolean.valueOf(args[1]));
                         CelestialSpigot.INSTANCE.getConfig().setSmoothHealPotions(Boolean.parseBoolean(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set smooth heal potions to: " + ChatColor.AQUA + Boolean.valueOf(args[1]));
                         break;

@@ -12,8 +12,8 @@ public class PingCommand extends Command {
 
 	public PingCommand() {
 		super("ping");
-		this.description = "Shows a player's ping";
-		this.usageMessage = "/ping";
+		setDescription("Shows a player's ping");
+		setUsage("/ping");
 	}
 
 	@Override

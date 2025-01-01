@@ -1,8 +1,8 @@
 package com.kaydeesea.spigot.knockback;
 
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.MathHelper;
+import net.minecraft.server.*;
+import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 
 public interface NormalKnockbackProfile extends KnockBackProfile {
     double getFriction();
@@ -27,9 +27,12 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
 
     double getExtraVertical();
 
+    void setExtraVertical(double extraVertical);
 
-    default void handleEntityLiving(EntityLiving entityLiving, float f, double d0, double d1) {
+
+    default void handleEntityLiving(EntityLiving entityLiving, double d0, double d1, DamageSource source) {
         // cSpigot start
+        entityLiving.ai = true;
         double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
 
         entityLiving.motX /= getFriction();
@@ -46,14 +49,32 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
         // cSpigot end
     };
 
-    default void handleEntityHuman(EntityHuman entityHuman, int i) {
-        entityHuman.g(
-                (-MathHelper.sin(entityHuman.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal()), getExtraVertical(),
-                (MathHelper.cos(entityHuman.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal())
-        );
+    default void handleEntityHuman(EntityHuman victim, Entity source, int i, Vector vector) {
+        if (i > 0) {
+            source.g(
+                    (-MathHelper.sin(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal()), getExtraVertical(),
+                    (MathHelper.cos(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal())
+            );
+            victim.motX *= 0.6;
+            victim.motZ *= 0.6;
+            victim.setSprinting(false);
+        }
+        if (source instanceof EntityPlayer && source.velocityChanged) {
+            EntityPlayer attackedPlayer = (EntityPlayer)source;
+            PlayerVelocityEvent event = new PlayerVelocityEvent(attackedPlayer.getBukkitEntity(), attackedPlayer.getBukkitEntity().getVelocity());
+            victim.world.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                attackedPlayer.getBukkitEntity().setVelocityDirect(event.getVelocity());
+                attackedPlayer.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(attackedPlayer));
+            }
+            attackedPlayer.velocityChanged = false;
+            attackedPlayer.motX = vector.getX();
+            attackedPlayer.motY = vector.getY();
+            attackedPlayer.motZ = vector.getZ();
+        }
+
     }
 
-    void setExtraVertical(double extraVertical);
     default ProfileType getType() {
         return ProfileType.NORMAL;
     }

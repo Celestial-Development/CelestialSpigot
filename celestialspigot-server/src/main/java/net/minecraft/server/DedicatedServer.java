@@ -130,6 +130,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.setOnlineMode(this.propertyManager.getBoolean("online-mode", true));
             this.c(this.propertyManager.getString("server-ip", ""));
         }
+        CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
+
 
         this.setSpawnAnimals(this.propertyManager.getBoolean("spawn-animals", true));
         this.setSpawnNPCs(this.propertyManager.getBoolean("spawn-npcs", true));
@@ -169,9 +171,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
         // PaperSpigot end
 
-        // Load Duels
-        CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
-        CelestialSpigot.INSTANCE.registerCommands();
 
         this.a(MinecraftEncryption.b());
         DedicatedServer.LOGGER.info("Starting Minecraft server on " + (this.getServerIp().isEmpty() ? "*" : this.getServerIp()) + ":" + this.R());
@@ -192,7 +191,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         server.loadPlugins();
         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
         // Spigot End
-
+        CelestialSpigot.INSTANCE.registerCommands();
         if (!this.getOnlineMode()) {
             DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
             DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");

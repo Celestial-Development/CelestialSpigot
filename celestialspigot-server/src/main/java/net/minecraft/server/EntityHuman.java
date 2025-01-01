@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.mojang.authlib.GameProfile;
@@ -15,6 +16,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.inventory.EquipmentSetEvent;
 import org.bukkit.event.player.*;
 import com.kaydeesea.spigot.CelestialSpigot;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 // CraftBukkit end
@@ -1018,35 +1020,16 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (i > 0) {
+                    if (entity instanceof EntityPlayer) {
                         KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
 
                         if(profile instanceof NormalKnockbackProfile) {
-                            ((NormalKnockbackProfile)profile).handleEntityHuman(this, i);
+                            ((NormalKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                        } else if(profile instanceof BedWarsKnockbackProfile) {
+                            ((BedWarsKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         }
-
-                        this.motX *= 0.6D;
-                        this.motZ *= 0.6D;
-                        this.setSprinting(false);
                     }
 
-                    // Kohi start
-                    if (entity instanceof EntityPlayer && entity.velocityChanged) {
-                        EntityPlayer attackedPlayer = (EntityPlayer) entity;
-                        PlayerVelocityEvent event = new PlayerVelocityEvent(attackedPlayer.getBukkitEntity(), attackedPlayer.getBukkitEntity().getVelocity());
-
-                        this.world.getServer().getPluginManager().callEvent(event);
-
-                        if (!event.isCancelled()) {
-                            attackedPlayer.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                            attackedPlayer.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(attackedPlayer));
-                        }
-
-                        attackedPlayer.velocityChanged = false;
-                        attackedPlayer.motX = victimMotX;
-                        attackedPlayer.motY = victimMotY;
-                        attackedPlayer.motZ = victimMotZ;
-                    }
                     // Kohi end
 
                     if (flag) {

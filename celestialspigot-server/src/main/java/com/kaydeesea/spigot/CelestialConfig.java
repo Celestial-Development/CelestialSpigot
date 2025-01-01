@@ -9,13 +9,10 @@ import java.util.*;
 import java.util.logging.Level;
 
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
-import com.kaydeesea.spigot.knockback.KnockBackProfile;
-import com.kaydeesea.spigot.knockback.ProfileType;
+import com.kaydeesea.spigot.knockback.*;
+import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
 import lombok.Setter;
-
-import com.kaydeesea.spigot.knockback.NormalTypeKnockbackProfile;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -38,6 +35,8 @@ public class CelestialConfig {
     private Set<KnockBackProfile> kbProfiles = new HashSet<>();
 
 
+    private YamlCommenter c = new YamlCommenter();
+
     private String pingCommandSelf;
     private String pingCommandOther;
 
@@ -51,7 +50,6 @@ public class CelestialConfig {
     private boolean entityActivation;
     private boolean invalidArmAnimationKick;
     private boolean mobAIEnabled;
-    private boolean baseVersionEnabled;
     private boolean doChunkUnload;
     private boolean blockOperations;
     private boolean disableJoinMessage;
@@ -62,7 +60,6 @@ public class CelestialConfig {
     private float potionThrowMultiplier;
     private float potionThrowOffset;
     private float potionFallSpeed;
-
     private boolean smoothHealPotions;
 
     public CelestialConfig() {
@@ -102,7 +99,6 @@ public class CelestialConfig {
             throw Throwables.propagate(ex);
         }
 
-        this.config.options().header(CelestialConfig.HEADER);
         this.config.options().copyDefaults(true);
 
         this.loadConfig();
@@ -147,7 +143,36 @@ public class CelestialConfig {
                     if (value.equalsIgnoreCase("extra-vertical"))
                         profile.setExtraVertical(this.getDouble(a, 0.01));
                 }
+            } else if(type.equals(ProfileType.BEDWARS)) {
+                BedWarsTypeKnockbackProfile profile = (BedWarsTypeKnockbackProfile) getKbProfileByName(key);
 
+                if (profile == null) {
+                    profile = new BedWarsTypeKnockbackProfile(key);
+                    this.kbProfiles.add(profile);
+                }
+                for (String value : profile.getValues()) {
+                    String a = path + "." + value;
+                    if(value.equalsIgnoreCase("friction"))
+                        profile.setFrictionValue(this.getDouble(a, 2.0));
+                    if(value.equalsIgnoreCase("horizontal"))
+                        profile.setHorizontal(this.getDouble(a, 0.9055));
+                    if(value.equalsIgnoreCase("vertical"))
+                        profile.setVertical(this.getDouble(a, 0.8835));
+                    if (value.equalsIgnoreCase("vertical-limit"))
+                        profile.setVerticalLimit(this.getDouble(a, 0.3534));
+                    if(value.equalsIgnoreCase("max-range-reduction"))
+                        profile.setMaxRangeReduction(this.getDouble(a, 0.4));
+                    if(value.equalsIgnoreCase("range-factor"))
+                        profile.setRangeFactor(this.getDouble(a, 0.2));
+                    if(value.equalsIgnoreCase("start-range-reduction"))
+                        profile.setStartRangeReduction(this.getDouble(a, 3.0));
+                    if(value.equalsIgnoreCase("w-tap"))
+                        profile.setWTap(this.getBoolean(a, false));
+                    if(value.equalsIgnoreCase("slowdown-boolean"))
+                        profile.setSlowdownBoolean(this.getBoolean(a, false));
+                    if(value.equalsIgnoreCase("friction-boolean"))
+                        profile.setFriction(this.getBoolean(a, false));
+                }
             }
 
         }
@@ -158,8 +183,9 @@ public class CelestialConfig {
             this.currentKb = defaultProfile;
         }
 
-        this.pingCommandSelf = this.getString("ping-command-self", "&bYour ping is: §3%ping%");
-        this.pingCommandOther = this.getString("ping-command-other", "&b%player%'s ping is: §3%ping%");
+        this.pingCommandSelf = this.getString("ping-command-self", "&bYour ping is: &3%ping%");
+        this.pingCommandOther = this.getString("ping-command-other", "&b%player%'s ping is: &3%ping%");
+
 
         this.enableVersionCommand = this.getBoolean("enable-version-command", true);
         this.enableReloadCommand = this.getBoolean("enable-reload-command", true);
@@ -171,26 +197,58 @@ public class CelestialConfig {
         this.entityActivation = this.getBoolean("entity-activation", false);
         this.invalidArmAnimationKick = this.getBoolean("invalid-arm-animation-kick", false);
         this.mobAIEnabled = this.getBoolean("mob-ai", true);
-        this.baseVersionEnabled = this.getBoolean("1-8-enabled", false);
         this.doChunkUnload = this.getBoolean("do-chunk-unload", true);
         this.blockOperations = this.getBoolean("block-operations", false);
         this.disableJoinMessage = this.getBoolean("disable-join-message", true);
         this.disableLeaveMessage = this.getBoolean("disable-leave-message", true);
 
         this.hitDelay = this.getInt("hit-delay", 20);
-        this.potionThrowMultiplier = this.getFloat("potion-throw-multiplier", 0.5f);
-        this.potionThrowOffset = this.getFloat("potion-throw-offset", -10.0f);
-        this.potionFallSpeed = this.getFloat("potion-fall-speed", 0.05f);
+        this.potionThrowMultiplier = this.getFloat("potions.potion-throw-multiplier", 0.5f);
+        this.potionThrowOffset = this.getFloat("potions.potion-throw-offset", -10.0f);
+        this.potionFallSpeed = this.getFloat("potions.potion-fall-speed", 0.05f);
 
-        this.smoothHealPotions = this.getBoolean("smooth-heal-potions", true);
+        this.smoothHealPotions = this.getBoolean("potions.smooth-heal-potions", true);
 
         CelestialBridge.disableOpPermissions = this.getBoolean("disable-op", false);
 
-        try {
-            this.config.save(this.configFile);
-        } catch (IOException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + this.configFile, ex);
-        }
+        save();
+    }
+    public void loadComments() {
+        c.setHeader(HEADER);
+        c.addComment("knockback.profiles", "KnockBack profiles, you can create profiles in-game by /knockback create <name> <type>");
+        c.addComment("knockback.current", "Currently selected knockback profile");
+
+        // Add comments for mob AI setting
+        c.addComment("mob-ai", "Setting to enable or disable mob artificial intelligence");
+
+        // Add comments for command-related settings
+        c.addComment("enable-version-command", "Enable or disable the version command");
+        c.addComment("enable-reload-command", "Enable or disable the reload command");
+        c.addComment("enable-plugins-command", "Enable or disable the plugins command");
+
+        // Add comments for player event-related settings
+        c.addComment("fire-player-move-event", "Enable firing events when players move");
+        c.addComment("fire-left-click-air", "Enable firing events when players left-click air");
+        c.addComment("fire-left-click-block", "Enable firing events when players left-click blocks");
+
+        // Add comments for entity and game settings
+        c.addComment("entity-activation", "Enable or disable entity activation rules");
+        c.addComment("invalid-arm-animation-kick", "Kick players for invalid arm animations");
+        c.addComment("do-chunk-unload", "Enable or disable chunk unloading");
+        c.addComment("block-operations", "Enable or disable block operations");
+        c.addComment("disable-join-message", "Enable or disable join messages");
+        c.addComment("disable-leave-message", "Enable or disable leave messages");
+
+        c.addComment("hit-delay", "Change the hit Delay (ticks)");
+
+        // Add comments for potion-related settings
+        c.addComment("potions.potion-throw-multiplier", "Set the multiplier for potion throwing speed");
+        c.addComment("potions.potion-throw-offset", "Set the offset angle for potion throws");
+        c.addComment("potions.potion-fall-speed", "Set the falling speed for potions");
+        c.addComment("potions.smooth-heal-potions", "Enable smooth healing effects for potions");
+
+        // Add comments for CelestialBridge settings
+        c.addComment("disable-op", "Enable or disable operator permissions");
     }
 
     public KnockBackProfile getKbProfileByName(String name) {
@@ -204,8 +262,10 @@ public class CelestialConfig {
     }
 
     public void save() {
+        loadComments();
         try {
             this.config.save(this.configFile);
+            this.c.saveComments(this.configFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
