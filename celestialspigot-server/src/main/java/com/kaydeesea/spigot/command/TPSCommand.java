@@ -1,5 +1,6 @@
 package com.kaydeesea.spigot.command;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
@@ -53,19 +54,19 @@ public class TPSCommand extends Command
         final World world2 = (sender instanceof Player) ? ((Player)sender).getWorld() : Bukkit.getWorlds().get(0);
         final Chunk[] loadedChunks = world2.getLoadedChunks();
 
-        sender.sendMessage("");
-        sender.sendMessage("§b§lPERFORMANCE§7:");
-        sender.sendMessage("");
-        sender.sendMessage("§bUptime: §f" + DateUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()));
-        sender.sendMessage("§bTPS: " + formatTPS(tpsNow));
-        sender.sendMessage("§bLag: " + formatLag(Math.round(lag * 10000.0) / 10000.0));
-        sender.sendMessage("");
-        sender.sendMessage("§bEntities: §f" + totalEntities);
-        sender.sendMessage("§bChunks: §f" + loadedChunks.length);
-        sender.sendMessage("");
-        sender.sendMessage("§bMemory: §f" + usedMemory + "/" + allocatedMemory + "MB");
-        sender.sendMessage("§bFull tick: §f" + MinecraftServer.AVERAGE_TICK_TIME);
-        sender.sendMessage("");
+        for (String s : CelestialSpigot.INSTANCE.getConfig().getTpsCommand()) {
+            sender.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', s)
+                            .replaceAll("%uptime%", DateUtil.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()))
+                            .replaceAll("%tps%", formatTPS(tpsNow))
+                            .replaceAll("%lag%", formatLag(Math.round(lag * 10000.0) / 10000.0))
+                            .replaceAll("%entities%", String.valueOf(totalEntities))
+                            .replaceAll("%loadedChunks%", String.valueOf(loadedChunks.length))
+                            .replaceAll("%usedMemory%", String.valueOf(usedMemory))
+                            .replaceAll("%allocatedMemory%", String.valueOf(allocatedMemory))
+                            .replaceAll("%averageTickTime%", String.valueOf(MinecraftServer.AVERAGE_TICK_TIME))
+            );
+        }
 
         return true;
     }

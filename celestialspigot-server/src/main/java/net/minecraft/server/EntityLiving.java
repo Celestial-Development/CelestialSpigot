@@ -1783,6 +1783,24 @@ public abstract class EntityLiving extends Entity {
         return this.world.rayTrace(new Vec3D(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ), new Vec3D(entity.locX, entity.locY + (double) entity.getHeadHeight(), entity.locZ)) == null;
     }
 
+    public boolean hasLineOfSightAccurate(Entity entity) {
+        Vec3D vec = new Vec3D(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
+
+        if (entity instanceof EntityPlayer && CelestialSpigot.INSTANCE.getConfig().isImprovedHitDetection()) {
+
+            // Head height is 1,5725
+            // Split it into three to get a more accurate line of sight -> 0.52416667
+
+            double parts = entity.getHeadHeight() / 3;
+
+            return this.world.rayTrace(vec, new Vec3D(entity.locX, entity.locY + (parts * 3), entity.locZ)) == null
+                    || this.world.rayTrace(vec, new Vec3D(entity.locX, entity.locY + (parts * 2), entity.locZ)) == null
+                    || this.world.rayTrace(vec, new Vec3D(entity.locX, entity.locY + (parts * 1), entity.locZ)) == null;
+        } else {
+            return this.world.rayTrace(vec, new Vec3D(entity.locX, entity.locY + (double) entity.getHeadHeight(), entity.locZ)) == null;
+        }
+    }
+
     public Vec3D ap() {
         return this.d(1.0F);
     }

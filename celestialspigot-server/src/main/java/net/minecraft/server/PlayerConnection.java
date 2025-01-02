@@ -257,7 +257,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					this.lastYaw = to.getYaw();
 					this.lastPitch = to.getPitch();
 
-					if (CelestialSpigot.INSTANCE.getConfig().isFirePlayerMoveEvent() && PlayerMoveEvent.getHandlerList().getRegisteredListeners().length != 0) {
+					if (CelestialSpigot.INSTANCE.getConfig().isFirePlayerMoveEvent()) {
 						Location oldTo = to.clone();
 						PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
 						this.server.getPluginManager().callEvent(event);
@@ -979,7 +979,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					Waitable waitable = new Waitable() {
 						@Override
 						protected Object evaluate() {
-							PlayerConnection.this.disconnect("disconnect.spam");
+							if(CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) PlayerConnection.this.disconnect("disconnect.spam");
 							return null;
 						}
 					};
@@ -994,7 +994,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						throw new RuntimeException(e);
 					}
 				} else {
-					this.disconnect("disconnect.spam");
+					if(CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) this.disconnect("disconnect.spam");
 				}
 			}
 		}
@@ -1289,7 +1289,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		this.player.resetIdleTimer();
 
 		if (entity != null) {
-			double d0 = 36.0D;
+			boolean flag = this.player.hasLineOfSightAccurate(entity);
+			double d0;
+
+			if (!flag) {
+				// Nacho - Increase the no player-player vision maximum reach
+				d0 = (CelestialSpigot.INSTANCE.getConfig().isImprovedHitDetection()) ? 12.75D : 9.0D;
+			} else {
+                d0 = 36.0;
+            }
 
 			if (this.player.distanceSqrdAccurate(entity) <= d0) { // Nacho - <  ->  <=
 				ItemStack itemInHand = this.player.inventory.getItemInHand();
@@ -1913,8 +1921,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		PlayerConnectionUtils.ensureMainThread(packetplayintabcomplete, this, this.player.u());
 
 		if (chatSpamField.addAndGet(this, 10) > 500 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) {
-			this.disconnect("disconnect.spam");
-			return;
+			if(CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) {
+				this.disconnect("disconnect.spam");
+				return;
+			}
 		}
 
 		ArrayList arraylist = Lists.newArrayList();

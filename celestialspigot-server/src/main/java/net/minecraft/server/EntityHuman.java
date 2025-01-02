@@ -576,7 +576,7 @@ public abstract class EntityHuman extends EntityLiving {
             EntityItem entityitem = new EntityItem(this.world, this.locX, d0, this.locZ, itemstack);
             entityitem.owner = this;
 
-            entityitem.a(40);
+            entityitem.a(CelestialSpigot.INSTANCE.getConfig().getPickupDelay());
             if (flag1) {
                 entityitem.c(this.getName());
             }

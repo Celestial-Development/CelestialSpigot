@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit;
 
+import com.kaydeesea.spigot.malware.AntiMalware;
 import net.minecraft.server.WorldType;
 import org.bukkit.*;
 import org.bukkit.World;
@@ -287,6 +288,12 @@ public final class CraftServer implements Server {
             Plugin[] plugins = pluginManager.loadPlugins(pluginFolder);
             for (Plugin plugin : plugins) {
                 try {
+                    // Nacho start - [Nacho-0047] Little anti-malware
+                    if (CelestialSpigot.INSTANCE.getConfig().isCheckForMalware()) {
+                        AntiMalware.find(plugin);
+                    }
+                    // Nacho end
+
                     String message = String.format("Loading %s", plugin.getDescription().getFullName());
                     plugin.getLogger().info(message);
                     plugin.onLoad();

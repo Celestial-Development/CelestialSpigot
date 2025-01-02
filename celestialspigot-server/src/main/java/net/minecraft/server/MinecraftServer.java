@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
+import com.kaydeesea.spigot.CelestialSpigot;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -16,6 +17,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
+import net.openhft.affinity.AffinityLock;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -551,12 +553,38 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         return System.nanoTime();
     }
 
+    private AffinityLock lock = null;
+
+
     public void run() {
         try {
             this.serverStartTime = getNanos();
             // PandaSpigot end
 
             if (this.init()) {
+                // CelestialSpigot start
+
+                if (CelestialSpigot.INSTANCE.getConfig().isThreadAffinity()) {
+                    LOGGER.info(" ");
+                    LOGGER.info("Enabling Thread Affinity...");
+                    lock = AffinityLock.acquireLock();
+                    if (lock.cpuId() != -1) {
+                        LOGGER.info("CPU " + lock.cpuId() + " locked for server usage.");
+                        LOGGER.info("This will boost the server's performance if configured properly.");
+                        LOGGER.info("If not it will most likely decrease performance.");
+                        LOGGER.info(
+                                "See https://github.com/OpenHFT/Java-Thread-Affinity#isolcpus for configuration!");
+                        LOGGER.info(" ");
+                    } else {
+                        LOGGER.error("An error occured whilst enabling thread affinity!");
+                        LOGGER.error(" ");
+                    }
+
+                    LOGGER.info(AffinityLock.dumpLocks());
+
+                }
+                // CelestialSpigot end
+
                 this.ab = az();
 
                 this.r.setMOTD(new ChatComponentText(this.motd));
@@ -636,6 +664,12 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
             this.a(crashreport);
         } finally {
+            // CelestialSpigot start
+            if (lock != null) {
+                lock.release();
+                MinecraftServer.LOGGER.info("Released CPU " + lock.cpuId() + " from server usage.");
+            }
+            // CelestialSpigot end
             try {
                 org.spigotmc.WatchdogThread.doStop();
                 this.isStopped = true;

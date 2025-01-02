@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.kaydeesea.spigot.CelestialSpigot;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import org.apache.logging.log4j.LogManager;
@@ -413,6 +414,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
         String deathmessage = chatmessage.c();
         org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
+
+        // CelestialSpigot start
+        if(CelestialSpigot.INSTANCE.getConfig().isInstantRespawn()) getBukkitEntity().spigot().respawn();
+        // CelestialSpigot end
 
         String deathMessage = event.getDeathMessage();
 

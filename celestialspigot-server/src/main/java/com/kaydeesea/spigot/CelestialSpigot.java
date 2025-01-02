@@ -1,13 +1,10 @@
 package com.kaydeesea.spigot;
 
-import com.kaydeesea.spigot.command.PingCommand;
+import com.kaydeesea.spigot.command.*;
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import lombok.Getter;
 import lombok.Setter;
-import com.kaydeesea.spigot.command.PotionCommand;
-import com.kaydeesea.spigot.command.TPSCommand;
 import com.kaydeesea.spigot.handler.MovementHandler;
-import com.kaydeesea.spigot.command.KnockbackCommand;
 import com.kaydeesea.spigot.handler.PacketHandler;
 
 import java.util.HashMap;
@@ -27,14 +24,11 @@ public enum CelestialSpigot {
     @Setter
     private CelestialConfig config;
 
-	@Setter
+	@Getter
+    @Setter
 	private LagCompensator lagCompensator;
 
-	public LagCompensator getLagCompensator() {
-		return lagCompensator;
-	}
-
-	public static String version = "1.2.0";
+    public static String version = "1.2.0";
     private Set<PacketHandler> packetHandlers = new HashSet<>();
     private Set<MovementHandler> movementHandlers = new HashSet<>();
 
@@ -52,7 +46,18 @@ public enum CelestialSpigot {
 		commands.put("knockback", new KnockbackCommand());
         commands.put("potion", new PotionCommand());
         commands.put("tps", new TPSCommand());
-		commands.put("ping", new PingCommand());
+		if(getConfig().isEnablePingCommand()) {
+			commands.put("ping", new PingCommand());
+		}
+		if(getConfig().isEnableVersionCommand()) {
+			commands.put("version", new VersionCommand());
+		}
+		if(getConfig().isEnableDayCommand()) {
+			commands.put("day", new DayCommand());
+		}
+		if(getConfig().isEnableNightCommand()) {
+			commands.put("night", new NightCommand());
+		}
 
 		for (Map.Entry<String, Command> entry : commands.entrySet()) {
 			MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());

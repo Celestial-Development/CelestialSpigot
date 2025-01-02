@@ -26,7 +26,7 @@ public class OpCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String currentAlias, String[] args) {
         if (!testPermission(sender)) return true;
-        if (args.length != 1 || args[0].length() == 0)  {
+        if (args.length != 1 || args[0].isEmpty())  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
             return false;
         }
@@ -48,9 +48,12 @@ public class OpCommand extends VanillaCommand {
             if (!(sender instanceof Player)) {
                 return ImmutableList.of();
             }
+            if(!sender.isOp()) {
+                return ImmutableList.of();
+            }
 
             String lastWord = args[0];
-            if (lastWord.length() == 0) {
+            if (lastWord.isEmpty()) {
                 return ImmutableList.of();
             }
 

@@ -189,6 +189,14 @@ public abstract class PlayerList {
             }
         }
 
+        // ClubSpigot start - toggleable player ip hiding
+        if (!CelestialSpigot.INSTANCE.getConfig().isShowPlayerIps()) {
+            // Replace the address before the ":port" part of the string
+            String port = s1.split(":") [1];
+            s1 = "hidden-address:" + port;
+        }
+        // ClubSpigot end
+
         // CraftBukkit - Moved from above, added world
         PlayerList.f.info(entityplayer.getName() + "[" + s1 + "] logged in with entity id " + entityplayer.getId() + " at ([" + entityplayer.world.worldData.getName() + "]" + entityplayer.locX + ", " + entityplayer.locY + ", " + entityplayer.locZ + ")");
     }
