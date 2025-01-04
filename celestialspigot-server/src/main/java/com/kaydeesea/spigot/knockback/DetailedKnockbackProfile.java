@@ -91,13 +91,11 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
         double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
 
         if (isInheritH()) {
-            System.out.println(d0);
-            System.out.println(d1);
-            d0 += getInheritHValue();
-            d1 += getInheritHValue();
+            d0 *= getInheritHValue();
+            d1 *= getInheritHValue();
         }
         if (isInheritY()) {
-            entityLiving.motY += getInheritYValue();
+            entityLiving.motY *= getInheritYValue();
         }
 
         entityLiving.motX /= getFrictionH();
