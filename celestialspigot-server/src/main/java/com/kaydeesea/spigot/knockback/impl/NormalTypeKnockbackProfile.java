@@ -1,6 +1,7 @@
-package com.kaydeesea.spigot.knockback;
+package com.kaydeesea.spigot.knockback.impl;
 
 import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import lombok.Getter;
 import lombok.Setter;
 

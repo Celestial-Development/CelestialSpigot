@@ -805,7 +805,11 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 		String quitMessage = this.minecraftServer.getPlayerList().disconnect(this.player);
 
-		if ((quitMessage != null) && (quitMessage.length() > 0)) {
+		if(CelestialSpigot.INSTANCE.getConfig().isDisableLeaveMessage()) {
+			quitMessage = null;
+		}
+
+		if ((quitMessage != null) && (!quitMessage.isEmpty())) {
 			this.minecraftServer.getPlayerList().sendMessage(CraftChatMessage.fromString(quitMessage));
 		}
 

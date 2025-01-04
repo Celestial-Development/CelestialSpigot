@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
+import com.kaydeesea.spigot.knockback.DetailedKnockbackProfile;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.mojang.authlib.GameProfile;
@@ -1021,12 +1022,14 @@ public abstract class EntityHuman extends EntityLiving {
 
                 if (damaged) {
                     if (entity instanceof EntityPlayer) {
-                        KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
+                        KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() : this.getKnockbackProfile();
 
                         if(profile instanceof NormalKnockbackProfile) {
                             ((NormalKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         } else if(profile instanceof BedWarsKnockbackProfile) {
                             ((BedWarsKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                        } else if(profile instanceof DetailedKnockbackProfile) {
+                            ((DetailedKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         }
                     }
 

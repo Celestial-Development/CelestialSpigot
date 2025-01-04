@@ -313,6 +313,10 @@ public abstract class PlayerList {
 
         joinMessage = playerJoinEvent.getJoinMessage();
 
+        if(CelestialSpigot.INSTANCE.getConfig().isDisableJoinMessage()) {
+            joinMessage = null;
+        }
+
         if (joinMessage != null && !joinMessage.isEmpty()) {
             for (IChatBaseComponent line : org.bukkit.craftbukkit.util.CraftChatMessage.fromString(joinMessage)) {
                 server.getPlayerList().sendAll(new PacketPlayOutChat(line));

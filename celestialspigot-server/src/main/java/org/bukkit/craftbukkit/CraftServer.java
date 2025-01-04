@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit;
 
+import com.kaydeesea.spigot.CelestialKnockBack;
 import com.kaydeesea.spigot.malware.AntiMalware;
 import net.minecraft.server.WorldType;
 import org.bukkit.*;
@@ -725,6 +726,7 @@ public final class CraftServer implements Server {
 
         // SpigotX
         CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
+        CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
         CelestialSpigot.INSTANCE.registerCommands();
 
         for (WorldServer world : console.worlds) {

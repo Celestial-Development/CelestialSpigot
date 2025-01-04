@@ -6,8 +6,10 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
+import com.kaydeesea.spigot.knockback.DetailedKnockbackProfile;
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
@@ -915,14 +917,37 @@ public abstract class EntityLiving extends Entity {
 
     public void a(Entity entity, float f, double d0, double d1, DamageSource source) {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
-            if(getKnockbackProfile() == null) setKnockbackProfile(CelestialSpigot.INSTANCE.getConfig().getCurrentKb());
 
-            KnockBackProfile profile = getKnockbackProfile();
-            if(profile instanceof NormalKnockbackProfile) {
-                ((NormalKnockbackProfile)profile).handleEntityLiving(this, d0, d1, source);
-            } else if(profile instanceof BedWarsKnockbackProfile) {
-                ((BedWarsKnockbackProfile)profile).handleEntityLiving(this, d0, d1, source);
+
+            if (this instanceof EntityPlayer && entity instanceof EntityPlayer) {
+                if(getKnockbackProfile() == null) setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
+                KnockBackProfile profile = getKnockbackProfile();
+                if (profile instanceof NormalKnockbackProfile) {
+                    ((NormalKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
+                } else if (profile instanceof BedWarsKnockbackProfile) {
+                    ((BedWarsKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
+                } else if (profile instanceof DetailedKnockbackProfile) {
+                    ((DetailedTypeKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
+                }
+                return;
             }
+
+            double horizontal = 0.4;
+            double vertical = 0.4;
+
+            this.ai = true;
+            double f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
+            this.motX /= 2.0;
+            this.motY /= 2.0;
+            this.motZ /= 2.0;
+            this.motX -= d0 / f1 * horizontal;
+            this.motY += vertical;
+            this.motZ -= d1 / f1 * horizontal;
+            if (this.motY > (double)0.4f) {
+                this.motY = 0.4f;
+            }
+
+
         }
     }
 
@@ -970,11 +995,9 @@ public abstract class EntityLiving extends Entity {
             int l = MathHelper.floor(this.locZ);
             Block block = this.world.getType(new BlockPosition(j, k, l)).getBlock();
 
-            if (block.getMaterial() != Material.AIR) {
-                Block.StepSound block_stepsound = block.stepSound;
+            Block.StepSound block_stepsound = block.stepSound;
 
-                this.makeSound(block_stepsound.getStepSound(), block_stepsound.getVolume1() * 0.5F, block_stepsound.getVolume2() * 0.75F);
-            }
+            this.makeSound(block_stepsound.getStepSound(), block_stepsound.getVolume1() * 0.5F, block_stepsound.getVolume2() * 0.75F);
         }
 
     }

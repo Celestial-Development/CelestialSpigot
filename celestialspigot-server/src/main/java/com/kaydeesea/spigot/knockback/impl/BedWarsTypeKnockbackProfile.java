@@ -1,6 +1,7 @@
-package com.kaydeesea.spigot.knockback;
+package com.kaydeesea.spigot.knockback.impl;
 
 import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,6 +35,11 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
                 "w-tap", "slowdown-boolean", "friction-boolean"
         };
         return new ArrayList<>(Arrays.asList(keys));
+    }
+    public boolean isValueBoolean(String s) {
+        return s.equalsIgnoreCase("w-tap") ||
+                s.equalsIgnoreCase("slowdown-boolean") ||
+                s.equalsIgnoreCase("friction-boolean");
     }
 
     @Override

@@ -24,6 +24,9 @@ public enum CelestialSpigot {
     @Setter
     private CelestialConfig config;
 
+	@Setter
+	private CelestialKnockBack knockBack;
+
 	@Getter
     @Setter
 	private LagCompensator lagCompensator;

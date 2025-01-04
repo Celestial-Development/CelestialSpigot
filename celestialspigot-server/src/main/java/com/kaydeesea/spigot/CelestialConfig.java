@@ -5,21 +5,23 @@ import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.logging.Level;
 
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import com.kaydeesea.spigot.knockback.*;
-import com.kaydeesea.spigot.util.DateUtil;
+import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
 import lombok.Setter;
 
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 
 @Getter
 @Setter
@@ -30,12 +32,6 @@ public class CelestialConfig {
 
     private File configFile;
     private YamlConfiguration config;
-
-    @Setter
-    @Getter
-    private KnockBackProfile currentKb;
-    @Getter
-    private Set<KnockBackProfile> kbProfiles = new HashSet<>();
 
 
     private YamlCommenter c = new YamlCommenter();
@@ -73,6 +69,8 @@ public class CelestialConfig {
 
     private int hitDelay;
     private int pickupDelay;
+    private int chunkLoadingThreads;
+    private int playersPerThread;
 
     private float potionThrowMultiplier;
     private float potionThrowOffset;
@@ -122,83 +120,7 @@ public class CelestialConfig {
     }
 
     private void loadConfig() {
-        final NormalKnockbackProfile defaultProfile = new NormalTypeKnockbackProfile("default");
 
-        this.kbProfiles = new HashSet<>();
-        this.kbProfiles.add(defaultProfile);
-        ArrayList<String> profiles = new ArrayList<>(this.getKeys("knockback.profiles"));
-        if(profiles.isEmpty()) {
-            profiles.add("default");
-        }
-        for (String key : profiles) {
-            final String path = "knockback.profiles." + key;
-            ProfileType type = ProfileType.NORMAL;
-            try {
-                type = ProfileType.valueOf(this.getString(path+".type", "NORMAL"));
-            } catch (Exception ex) {
-                System.out.println("No profile type set for profile "+key);
-            }
-            if(type == ProfileType.NORMAL) {
-                NormalTypeKnockbackProfile profile = (NormalTypeKnockbackProfile) getKbProfileByName(key);
-
-                if (profile == null) {
-                    profile = new NormalTypeKnockbackProfile(key);
-                    this.kbProfiles.add(profile);
-                }
-                for (String value : profile.getValues()) {
-                    String a = path + "." + value;
-                    if (value.equalsIgnoreCase("friction"))
-                        profile.setFriction(this.getDouble(a, 2.0));
-                    if (value.equalsIgnoreCase("horizontal"))
-                        profile.setHorizontal(this.getDouble(a, 0.35));
-                    if (value.equalsIgnoreCase("vertical"))
-                        profile.setVertical(this.getDouble(a, 0.35));
-                    if (value.equalsIgnoreCase("vertical-limit"))
-                        profile.setVerticalLimit(this.getDouble(a, 0.4));
-                    if (value.equalsIgnoreCase("extra-horizontal"))
-                        profile.setExtraHorizontal(this.getDouble(a, 0.01));
-                    if (value.equalsIgnoreCase("extra-vertical"))
-                        profile.setExtraVertical(this.getDouble(a, 0.01));
-                }
-            } else if(type.equals(ProfileType.BEDWARS)) {
-                BedWarsTypeKnockbackProfile profile = (BedWarsTypeKnockbackProfile) getKbProfileByName(key);
-
-                if (profile == null) {
-                    profile = new BedWarsTypeKnockbackProfile(key);
-                    this.kbProfiles.add(profile);
-                }
-                for (String value : profile.getValues()) {
-                    String a = path + "." + value;
-                    if(value.equalsIgnoreCase("friction"))
-                        profile.setFrictionValue(this.getDouble(a, 2.0));
-                    if(value.equalsIgnoreCase("horizontal"))
-                        profile.setHorizontal(this.getDouble(a, 0.9055));
-                    if(value.equalsIgnoreCase("vertical"))
-                        profile.setVertical(this.getDouble(a, 0.8835));
-                    if (value.equalsIgnoreCase("vertical-limit"))
-                        profile.setVerticalLimit(this.getDouble(a, 0.3534));
-                    if(value.equalsIgnoreCase("max-range-reduction"))
-                        profile.setMaxRangeReduction(this.getDouble(a, 0.4));
-                    if(value.equalsIgnoreCase("range-factor"))
-                        profile.setRangeFactor(this.getDouble(a, 0.2));
-                    if(value.equalsIgnoreCase("start-range-reduction"))
-                        profile.setStartRangeReduction(this.getDouble(a, 3.0));
-                    if(value.equalsIgnoreCase("w-tap"))
-                        profile.setWTap(this.getBoolean(a, false));
-                    if(value.equalsIgnoreCase("slowdown-boolean"))
-                        profile.setSlowdownBoolean(this.getBoolean(a, false));
-                    if(value.equalsIgnoreCase("friction-boolean"))
-                        profile.setFriction(this.getBoolean(a, false));
-                }
-            }
-
-        }
-
-        this.currentKb = this.getKbProfileByName(this.getString("knockback.current", "default"));
-
-        if (this.currentKb == null) {
-            this.currentKb = defaultProfile;
-        }
 
         ArrayList<String> tpsCMD = new ArrayList<>();
         tpsCMD.add("&b&lPERFORMANCE&7:");
@@ -259,6 +181,11 @@ public class CelestialConfig {
 
         this.hitDelay = this.getInt("hit-delay", 20);
         this.pickupDelay = this.getInt("pickup-delay", 40);
+        this.chunkLoadingThreads = this.getInt("chunk-loading-threads", 2);
+        this.playersPerThread = this.getInt("players-per-thread", 50);
+
+        ChunkIOExecutor.BASE_THREADS = chunkLoadingThreads;
+        ChunkIOExecutor.PLAYERS_PER_THREAD = playersPerThread;
 
         this.potionThrowMultiplier = this.getFloat("potions.potion-throw-multiplier", 0.5f);
         this.potionThrowOffset = this.getFloat("potions.potion-throw-offset", -10.0f);
@@ -272,9 +199,6 @@ public class CelestialConfig {
     }
     public void loadComments() {
         c.setHeader(HEADER);
-        c.addComment("knockback.profiles", "KnockBack profiles, you can create profiles in-game by /knockback create <name> <type>");
-        c.addComment("knockback.current", "Currently selected knockback profile");
-
         // add messages
         c.addComment("messages", "Modify current commands messages");
         c.addComment("messages.tps-command", "Modify current tps command message");
@@ -314,8 +238,12 @@ public class CelestialConfig {
         c.addComment("disable-join-message", "Enable or disable join messages");
         c.addComment("disable-leave-message", "Enable or disable leave messages");
         c.addComment("improved-hit-detection", "Toggle improved hit detection, This makes the calculation of locations faster while PvPing.");
+
         c.addComment("hit-delay", "Change the hit Delay (ticks)");
         c.addComment("pickup-delay", "Change the dropped item pickup delay");
+        c.addComment("chunk-loading-threads", "Change the chunk loading threads");
+        c.addComment("players-per-thread", "Change the max players per chunk thread");
+
         // Add comments for potion-related settings
         c.addComment("potions.potion-throw-multiplier", "Set the multiplier for potion throwing speed");
         c.addComment("potions.potion-throw-offset", "Set the offset angle for potion throws");
@@ -324,16 +252,6 @@ public class CelestialConfig {
 
         // Add comments for CelestialBridge settings
         c.addComment("disable-op", "Enable or disable operator permissions");
-    }
-
-    public KnockBackProfile getKbProfileByName(String name) {
-        for (KnockBackProfile profile : this.kbProfiles) {
-            if (profile.getName().equalsIgnoreCase(name)) {
-                return profile;
-            }
-        }
-
-        return null;
     }
 
     public void save() {

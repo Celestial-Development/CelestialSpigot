@@ -1,5 +1,7 @@
 package org.bukkit.craftbukkit.chunkio;
 
+import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkProviderServer;
 import net.minecraft.server.ChunkRegionLoader;
@@ -7,8 +9,8 @@ import net.minecraft.server.World;
 import org.bukkit.craftbukkit.util.AsynchronousExecutor;
 
 public class ChunkIOExecutor {
-    static final int BASE_THREADS = 2; // PaperSpigot - Bumped value
-    static final int PLAYERS_PER_THREAD = 50;
+    public static int BASE_THREADS = 2; // PaperSpigot - Bumped value
+    public static int PLAYERS_PER_THREAD = 50;
 
     private static final AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException> instance = new AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException>(new ChunkIOProvider(), BASE_THREADS);
 

@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import co.aikar.timings.SpigotTimings;
 import com.google.common.collect.Lists;
+import com.kaydeesea.spigot.CelestialKnockBack;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -131,6 +132,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.c(this.propertyManager.getString("server-ip", ""));
         }
         CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
+        CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
 
 
         this.setSpawnAnimals(this.propertyManager.getBoolean("spawn-animals", true));

@@ -1556,7 +1556,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	}
 
 	public void setRealHealth(double health) {
-		double previous = health;
+		double previous = this.health;
 
 		this.health = health;
 

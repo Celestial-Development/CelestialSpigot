@@ -95,7 +95,7 @@ public class PotionCommand extends Command {
         if (args.length > 0
                 && SUB_COMMANDS.contains(args[0].toLowerCase())) {
             if (args.length == 2) {
-                return CelestialSpigot.INSTANCE.getConfig().getKbProfiles()
+                return CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles()
                         .stream()
                         .sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName()))
                         .map(KnockBackProfile::getName)
