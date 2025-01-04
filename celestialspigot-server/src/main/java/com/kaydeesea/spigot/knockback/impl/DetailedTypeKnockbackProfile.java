@@ -58,23 +58,23 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
     @Override
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".friction-horizontal", this.frictionH);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".friction-vertical", this.frictionY);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".ground-horizontal", this.groundH);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".ground-vertical", this.groundV);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".sprint-horizontal", this.sprintH);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".sprint-vertical", this.sprintV);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".slowdown", this.slowdown);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".enable-vertical-limit", this.enableVerticalLimit);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".stop-sprint", this.stopSprint);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".inherit-horizontal", this.inheritH);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".inherit-vertical", this.inheritY);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".inherit-horizontal-value", this.inheritHValue);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".inherit-vertical-value", this.inheritYValue);
-        CelestialSpigot.INSTANCE.getConfig().save();
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".type", this.getType().name());
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction-horizontal", this.frictionH);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction-vertical", this.frictionY);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".horizontal", this.horizontal);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical", this.vertical);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical-limit", this.verticalLimit);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".ground-horizontal", this.groundH);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".ground-vertical", this.groundV);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".sprint-horizontal", this.sprintH);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".sprint-vertical", this.sprintV);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".slowdown", this.slowdown);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".enable-vertical-limit", this.enableVerticalLimit);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".stop-sprint", this.stopSprint);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".inherit-horizontal", this.inheritH);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".inherit-vertical", this.inheritY);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".inherit-horizontal-value", this.inheritHValue);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".inherit-vertical-value", this.inheritYValue);
+        CelestialSpigot.INSTANCE.getKnockBack().save();
     }
 }

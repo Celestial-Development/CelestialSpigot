@@ -45,18 +45,18 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
     @Override
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".friction", this.frictionValue);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".max-range-reduction", this.maxRangeReduction);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".range-factor", this.rangeFactor);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".start-range-reduction", this.startRangeReduction);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".w-tap", this.wTap);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".slowdown-boolean", this.slowdownBoolean);
-        CelestialSpigot.INSTANCE.getConfig().set(path + ".friction-boolean", this.friction);
-        CelestialSpigot.INSTANCE.getConfig().save();
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".type", this.getType().name());
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction", this.frictionValue);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".horizontal", this.horizontal);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical", this.vertical);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical-limit", this.verticalLimit);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".max-range-reduction", this.maxRangeReduction);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".range-factor", this.rangeFactor);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".start-range-reduction", this.startRangeReduction);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".w-tap", this.wTap);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".slowdown-boolean", this.slowdownBoolean);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction-boolean", this.friction);
+        CelestialSpigot.INSTANCE.getKnockBack().save();
     }
 
 }
