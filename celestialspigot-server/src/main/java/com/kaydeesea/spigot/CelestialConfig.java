@@ -66,6 +66,7 @@ public class CelestialConfig {
     private boolean blockOperations;
     private boolean disableJoinMessage;
     private boolean disableLeaveMessage;
+    private boolean fixEatWhileRunning;
 
     private int hitDelay;
     private int pickupDelay;
@@ -178,6 +179,7 @@ public class CelestialConfig {
         this.blockOperations = this.getBoolean("block-operations", false);
         this.disableJoinMessage = this.getBoolean("disable-join-message", false);
         this.disableLeaveMessage = this.getBoolean("disable-leave-message", false);
+        this.fixEatWhileRunning = this.getBoolean("fix-eat-while-running", true);
 
         this.hitDelay = this.getInt("hit-delay", 20);
         this.pickupDelay = this.getInt("pickup-delay", 40);
@@ -238,6 +240,7 @@ public class CelestialConfig {
         c.addComment("disable-join-message", "Enable or disable join messages");
         c.addComment("disable-leave-message", "Enable or disable leave messages");
         c.addComment("improved-hit-detection", "Toggle improved hit detection, This makes the calculation of locations faster while PvPing.");
+        c.addComment("fix-eat-while-running", "Fixes the bug that makes players eat while running");
 
         c.addComment("hit-delay", "Change the hit Delay (ticks)");
         c.addComment("pickup-delay", "Change the dropped item pickup delay");

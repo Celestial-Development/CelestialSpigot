@@ -707,6 +707,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				if (!cancelled) {
 					this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
 				}
+			} else {
+				if(MinecraftServer.currentTick - lastDropTick > 1 && CelestialSpigot.INSTANCE.getConfig().isFixEatWhileRunning()) this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
 			}
 
 			always = (itemstack.count != itemstackAmount) || itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY);
