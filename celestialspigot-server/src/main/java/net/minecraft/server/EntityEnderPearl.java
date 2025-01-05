@@ -51,11 +51,28 @@ public class EntityEnderPearl extends EntityProjectile {
                     // CraftBukkit start - Fire PlayerTeleportEvent
                     org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
                     org.bukkit.Location location = getBukkitEntity().getLocation();
-                    location.setX(location.getBlockX() + 0.5D);
-                    location.setY(location.getBlockY() + 0.5D);
-                    location.setZ(location.getBlockZ() + 0.5D);
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
+
+                    double diffX = location.getBlockX() - player.getLocation().getBlockX();
+                    double diffY = location.getBlockY() - player.getLocation().getBlockY();
+                    double diffZ = location.getBlockZ() - player.getLocation().getBlockZ();
+
+                    if (diffY <= 0) {
+                        location.setY(location.getBlockY() + 0.5D);
+                    } else {
+                        location.setY(location.getBlockY() - 0.5D);
+                        if (diffX <= 0) {
+                            location.setX(location.getBlockX() + 0.5D);
+                        } else {
+                            location.setX(location.getBlockX() - 0.5D);
+                        }
+                        if (diffZ <= 0) {
+                            location.setZ(location.getBlockZ() + 0.5D);
+                        } else {
+                            location.setZ(location.getBlockZ() - 0.5D);
+                        }
+                    }
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);

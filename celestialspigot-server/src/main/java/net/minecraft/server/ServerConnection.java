@@ -10,7 +10,6 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +26,7 @@ public class ServerConnection {
 
     private static final Logger e = LogManager.getLogger();
     public static final LazyInitVar<NioEventLoopGroup> a = new LazyInitVar() {
-        protected NioEventLoopGroup a() {
+        private NioEventLoopGroup a() {
             return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).build());
         }
 
@@ -36,7 +35,7 @@ public class ServerConnection {
         }
     };
     public static final LazyInitVar<EpollEventLoopGroup> b = new LazyInitVar() {
-        protected EpollEventLoopGroup a() {
+        private EpollEventLoopGroup a() {
             return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
         }
 
@@ -45,7 +44,7 @@ public class ServerConnection {
         }
     };
     public static final LazyInitVar<LocalEventLoopGroup> c = new LazyInitVar() {
-        protected LocalEventLoopGroup a() {
+        private LocalEventLoopGroup a() {
             return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
         }
 
@@ -53,10 +52,10 @@ public class ServerConnection {
             return this.a();
         }
     };
-    private final MinecraftServer f;
+    final MinecraftServer f;
     public volatile boolean d;
     private final List<ChannelFuture> g = Collections.synchronizedList(Lists.<ChannelFuture>newArrayList());
-    private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
+    public static final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
 
     public ServerConnection(MinecraftServer minecraftserver) {
         this.f = minecraftserver;
@@ -76,34 +75,19 @@ public class ServerConnection {
                 lazyinitvar = ServerConnection.a;
             }
 
-	        this.g.add(((new ServerBootstrap().channel(oclass)).childHandler(new ChannelInitializer() {
-		        protected void initChannel(Channel channel) throws Exception {
-			        try {
-				        channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
-                        channel.config().setOption(ChannelOption.IP_TOS, 0x18);
-			        } catch (ChannelException channelexception) {
-				        ;
-			        }
-
-			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
-
-			        NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
-
-			        ServerConnection.this.h.add(networkmanager);
-			        channel.pipeline().addLast("packet_handler", networkmanager);
-			        networkmanager.a((new HandshakeListener(ServerConnection.this.f, networkmanager)));
-		        }
-	        }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
+	        this.g.add(((new ServerBootstrap().channel(oclass))
+                    .childHandler(new MinecraftPipeline(this))
+                    .group((EventLoopGroup) lazyinitvar.c())
+                    .localAddress(inetaddress, i))
+                    .bind()
+                    .syncUninterruptibly());
         }
     }
 
     public void b() {
         this.d = false;
-        Iterator iterator = this.g.iterator();
 
-        while (iterator.hasNext()) {
-            ChannelFuture channelfuture = (ChannelFuture) iterator.next();
-
+        for (ChannelFuture channelfuture : this.g) {
             try {
                 channelfuture.channel().close().sync();
             } catch (InterruptedException interruptedexception) {
@@ -114,8 +98,8 @@ public class ServerConnection {
     }
 
     public void c() {
-        synchronized (this.h) {
-            Iterator iterator = this.h.iterator();
+        synchronized (h) {
+            Iterator<NetworkManager> iterator = h.iterator();
 
             while (iterator.hasNext()) {
                 final NetworkManager networkmanager = (NetworkManager) iterator.next();

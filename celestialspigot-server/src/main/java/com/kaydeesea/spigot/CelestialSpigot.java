@@ -32,8 +32,8 @@ public enum CelestialSpigot {
 	private LagCompensator lagCompensator;
 
     public static String version = "1.2.0";
-    private Set<PacketHandler> packetHandlers = new HashSet<>();
-    private Set<MovementHandler> movementHandlers = new HashSet<>();
+    private final Set<PacketHandler> packetHandlers = new HashSet<>();
+    private final Set<MovementHandler> movementHandlers = new HashSet<>();
 
     public void addPacketHandler(PacketHandler handler) {
 		this.packetHandlers.add(handler);
