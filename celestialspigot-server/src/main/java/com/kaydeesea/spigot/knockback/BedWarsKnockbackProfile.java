@@ -6,43 +6,33 @@ import org.bukkit.util.Vector;
 
 public interface BedWarsKnockbackProfile extends KnockBackProfile {
     boolean isFriction();
-
     void setFriction(boolean value);
 
     double getFrictionValue();
-
     void setFrictionValue(double value);
 
     double getHorizontal();
-
     void setHorizontal(double value);
 
     double getMaxRangeReduction();
-
     void setMaxRangeReduction(double value);
 
     double getRangeFactor();
-
     void setRangeFactor(double value);
 
     double getStartRangeReduction();
-
     void setStartRangeReduction(double value);
 
     double getVertical();
-
     void setVertical(double value);
 
     double getVerticalLimit();
-
     void setVerticalLimit(double value);
 
     boolean isWTap();
-
     void setWTap(boolean value);
 
     boolean isSlowdownBoolean();
-
     void setSlowdownBoolean(boolean value);
 
 

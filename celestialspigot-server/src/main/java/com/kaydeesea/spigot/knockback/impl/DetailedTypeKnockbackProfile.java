@@ -27,6 +27,7 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
     private double sprintH = 1.23;
     private double sprintV = 1.0;
     private boolean stopSprint = true;
+    private int hitDelay = 20;
     private double slowdown = 0.5;
 
     public DetailedTypeKnockbackProfile(String name) {
@@ -40,7 +41,7 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
                 "horizontal", "vertical", "vertical-limit",
                 "ground-horizontal", "ground-vertical",
                 "sprint-horizontal", "sprint-vertical",
-                "slowdown",
+                "slowdown", "hit-delay",
                 "enable-vertical-limit", "stop-sprint",
                 "inherit-horizontal", "inherit-vertical",
                 "inherit-horizontal-value", "inherit-vertical-value"
@@ -69,6 +70,7 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".sprint-horizontal", this.sprintH);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".sprint-vertical", this.sprintV);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".slowdown", this.slowdown);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".hit-delay", this.hitDelay);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".enable-vertical-limit", this.enableVerticalLimit);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".stop-sprint", this.stopSprint);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".inherit-horizontal", this.inheritH);

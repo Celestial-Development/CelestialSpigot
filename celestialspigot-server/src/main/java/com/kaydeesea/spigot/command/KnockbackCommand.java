@@ -6,7 +6,10 @@ import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.EntityLiving;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import com.kaydeesea.spigot.CelestialSpigot;
 
@@ -86,7 +89,8 @@ public class KnockbackCommand extends Command {
             } else {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
-        } else if (command.equalsIgnoreCase("load") || command.equalsIgnoreCase("setactive")) {
+        }
+        else if (command.equalsIgnoreCase("load") || command.equalsIgnoreCase("setactive")) {
             if (args.length < 2) {
                 sender.sendMessage("§cUsage: /knockback load <profile_name>");
                 return true;
@@ -100,6 +104,7 @@ public class KnockbackCommand extends Command {
                 CelestialSpigot.INSTANCE.getKnockBack().setCurrentKb(profile);
                 for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
                     onlinePlayer.setKnockbackProfile(profile);
+                    ((CraftPlayer)onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
                 CelestialSpigot.INSTANCE.getKnockBack().set("knockback.current", profile.getName());
                 CelestialSpigot.INSTANCE.getKnockBack().save();
@@ -108,7 +113,8 @@ public class KnockbackCommand extends Command {
             } else {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
-        } else if (command.equals("info") || command.equalsIgnoreCase("information")) {
+        }
+        else if (command.equals("info") || command.equalsIgnoreCase("information")) {
             if (args.length < 2) {
                 sender.sendMessage("§cUsage: /knockback info <profile_name>");
                 return true;
@@ -119,7 +125,8 @@ public class KnockbackCommand extends Command {
             } else {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
-        } else if (command.equals("set")) {
+        }
+        else if (command.equals("set")) {
             if (args.length < 3) {
                 sender.sendMessage("§cUsage: /knockback set <profile_name> <player>");
                 return true;
@@ -135,7 +142,8 @@ public class KnockbackCommand extends Command {
                 return true;
             }
             target.setKnockbackProfile(profile);
-        } else if (command.equalsIgnoreCase("create") || command.equalsIgnoreCase("add")) {
+        }
+        else if (command.equalsIgnoreCase("create") || command.equalsIgnoreCase("add")) {
             if (args.length < 3) {
                 sender.sendMessage("§cUsage: /knockback create <profile_name> <type>");
                 return true;
@@ -170,7 +178,8 @@ public class KnockbackCommand extends Command {
             } else {
                 sender.sendMessage("§cA knockback profile with that name already exists.");
             }
-        } else if (command.equalsIgnoreCase("edit") || command.equalsIgnoreCase("modify")) {
+        }
+        else if (command.equalsIgnoreCase("edit") || command.equalsIgnoreCase("modify")) {
             if (args.length < 4) {
                 sender.sendMessage("§cUsage: /knockback edit <profile_name> <property> <value>");
                 return true;
@@ -216,7 +225,6 @@ public class KnockbackCommand extends Command {
                     f = "w-tap";
                     break;
                 case "slowdownboolean":
-                case "slowdown":
                     f = "slowdown-boolean";
                     break;
                 case "frictionboolean":
@@ -233,6 +241,14 @@ public class KnockbackCommand extends Command {
                 if (a.equalsIgnoreCase(f)) s = a;
             }
             if (!s.isEmpty()) {
+                if(s.equalsIgnoreCase("hit-delay")) {
+                    sender.sendMessage("§aUpdating hitdelay for everyone...");
+                    for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                        if(onlinePlayer.getKnockbackProfile() == profile) {
+                            ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                        }
+                    }
+                }
                 if (profile.getType() == ProfileType.DETAILED) {
                     if(((DetailedTypeKnockbackProfile) profile).isValueBoolean(s)) {
                         if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
@@ -284,8 +300,12 @@ public class KnockbackCommand extends Command {
             } else {
                 sender.sendMessage("§cCouldn't find a §4" + f + " §cproperty in knockback profile " + profile.getName() + ".");
             }
-        } else {
+        }
+        else if (command.equalsIgnoreCase("list")) {
             knockbackCommandMain(sender);
+        }
+        else {
+            sendHelp(sender);
         }
 
         return true;
@@ -317,6 +337,8 @@ public class KnockbackCommand extends Command {
             profile.setInheritHValue(value);
         } else if (s.equalsIgnoreCase("inherit-vertical-value")) {
             profile.setInheritYValue(value);
+        } else if (s.equalsIgnoreCase("hit-delay")) {
+            profile.setHitDelay((int) value);
         }
         profile.save();
     }
@@ -350,6 +372,8 @@ public class KnockbackCommand extends Command {
             profile.setRangeFactor(value);
         } else if(s.equalsIgnoreCase("start-range-reduction")) {
             profile.setStartRangeReduction(value);
+        } else if(s.equalsIgnoreCase("hit-delay")) {
+            profile.setHitDelay((int) value);
         }
         profile.save();
     }
@@ -377,6 +401,8 @@ public class KnockbackCommand extends Command {
             profile.setExtraHorizontal(value);
         } else if (s.equalsIgnoreCase("extra-vertical")) {
             profile.setExtraVertical(value);
+        } else if(s.equalsIgnoreCase("hit-delay")) {
+            profile.setHitDelay((int) value);
         }
         profile.save();
     }
@@ -443,6 +469,8 @@ public class KnockbackCommand extends Command {
             msg += prf.getExtraHorizontal();
         } else if(value.equalsIgnoreCase("extra-vertical")) {
             msg += prf.getExtraVertical();
+        } else if(value.equalsIgnoreCase("hit-delay")) {
+            msg += prf.getHitDelay();
         }
         return msg;
     }
@@ -480,10 +508,11 @@ public class KnockbackCommand extends Command {
             msg += prf.isEnableVerticalLimit();
         } else if (value.equalsIgnoreCase("stop-sprint")) {
             msg += prf.isStopSprint();
+        } else if(value.equalsIgnoreCase("hit-delay")) {
+            msg += prf.getHitDelay();
         }
         return msg;
     }
-
     private static String getBedWarsKnockbackInfo(String value, BedWarsTypeKnockbackProfile prf) {
         String msg = "§b"+ value +": §3";
         if(value.equalsIgnoreCase("friction")) {
@@ -506,6 +535,8 @@ public class KnockbackCommand extends Command {
             msg += prf.isSlowdownBoolean();
         } else if(value.equalsIgnoreCase("friction-boolean")) {
             msg += prf.isFriction();
+        } else if(value.equalsIgnoreCase("hit-delay")) {
+            msg += prf.getHitDelay();
         }
 
         return msg;
@@ -543,8 +574,7 @@ public class KnockbackCommand extends Command {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        if (args.length > 0
-                && SUB_COMMANDS.contains(args[0].toLowerCase())) {
+        if (args.length > 0 && SUB_COMMANDS.contains(args[0].toLowerCase())) {
             if (args.length == 2) {
                 return CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles()
                         .stream()

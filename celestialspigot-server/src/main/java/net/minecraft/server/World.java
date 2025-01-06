@@ -1066,7 +1066,10 @@ public abstract class World implements IBlockAccess {
         this.a(entity);
         // ClubSpigot start - configurable entity hit delay
         if (entity instanceof EntityLiving) {
-            ((EntityLiving) entity).maxNoDamageTicks = CelestialSpigot.INSTANCE.getConfig().getHitDelay();
+            EntityLiving living = (EntityLiving) entity;
+            if(living.getKnockbackProfile() == null) living.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
+
+            ((EntityLiving) entity).maxNoDamageTicks = living.getKnockbackProfile().getHitDelay();
         }
         // ClubSpigot stop
         return true;

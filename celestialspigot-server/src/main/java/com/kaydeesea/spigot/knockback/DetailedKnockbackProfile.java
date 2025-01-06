@@ -85,7 +85,6 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
     void setSlowdown(double slowdown);
 
 
-
     default void handleEntityLiving(EntityLiving entityLiving, double d0, double d1, DamageSource source) {
         entityLiving.ai = true;
         double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);

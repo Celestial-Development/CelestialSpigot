@@ -8,4 +8,6 @@ public interface KnockBackProfile {
     ProfileType getType();
     ArrayList<String> getValues();
     void save();
+    int getHitDelay();
+    void setHitDelay(int value);
 }

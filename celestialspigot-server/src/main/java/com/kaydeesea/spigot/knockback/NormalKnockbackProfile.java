@@ -6,27 +6,21 @@ import org.bukkit.util.Vector;
 
 public interface NormalKnockbackProfile extends KnockBackProfile {
     double getFriction();
-
     void setFriction(double friction);
 
     double getHorizontal();
-
     void setHorizontal(double horizontal);
 
     double getVertical();
-
     void setVertical(double vertical);
 
     double getVerticalLimit();
-
     void setVerticalLimit(double verticalLimit);
 
     double getExtraHorizontal();
-
     void setExtraHorizontal(double extraHorizontal);
 
     double getExtraVertical();
-
     void setExtraVertical(double extraVertical);
 
 

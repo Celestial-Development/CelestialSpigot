@@ -19,6 +19,7 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
     private double verticalLimit = 0.4D;
     private double extraHorizontal = 0.425D;
     private double extraVertical = 0.085D;
+    private int hitDelay = 20;
 
     public NormalTypeKnockbackProfile(String name) {
         this.name = name;
@@ -26,7 +27,10 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
 
     @Override
     public ArrayList<String> getValues() {
-        String[] a = new String[] {"friction", "horizontal", "vertical", "vertical-limit", "extra-horizontal", "extra-vertical"};
+        String[] a = new String[] {
+                "friction", "horizontal", "vertical",
+                "hit-delay",
+                "vertical-limit", "extra-horizontal", "extra-vertical"};
         return new ArrayList<>(Arrays.asList(a));
     }
 
@@ -36,6 +40,7 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction", this.friction);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".horizontal", this.horizontal);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical", this.vertical);
+        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".hit-delay", this.hitDelay);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical-limit", this.verticalLimit);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".extra-horizontal", this.extraHorizontal);
         CelestialSpigot.INSTANCE.getKnockBack().set(path + ".extra-vertical", this.extraVertical);

@@ -61,7 +61,13 @@ public enum CelestialSpigot {
 		if(getConfig().isEnableNightCommand()) {
 			commands.put("night", new NightCommand());
 		}
-
+		if(getConfig().isEnableKillEntitiesCommand()) {
+			commands.put("killentities", new KillEntitiesCommand());
+		}
+		if(getConfig().isEnableSetSlotsCommand()) {
+			commands.put("setslots", new SetSlotsCommand());
+		}
+		commands.put("plugin", new PluginCommand());
 		for (Map.Entry<String, Command> entry : commands.entrySet()) {
 			MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());
 		}

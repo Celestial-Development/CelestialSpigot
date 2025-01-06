@@ -49,12 +49,16 @@ public class CelestialConfig {
     private boolean kickForSpam;
     private boolean showPlayerIps;
     private boolean instantRespawn;
+
     private boolean enableDayCommand;
     private boolean enableNightCommand;
     private boolean enablePluginsCommand;
     private boolean enableVersionCommand;
+    private boolean enableKillEntitiesCommand;
     private boolean enableReloadCommand;
     private boolean enablePingCommand;
+    private boolean enableSetSlotsCommand;
+
     private boolean improvedHitDetection;
     private boolean firePlayerMoveEvent;
     private boolean fireLeftClickAir;
@@ -68,7 +72,6 @@ public class CelestialConfig {
     private boolean disableLeaveMessage;
     private boolean fixEatWhileRunning;
 
-    private int hitDelay;
     private int pickupDelay;
     private int chunkLoadingThreads;
     private int playersPerThread;
@@ -167,6 +170,8 @@ public class CelestialConfig {
         this.enableVersionCommand = this.getBoolean("commands.enable-version-command", true);
         this.enableReloadCommand = this.getBoolean("commands.enable-reload-command", true);
         this.enablePluginsCommand = this.getBoolean("commands.enable-plugins-command", true);
+        this.enableKillEntitiesCommand = this.getBoolean("commands.enable-kill-entities-command", true);
+        this.enableSetSlotsCommand = this.getBoolean("commands.enable-set-slots-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
         this.firePlayerMoveEvent = this.getBoolean("fire-player-move-event", true);
@@ -181,7 +186,6 @@ public class CelestialConfig {
         this.disableLeaveMessage = this.getBoolean("disable-leave-message", false);
         this.fixEatWhileRunning = this.getBoolean("fix-eat-while-running", true);
 
-        this.hitDelay = this.getInt("hit-delay", 20);
         this.pickupDelay = this.getInt("pickup-delay", 40);
         this.chunkLoadingThreads = this.getInt("chunk-loading-threads", 2);
         this.playersPerThread = this.getInt("players-per-thread", 50);
@@ -226,6 +230,8 @@ public class CelestialConfig {
         c.addComment("commands.enable-plugins-command", "Enable or disable the plugins command");
         c.addComment("commands.enable-day-command", "Enable or disable the day command");
         c.addComment("commands.enable-night-command", "Enable or disable the night command");
+        c.addComment("commands.enable-kill-entities-command", "Enable or disable the kill entities command");
+        c.addComment("commands.enable-set-slots-command", "Enable or disable the set slots command");
 
         // Add comments for player event-related settings
         c.addComment("fire-player-move-event", "Enable firing events when players move");
@@ -242,7 +248,6 @@ public class CelestialConfig {
         c.addComment("improved-hit-detection", "Toggle improved hit detection, This makes the calculation of locations faster while PvPing.");
         c.addComment("fix-eat-while-running", "Fixes the bug that makes players eat while running");
 
-        c.addComment("hit-delay", "Change the hit Delay (ticks)");
         c.addComment("pickup-delay", "Change the dropped item pickup delay");
         c.addComment("chunk-loading-threads", "Change the chunk loading threads");
         c.addComment("players-per-thread", "Change the max players per chunk thread");
