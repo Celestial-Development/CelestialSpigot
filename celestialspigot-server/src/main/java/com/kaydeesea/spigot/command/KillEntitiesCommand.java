@@ -67,7 +67,7 @@ public class KillEntitiesCommand extends Command {
         }
         ArrayList<String> entityTypes = new ArrayList<>();
         for (EntityType value : EntityType.values()) {
-            if(value.name().toLowerCase().contains(a.toLowerCase())) entityTypes.add(value.name());
+            if(value.name().toLowerCase().contains(a.toLowerCase())) entityTypes.add(value.name().toLowerCase());
         }
         return entityTypes;
     }

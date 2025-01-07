@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -22,7 +25,9 @@ import org.bukkit.util.StringUtil;
 
 public class SimpleCommandMap implements CommandMap {
     private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", 16);
-    protected final Map knownCommands = new HashMap();
+    @Getter
+    @Setter
+    protected Map knownCommands = new HashMap();
     private final Server server;
 
     public SimpleCommandMap(Server server) {

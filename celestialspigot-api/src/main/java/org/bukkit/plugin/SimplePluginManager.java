@@ -1,6 +1,7 @@
 package org.bukkit.plugin;
 
 import com.google.common.collect.ImmutableSet;
+import lombok.Getter;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -33,8 +34,10 @@ public class SimplePluginManager implements PluginManager {
     private final Server server;
     private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
     private final List<Plugin> plugins = new ArrayList<Plugin>();
+    @Getter
     private final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
     private static File updateDirectory = null;
+    @Getter
     private final SimpleCommandMap commandMap;
     private final Map<String, Permission> permissions = new HashMap<String, Permission>();
     private final Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<Boolean, Set<Permission>>();

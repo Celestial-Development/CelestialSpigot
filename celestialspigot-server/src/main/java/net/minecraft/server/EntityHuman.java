@@ -1025,11 +1025,11 @@ public abstract class EntityHuman extends EntityLiving {
                         KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() : this.getKnockbackProfile();
 
                         if(profile instanceof NormalKnockbackProfile) {
-                            ((NormalKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                            ((NormalKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         } else if(profile instanceof BedWarsKnockbackProfile) {
-                            ((BedWarsKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                            ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         } else if(profile instanceof DetailedKnockbackProfile) {
-                            ((DetailedKnockbackProfile) profile).handleEntityHuman(this, entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                            ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                         }
                     }
 

@@ -58,6 +58,8 @@ public class CelestialConfig {
     private boolean enableReloadCommand;
     private boolean enablePingCommand;
     private boolean enableSetSlotsCommand;
+    private boolean enablePluginCommand;
+    private boolean enableShrugCommand;
 
     private boolean improvedHitDetection;
     private boolean firePlayerMoveEvent;
@@ -172,6 +174,8 @@ public class CelestialConfig {
         this.enablePluginsCommand = this.getBoolean("commands.enable-plugins-command", true);
         this.enableKillEntitiesCommand = this.getBoolean("commands.enable-kill-entities-command", true);
         this.enableSetSlotsCommand = this.getBoolean("commands.enable-set-slots-command", true);
+        this.enablePluginCommand = this.getBoolean("commands.enable-plugin-command", true);
+        this.enableShrugCommand = this.getBoolean("commands.enable-shrug-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
         this.firePlayerMoveEvent = this.getBoolean("fire-player-move-event", true);
@@ -230,8 +234,10 @@ public class CelestialConfig {
         c.addComment("commands.enable-plugins-command", "Enable or disable the plugins command");
         c.addComment("commands.enable-day-command", "Enable or disable the day command");
         c.addComment("commands.enable-night-command", "Enable or disable the night command");
-        c.addComment("commands.enable-kill-entities-command", "Enable or disable the kill entities command");
-        c.addComment("commands.enable-set-slots-command", "Enable or disable the set slots command");
+        c.addComment("commands.enable-kill-entities-command", "Enable or disable the kill entities command (command that kills all entities of the specified type)");
+        c.addComment("commands.enable-set-slots-command", "Enable or disable the set slots command (command that changes the player slots ingame)");
+        c.addComment("commands.enable-plugin-command", "Enable or disable the plugin command (command that lets you manage plugins ingame)");
+        c.addComment("commands.enable-shrug-command", "Enable or disable the shrug command (¯\\_(ツ)_/¯)");
 
         // Add comments for player event-related settings
         c.addComment("fire-player-move-event", "Enable firing events when players move");

@@ -49,6 +49,8 @@ public enum CelestialSpigot {
 		commands.put("knockback", new KnockbackCommand());
         commands.put("potion", new PotionCommand());
         commands.put("tps", new TPSCommand());
+		commands.put("deop", new DeopCommand());
+		commands.put("op", new OpCommand());
 		if(getConfig().isEnablePingCommand()) {
 			commands.put("ping", new PingCommand());
 		}
@@ -67,7 +69,12 @@ public enum CelestialSpigot {
 		if(getConfig().isEnableSetSlotsCommand()) {
 			commands.put("setslots", new SetSlotsCommand());
 		}
-		commands.put("plugin", new PluginCommand());
+		if(getConfig().isEnablePluginCommand()) {
+			commands.put("plugin", new PluginCommand());
+		}
+		if(getConfig().isEnableShrugCommand()) {
+			commands.put("shrug", new ShrugCommand());
+		}
 		for (Map.Entry<String, Command> entry : commands.entrySet()) {
 			MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());
 		}

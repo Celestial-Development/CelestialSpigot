@@ -59,7 +59,7 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
             this.a((ICommand) (new CommandPardonIP()));
             this.a((ICommand) (new CommandBan()));
             this.a((ICommand) (new CommandBanList()));
-            this.a((ICommand) (new CommandPardon()));
+            this.a(new CommandPardon());
             this.a((ICommand) (new CommandKick()));
             this.a((ICommand) (new CommandList()));
             this.a((ICommand) (new CommandWhitelist()));
@@ -82,19 +82,17 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
         ChatMessage chatmessage = new ChatMessage("chat.type.admin", new Object[] { icommandlistener.getName(), new ChatMessage(s, aobject)});
 
         chatmessage.getChatModifier().setColor(EnumChatFormat.GRAY);
-        chatmessage.getChatModifier().setItalic(Boolean.valueOf(true));
+        chatmessage.getChatModifier().setItalic(Boolean.TRUE);
         if (flag) {
-            Iterator iterator = minecraftserver.getPlayerList().v().iterator();
 
-            while (iterator.hasNext()) {
-                EntityHuman entityhuman = (EntityHuman) iterator.next();
+            for (EntityPlayer entityPlayer : minecraftserver.getPlayerList().v()) {
 
-                if (entityhuman != icommandlistener && minecraftserver.getPlayerList().isOp(entityhuman.getProfile()) && icommand.canUse(icommandlistener)) {
+                if (entityPlayer != icommandlistener && minecraftserver.getPlayerList().isOp(((EntityHuman) entityPlayer).getProfile()) && icommand.canUse(icommandlistener)) {
                     boolean flag1 = icommandlistener instanceof MinecraftServer && MinecraftServer.getServer().r();
                     boolean flag2 = icommandlistener instanceof RemoteControlCommandListener && MinecraftServer.getServer().q();
 
                     if (flag1 || flag2 || !(icommandlistener instanceof RemoteControlCommandListener) && !(icommandlistener instanceof MinecraftServer)) {
-                        entityhuman.sendMessage(chatmessage);
+                        ((EntityHuman) entityPlayer).sendMessage(chatmessage);
                     }
                 }
             }
