@@ -18,12 +18,12 @@ public class DeopCommand extends Command {
     
     private final ChatColor color = ChatColor.AQUA;
     private final String[] HELP_MESSAGE = {
-            color + "&m--------&7&m" + StringUtils.repeat("-", 37) + color + "&m--------",
-            color + "CelestialSpigot &7(OP Commands)",
-            color + "&m--------&7&m" + StringUtils.repeat("-", 37) + color + "&m--------",
-            "&7 * " + color + "/op &8<&7player&8> &8(&7&oGives a player operator status&8)",
-            "&7 * " + color + "/deop &8<&7player&8> &8(&7&oRemoves a player's operator status&8)",
-            color + "&m--------&7&m" + StringUtils.repeat("-", 37) + color + "&m--------"
+            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------",
+            color + "CelestialSpigot §7(OP Commands)",
+            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------",
+            "§7 * " + color + "/op §8<§7player§8> §8(§7§oGives a player operator status§8)",
+            "§7 * " + color + "/deop §8<§7player§8> §8(§7§oRemoves a player's operator status§8)",
+            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------"
     };
 
     public DeopCommand() {
@@ -36,17 +36,17 @@ public class DeopCommand extends Command {
     @Override
     public boolean execute(CommandSender sender, String currentAlias, String[] args) {
         if (!sender.hasPermission("bukkit.command.deop")) {
-            sender.sendMessage("&cNo permission.");
+            sender.sendMessage("§cNo permission.");
         } else {
             if (args.length != 1 || args[0].isEmpty()) {
                 sender.sendMessage(HELP_MESSAGE);
             } else {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
                 player.setOp(false);
-                sender.sendMessage("&7You've taken " + color + player.getName() + "'s &7permissions for " + color + "operator&7!");
+                sender.sendMessage("§7You've taken " + color + player.getName() + "'s §7permissions for " + color + "operator§7!");
                 if (player.isOnline()) {
                     player.getPlayer().sendMessage(" ");
-                    player.getPlayer().sendMessage("&7Your " + color + "operator status &7has been removed.");
+                    player.getPlayer().sendMessage("§7Your " + color + "operator status §7has been removed.");
                     player.getPlayer().sendMessage(" ");
                 }
             }
