@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
+import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
@@ -17,16 +19,16 @@ public abstract class MobSpawnerAbstract {
     private MobSpawnerAbstract.a spawnData;
     private double e;
     private double f;
-    private int minSpawnDelay = 200 / 1;
-    private int maxSpawnDelay = 800 / 1;
-    private int spawnCount = 4;
+    private int minSpawnDelay = CelestialSpigot.INSTANCE.getConfig().getMinSpawnDelay();
+    private int maxSpawnDelay = CelestialSpigot.INSTANCE.getConfig().getMaxSpawnDelay();
+    private int spawnCount = CelestialSpigot.INSTANCE.getConfig().getSpawnCount();
     private Entity j;
-    private int maxNearbyEntities = 6;
-    private int requiredPlayerRange = 16;
-    private int spawnRange = 4;
+    private int maxNearbyEntities = CelestialSpigot.INSTANCE.getConfig().getMaxNearbyEntities();
+    private int requiredPlayerRange = CelestialSpigot.INSTANCE.getConfig().getRequiredPlayerRange();
+    private int spawnRange = CelestialSpigot.INSTANCE.getConfig().getSpawnRange();
     /*private int tickDelay = 0;*/ // PaperSpigot
 
-    static final int FAIL_DELAY_TICKS = 100 / 1; // Mobspawner Fail Delay
+    static final int FAIL_DELAY_TICKS = 100; // Mobspawner Fail Delay
 
     public MobSpawnerAbstract() {}
 

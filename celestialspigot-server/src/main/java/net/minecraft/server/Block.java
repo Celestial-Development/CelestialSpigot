@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.redstone.PandaRedstoneWire;
 
 import java.util.Iterator;
@@ -782,7 +783,7 @@ public class Block {
         a(53, "oak_stairs", (new BlockStairs(block1.getBlockData().set(BlockWood.VARIANT, BlockWood.EnumLogVariant.OAK))).c("stairsWood"));
         a(54, "chest", (new BlockChest(0)).c(2.5F).a(Block.f).c("chest"));
         // PandaRedstoneWire
-        a(55, "redstone_wire", (new PandaRedstoneWire()).c(0.0F).a(Block.e).c("redstoneDust").K());
+        a(55, "redstone_wire", (CelestialSpigot.INSTANCE.getConfig().isUsePandaWire() ? new PandaRedstoneWire() : new BlockRedstoneWire()).c(0.0F).a(Block.e).c("redstoneDust").K());
         a(56, "diamond_ore", (new BlockOre()).c(3.0F).b(5.0F).a(Block.i).c("oreDiamond"));
         a(57, "diamond_block", (new Block(Material.ORE, MaterialMapColor.G)).c(5.0F).b(10.0F).a(Block.j).c("blockDiamond").a(CreativeModeTab.b));
         a(58, "crafting_table", (new BlockWorkbench()).c(2.5F).a(Block.f).c("workbench"));

@@ -126,15 +126,18 @@ public class VersionCommand extends BukkitCommand {
         if (args.length == 1) {
             if(!testPermission(sender)) return ImmutableList.of();
             List<String> completions = new ArrayList<>();
-            String toComplete = args[0].toLowerCase();
+            if(CelestialSpigot.INSTANCE.getConfig().isTabCompletePlugins()) {
+                String toComplete = args[0].toLowerCase();
 
-            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                if (StringUtil.startsWithIgnoreCase(plugin.getName(), toComplete)) {
-                    completions.add(plugin.getName());
+                for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                    if (StringUtil.startsWithIgnoreCase(plugin.getName(), toComplete)) {
+                        completions.add(plugin.getName());
+                    }
                 }
-            }
 
+            }
             return completions;
+
         } else {
             return ImmutableList.of();
         }

@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
@@ -209,6 +212,8 @@ public class Main {
                 }
 
                 System.out.println("Loading libraries, please wait...");
+                // CelestialSpigot
+                CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
 
                 // PandaSpigot start - Modern tick loop
                 net.minecraft.server.DispenserRegistry.c();

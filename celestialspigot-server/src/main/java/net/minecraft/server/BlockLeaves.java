@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.event.block.LeavesDecayEvent;
 
 import java.util.Random;
@@ -134,7 +136,9 @@ public abstract class BlockLeaves extends BlockTransparent {
     private void e(World world, BlockPosition blockposition) {
         // CraftBukkit start
         LeavesDecayEvent event = new LeavesDecayEvent(world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
-        world.getServer().getPluginManager().callEvent(event);
+        if(CelestialSpigot.INSTANCE.getConfig().isFireLeafDecayEvent()) {
+            world.getServer().getPluginManager().callEvent(event);
+        }
 
         if (event.isCancelled() || world.getType(blockposition).getBlock() != this) {
             return;

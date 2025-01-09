@@ -1,5 +1,8 @@
 package com.kaydeesea.spigot.util;
 
+import lombok.Setter;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,8 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class YamlCommenter {
+    public YamlCommenter() {
+    }
 	private final HashMap<String, String> comments = new HashMap<>();
-	private String Header = "";
+    /**
+     * -- SETTER --
+     *  Set the header for this config file
+     *
+     * @param header Header to add
+     */
+    @Setter
+    private String Header = "";
 
 	/**
 	 * Add comment to a config option.<br>
@@ -23,16 +35,7 @@ public class YamlCommenter {
 		comments.put(path, comment);
 	}
 
-	/**
-	 * Set the header for this config file
-	 *
-	 * @param header Header to add
-	 */
-	public void setHeader(String header) {
-		Header = header;
-	}
-
-	/**
+    /**
 	 * Saves comments to config file
 	 *
 	 * @param file File to save to
@@ -44,14 +47,14 @@ public class YamlCommenter {
 		lines.add(0, "# " + Header.replace("\n", "\n# ") + "\n");
 		for (Map.Entry<String, String> _comment : comments.entrySet()) {
 			int line = YamlUtils.findKey(lines, _comment.getKey());
-			
-            if(line == -1) {
-                throw new IllegalStateException(String.format(
-                        "You are trying to add a comment to key \"%s\" which does not exist!",
-                        _comment.getKey()
-                ));
-            }
-            
+
+			if(line == -1) {
+				throw new IllegalStateException(String.format(
+						"You are trying to add a comment to key \"%s\" which does not exist!",
+						_comment.getKey()
+				));
+			}
+
 			String prefix = Utils.repeat(" ", getIndentation(lines.get(line))) + "# ";
 			boolean noNewline = getIndentation(lines.get(line)) > getIndentation(lines.get(line - 1));
 			if (line >= 0) {

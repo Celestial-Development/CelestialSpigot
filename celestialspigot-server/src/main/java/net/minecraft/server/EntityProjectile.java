@@ -132,25 +132,24 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
         if (!this.world.isClientSide) {
             Entity entity = null;
-            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
+            List<Entity> list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
 
-            for (int i = 0; i < list.size(); ++i) {
-                Entity entity1 = (Entity) list.get(i);
+            for (Entity o : list) {
 
-                if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
+                if (o.ad() && (o != entityliving || this.ar >= 5)) {
                     float f = 0.3F;
-                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f, f, f);
+                    AxisAlignedBB axisalignedbb = o.getBoundingBox().grow(f, f, f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
-                    if (healPotion && CelestialSpigot.INSTANCE.getConfig().isSmoothHealPotions() && movingobjectposition1 == null && entity1 == entityliving && ticksLived % 3 == 0 && !entity1.inWater && !entity1.ab() && !entity1.isSneaking()) {
-                        movingobjectposition1 = new MovingObjectPosition(entity1);
+                    if (healPotion && CelestialSpigot.INSTANCE.getConfig().isSmoothHealPotions() && movingobjectposition1 == null && o == entityliving && ticksLived % 3 == 0 && !o.inWater && !o.ab() && !o.isSneaking()) {
+                        movingobjectposition1 = new MovingObjectPosition(o);
                     }
                     if (movingobjectposition1 != null) {
                         double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
 
                         if (d1 < d0 || d0 == 0.0D) {
-                            entity = entity1;
+                            entity = o;
                             d0 = d1;
                         }
                     }

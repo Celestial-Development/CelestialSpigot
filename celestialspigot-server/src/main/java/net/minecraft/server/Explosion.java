@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -184,7 +185,9 @@ public class Explosion {
 
             if (explode != null) {
                 EntityExplodeEvent event = new EntityExplodeEvent(explode, location, blockList, 0.3F);
-                this.world.getServer().getPluginManager().callEvent(event);
+                if(CelestialSpigot.INSTANCE.getConfig().isFireEntityExplodeEvent()) {
+                    this.world.getServer().getPluginManager().callEvent(event);
+                }
                 cancelled = event.isCancelled();
                 bukkitBlocks = event.blockList();
                 yield = event.getYield();

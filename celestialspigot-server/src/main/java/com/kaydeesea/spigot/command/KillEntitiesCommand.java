@@ -1,5 +1,6 @@
 package com.kaydeesea.spigot.command;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -41,7 +42,10 @@ public class KillEntitiesCommand extends Command {
                     }
                 }
             }
-            sender.sendMessage(ChatColor.GREEN + "You have removed a total of " + ChatColor.GRAY + i + ChatColor.GREEN + " entities");
+            sender.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getKillEntitiesCommand())
+                            .replaceAll("%entities%", i+"")
+            );
 
             return false;
         }
@@ -55,7 +59,10 @@ public class KillEntitiesCommand extends Command {
                 }
             }
         }
-        sender.sendMessage(ChatColor.GREEN + "You have removed a total of " + ChatColor.GRAY + i + ChatColor.GREEN + " entities");
+        sender.sendMessage(
+                ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getKillEntitiesCommand())
+                        .replaceAll("%entities%", i+"")
+        );
         return false;
     }
 

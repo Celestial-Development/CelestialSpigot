@@ -39,13 +39,14 @@ public class CelestialKnockBack {
 
     private final File knockbackFile;
 
-    private final YamlCommenter c = new YamlCommenter();
+    private final YamlCommenter c;
 
     private final YamlConfiguration config;
 
     public CelestialKnockBack() {
         knockbackFile = new File("knockback.yml");
         config = new YamlConfiguration();
+        c = new YamlCommenter();
         try {
             config.load(this.knockbackFile);
         } catch (IOException ex) {

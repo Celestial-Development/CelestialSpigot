@@ -131,7 +131,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.setOnlineMode(this.propertyManager.getBoolean("online-mode", true));
             this.c(this.propertyManager.getString("server-ip", ""));
         }
-        CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
         CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
 
 

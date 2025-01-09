@@ -1068,7 +1068,6 @@ public abstract class World implements IBlockAccess {
         if (entity instanceof EntityLiving) {
             EntityLiving living = (EntityLiving) entity;
             if(living.getKnockbackProfile() == null) living.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
-
             ((EntityLiving) entity).maxNoDamageTicks = living.getKnockbackProfile().getHitDelay();
         }
         // ClubSpigot stop

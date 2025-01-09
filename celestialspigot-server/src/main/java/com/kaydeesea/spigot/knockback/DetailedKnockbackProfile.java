@@ -119,7 +119,7 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
             velX *= getHorizontal();
             velZ *= getHorizontal();
 
-            if (isInheritH()) {
+            if (isInheritY()) {
                 entityVelY = victim.motY * getInheritYValue();
                 velY = entityVelY + getVertical();
             } else {

@@ -22,6 +22,19 @@ public class EntityEnderPearl extends EntityProjectile {
         this.loadChunks = world.paperSpigotConfig.loadUnloadedEnderPearls; // PaperSpigot
     }
 
+
+    protected float m() {
+        return CelestialSpigot.INSTANCE.getConfig().getPearlGravity();
+    }
+
+    protected float j() {
+        return CelestialSpigot.INSTANCE.getConfig().getPearlSpeed();
+    }
+
+    protected float l() {
+        return CelestialSpigot.INSTANCE.getConfig().getPearlVerticalOffset();
+    }
+
     protected void a(MovingObjectPosition movingobjectposition) {
         EntityLiving entityliving = this.getShooter();
 
@@ -54,6 +67,7 @@ public class EntityEnderPearl extends EntityProjectile {
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
 
+                    // CelestialSpigot start pearl fix
                     double diffX = location.getBlockX() - player.getLocation().getBlockX();
                     double diffY = location.getBlockY() - player.getLocation().getBlockY();
                     double diffZ = location.getBlockZ() - player.getLocation().getBlockZ();
@@ -73,7 +87,7 @@ public class EntityEnderPearl extends EntityProjectile {
                             location.setZ(location.getBlockZ() - 0.5D);
                         }
                     }
-
+                    // CelestialSpigot end
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);
 
@@ -93,9 +107,11 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
                         CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(player, location); // Nacho
                         entityliving.fallDistance = 0.0F;
-                        CraftEventFactory.entityDamage = this;
-                        entityliving.damageEntity(DamageSource.FALL, 5.0F);
-                        CraftEventFactory.entityDamage = null;
+                        if (CelestialSpigot.INSTANCE.getConfig().isPearlDamage()) {
+                            CraftEventFactory.entityDamage = this;
+                            entityliving.damageEntity(DamageSource.FALL, 5.0F);
+                            CraftEventFactory.entityDamage = null;
+                        }
                     }
                     // CraftBukkit end
                 }

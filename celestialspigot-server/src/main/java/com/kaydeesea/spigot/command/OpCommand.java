@@ -1,8 +1,7 @@
 package com.kaydeesea.spigot.command;
 
 import com.google.common.collect.ImmutableList;
-import joptsimple.internal.Strings;
-import org.apache.commons.lang.StringUtils;
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,19 +19,10 @@ public class OpCommand extends Command {
 
     private final ChatColor color = ChatColor.AQUA;
 
-    private final String[] HELP_MESSAGE = {
-            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------",
-            color + "CelestialSpigot §7(OP Commands)",
-            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------",
-            "§7 * " + color + "/op §8<§7player§8> §8(§7§oGives a player operator status§8)",
-            "§7 * " + color + "/deop §8<§7player§8> §8(§7§oRemoves a player's operator status§8)",
-            color + "§m--------§7§m" + StringUtils.repeat("-", 37) + color + "§m--------"
-    };
 
     public OpCommand() {
         super("op");
         this.description = "Grant operator status to specified player.";
-        this.usageMessage = Strings.join(HELP_MESSAGE, "\n");
         this.setPermission("bukkit.command.op");
     }
 
@@ -42,11 +32,18 @@ public class OpCommand extends Command {
             sender.sendMessage("§cNo permission.");
         } else {
             if (args.length != 1 || args[0].isEmpty()) {
-                sender.sendMessage(HELP_MESSAGE);
+                for (String s : CelestialSpigot.INSTANCE.getConfig().getOpCommand()) {
+                    sender.sendMessage(
+                            ChatColor.translateAlternateColorCodes('&', s)
+                    );
+                }
             } else {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
                 player.setOp(true);
-                sender.sendMessage("§7You've granted " + color + player.getName() + " §7permissions for " + color + "operator§7!");
+                sender.sendMessage(
+                        ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getOpGiveCommand())
+                                .replaceAll("%player%", player.getName())
+                );
                 if (player.isOnline()) {
                     player.getPlayer().sendMessage(" ");
                     player.getPlayer().sendMessage("§7You've been granted " + color + "Operator Status §7!");

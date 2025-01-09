@@ -724,7 +724,7 @@ public final class CraftServer implements Server {
         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("paper-settings")); // PaperSpigot
 
-        // SpigotX
+        // CelestialSpigot
         CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
         CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
         CelestialSpigot.INSTANCE.registerCommands();

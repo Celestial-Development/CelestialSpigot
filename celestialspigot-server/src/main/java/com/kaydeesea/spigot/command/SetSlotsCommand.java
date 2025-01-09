@@ -1,6 +1,8 @@
 package com.kaydeesea.spigot.command;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -34,7 +36,10 @@ public class SetSlotsCommand extends Command {
         } catch (Exception e) {
             e.printStackTrace( );
         }
-        sender.sendMessage("§6Slots updated to §e" + slots);
+        sender.sendMessage(
+                ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getSetSlotsCommand())
+                        .replaceAll("%slots%", slots+"")
+        );
         return false;
     }
 

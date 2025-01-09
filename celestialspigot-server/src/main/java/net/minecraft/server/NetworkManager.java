@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.kaydeesea.spigot.CelestialConfig;
 import io.netty.channel.*;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.local.LocalChannel;
@@ -185,6 +186,18 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public void a(Packet packet, GenericFutureListener<? extends Future<? super Void>> genericfuturelistener, GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
+        if (CelestialSpigot.INSTANCE.getConfig().isAsyncHits() && g() && packet instanceof PacketPlayInUseEntity) {
+            PacketPlayInUseEntity pI = (PacketPlayInUseEntity)packet;
+            if (pI.a() == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
+                CelestialSpigot.INSTANCE.getConfig().getHitDetectionThread().addPacket(packet, this, agenericfuturelistener);
+                return;
+            }
+        }
+        if (CelestialSpigot.INSTANCE.getConfig().isAsyncKnockback() && g() && (packet instanceof PacketPlayOutEntityVelocity || packet instanceof PacketPlayOutPosition || packet instanceof PacketPlayInFlying)) {
+            CelestialSpigot.INSTANCE.getConfig().getKnockbackThread().addPacket(packet, this, agenericfuturelistener);
+            return;
+        }
+
         if (this.g()) {
             this.m();
             this.a(packet, (GenericFutureListener[]) ArrayUtils.add(agenericfuturelistener, 0, genericfuturelistener));

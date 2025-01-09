@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
@@ -17,7 +18,7 @@ public class MinecraftPipeline extends ChannelInitializer<SocketChannel>
     protected void initChannel(SocketChannel ch) {
         try {
             ChannelConfig config = ch.config();
-            config.setOption(ChannelOption.TCP_NODELAY, true);
+            config.setOption(ChannelOption.TCP_NODELAY, CelestialSpigot.INSTANCE.getConfig().isTcpNoDelay());
             config.setOption(ChannelOption.TCP_FASTOPEN, 1);
             config.setOption(ChannelOption.TCP_FASTOPEN_CONNECT, true);
             config.setOption(ChannelOption.IP_TOS, 0x18); // [Nacho-0027] :: Optimize networking
