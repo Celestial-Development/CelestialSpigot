@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
+import jline.console.ConsoleReader;
 import net.openhft.affinity.AffinityLock;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -47,6 +48,7 @@ import org.apache.logging.log4j.Logger;
 import joptsimple.OptionSet;
 
 import co.aikar.timings.SpigotTimings; // Spigot
+import org.bukkit.craftbukkit.Main;
 // CraftBukkit end
 
 public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements ICommandListener, IAsyncTaskHandler, IMojangStatistics { // PandaSpigot - Modern tick loop
@@ -111,7 +113,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public OptionSet options;
     public org.bukkit.command.ConsoleCommandSender console;
     public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
-    //public ConsoleReader reader; // PandaSpigot - comment out
+    public ConsoleReader reader; // PandaSpigot - comment out
     public static int currentTick = 0; // PaperSpigot - Further improve tick loop
     public final Thread primaryThread;
     public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
@@ -157,7 +159,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         this.Y = this.V.createProfileRepository();
         // CraftBukkit start
         this.options = options;
-        /* // PandaSpigot - Handled by TerminalConsoleAppender
         // Try to see if we're actually running in a terminal, disable jline if not
         if (System.console() == null && System.getProperty("jline.terminal") == null) {
             System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
@@ -179,7 +180,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 LOGGER.warn((String) null, ex);
             }
         }
-        */ // PandaSpigot
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
 
         //this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main // PandaSpigot - comment out; we assign above

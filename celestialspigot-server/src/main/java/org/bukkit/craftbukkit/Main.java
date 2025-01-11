@@ -225,7 +225,7 @@ public class Main {
                 // Spigot End
                 */
                 // PandaSpigot end
-                System.setProperty("library.jansi.version", "CelestialSpigot"); // PandaSpigot - set meaningless jansi version to prevent git builds from crashing on Windows
+                System.setProperty("library.jansi.version", "PandaSpigot"); // PandaSpigot - set meaningless jansi version to prevent git builds from crashing on Windows
                 System.out.println("Loading libraries, please wait...");
                 // CelestialSpigot
                 CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());

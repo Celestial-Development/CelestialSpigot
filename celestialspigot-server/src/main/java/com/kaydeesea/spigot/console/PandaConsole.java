@@ -32,7 +32,7 @@ public class PandaConsole extends SimpleTerminalConsole {
     @Override
     protected LineReader buildReader(LineReaderBuilder builder) {
         return super.buildReader(builder
-            .appName("CelestialSpigot")
+            .appName("PandaSpigot")
             .variable(LineReader.HISTORY_FILE, Paths.get(".console_history"))
             .completer(new PandaConsoleCompleter(this.server)));
     }

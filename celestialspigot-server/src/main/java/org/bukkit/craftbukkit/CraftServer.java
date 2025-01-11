@@ -27,6 +27,7 @@ import com.kaydeesea.spigot.CelestialConfig;
 import com.kaydeesea.spigot.CelestialKnockBack;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.malware.AntiMalware;
+import jline.console.ConsoleReader;
 import net.minecraft.server.*;
 
 import org.bukkit.BanList;
@@ -1130,11 +1131,9 @@ public final class CraftServer implements Server {
         return logger;
     }
 
-    /* // PandaSpigot - jline update
     public ConsoleReader getReader() {
         return console.reader;
     }
-    */ // PandaSpigot
 
     @Override
     public PluginCommand getPluginCommand(String name) {

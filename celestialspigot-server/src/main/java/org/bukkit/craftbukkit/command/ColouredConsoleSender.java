@@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.command;
 import java.util.EnumMap;
 import java.util.Map;
 
+import jline.Terminal;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 //import jline.Terminal; // PandaSpigot - comment out
@@ -12,9 +13,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.CraftServer;
 
-public class ColouredConsoleSender /*extends CraftConsoleCommandSender */{/* // PandaSpigot - disable
+public class ColouredConsoleSender extends CraftConsoleCommandSender { // PandaSpigot - disable
     private final Terminal terminal;
-    private final Map<ChatColor, String> replacements = new EnumMap<ChatColor, String>(ChatColor.class);
+    private final Map<ChatColor, String> replacements = new EnumMap<>(ChatColor.class);
     private final ChatColor[] colors = ChatColor.values();
 
     protected ColouredConsoleSender() {
@@ -71,4 +72,4 @@ public class ColouredConsoleSender /*extends CraftConsoleCommandSender */{/* // 
             return new ColouredConsoleSender();
         }
     }
-*/} // PandaSpigot
+} // PandaSpigot
