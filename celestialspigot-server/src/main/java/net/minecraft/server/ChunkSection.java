@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-
 public class ChunkSection {
 
     private int yPos;
@@ -146,5 +145,4 @@ public class ChunkSection {
     public void b(NibbleArray nibblearray) {
         this.skyLight = nibblearray;
     }
-
 }

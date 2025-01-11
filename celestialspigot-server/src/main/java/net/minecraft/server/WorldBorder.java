@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class WorldBorder {
 
     // Inlined the getters from ChunkCoordIntPair
     public boolean isInBounds(int x, int z) {
-        return (double) ((x  << 4) + 15) > this.b() && (double) (x << 4) < this.d() && (double) ((z  << 4) + 15) > this.c() && (double) (x << 4) < this.e();
+        return (double) ((x << 4) + 15) > this.b() && (double) (x << 4) < this.d() && (double) ((z << 4) + 15) > this.c() && (double) (z << 4) < this.e(); // PandaSpigot - Fix isInBounds(int x, int z) checking the wrong variable
     }
 
     public boolean a(AxisAlignedBB axisalignedbb) {

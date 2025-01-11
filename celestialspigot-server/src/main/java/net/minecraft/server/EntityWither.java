@@ -2,14 +2,13 @@ package net.minecraft.server;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.entity.Wither;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
-import com.kaydeesea.spigot.event.WitherShootEvent;
-
 import java.util.Iterator;
 import java.util.List;
+
+// CraftBukkit start
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 // CraftBukkit end
 
 public class EntityWither extends EntityMonster implements IRangedEntity {
@@ -243,12 +242,9 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             if (entity instanceof EntityHuman && ((EntityHuman) entity).abilities.isInvulnerable) {
                                 this.b(i, 0);
                             } else {
-                                WitherShootEvent event = new WitherShootEvent((Wither) this.bukkitEntity, entity.bukkitEntity);
-                                if (event.isCancelled()) {
-                                    this.a(i + 1, (EntityLiving) entity);
-                                    this.bn[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
-                                    this.bo[i - 1] = 0;
-                                }
+                                this.a(i + 1, (EntityLiving) entity);
+                                this.bn[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
+                                this.bo[i - 1] = 0;
                             }
                         } else {
                             this.b(i, 0);
@@ -359,7 +355,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             return this.locZ;
         } else {
             float f = (this.aI + (float) (180 * (i - 1))) / 180.0F * 3.1415927F;
-            float f1 = (float) MathHelper.sin(f);
+            float f1 = MathHelper.sin(f);
 
             return this.locZ + (double) f1 * 1.3D;
         }

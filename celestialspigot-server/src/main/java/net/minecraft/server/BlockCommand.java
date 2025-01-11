@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.event.block.BlockRedstoneEvent;
-
 import java.util.Random;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockCommand extends BlockContainer {
 
@@ -110,7 +110,7 @@ public class BlockCommand extends BlockContainer {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockCommand.TRIGGERED});
     }
 

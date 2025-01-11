@@ -111,7 +111,7 @@ public class BlockTNT extends Block {
         return ((Boolean) iblockdata.get(BlockTNT.EXPLODE)).booleanValue() ? 1 : 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockTNT.EXPLODE});
     }
 }

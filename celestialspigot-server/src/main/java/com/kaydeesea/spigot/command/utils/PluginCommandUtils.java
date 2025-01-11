@@ -347,7 +347,7 @@ public class PluginCommandUtils implements PluginManager {
         SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
 
 
-        return (Map<String, Command>) commandMap.getKnownCommands();
+        return commandMap.getKnownCommands();
     }
 
 

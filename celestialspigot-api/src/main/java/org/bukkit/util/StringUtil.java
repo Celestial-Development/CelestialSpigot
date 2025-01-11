@@ -1,8 +1,7 @@
 package org.bukkit.util;
 
-import org.apache.commons.lang.Validate;
-
 import java.util.Collection;
+import org.apache.commons.lang.Validate;
 
 public class StringUtil {
 

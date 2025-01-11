@@ -46,9 +46,10 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
     default void handleEntityHuman(EntityHuman victim, EntityPlayer source, int i, Vector vector) {
         if (i > 0) {
             source.g(
-                    (-MathHelper.sin(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal()), getExtraVertical(),
-                    (MathHelper.cos(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal())
-            );
+                    -MathHelper.sin(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal(),
+                    getExtraVertical(),
+                    MathHelper.cos(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal());
+
             victim.motX *= 0.6;
             victim.motZ *= 0.6;
             victim.setSprinting(false);

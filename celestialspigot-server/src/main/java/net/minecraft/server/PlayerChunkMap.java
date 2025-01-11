@@ -1,11 +1,18 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 
-import java.util.*;
+// CraftBukkit start
+import java.util.Collections;
+import java.util.Queue;
+import java.util.LinkedList;
+import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
+import java.util.HashMap;
 // CraftBukkit end
 
 public class PlayerChunkMap {
@@ -366,15 +373,6 @@ public class PlayerChunkMap {
             PlayerChunkMap.this.a().chunkProviderServer.getChunkAt(i, j, loadedRunnable); // CraftBukkit
         }
 
-        public void resend() {
-            if (this.dirtyCount == 0) {
-                PlayerChunkMap.this.e.add(this);
-            }
-            this.dirtyCount = 64;
-            this.f = 0xFFFF;
-        }
-
-
         public void a(final EntityPlayer entityplayer) {  // CraftBukkit - added final to argument
             if (this.b.contains(entityplayer)) {
                 PlayerChunkMap.a.debug("Failed to add player. {} already is in chunk {}, {}", new Object[] { entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z)});
@@ -382,6 +380,7 @@ public class PlayerChunkMap {
                 if (this.b.isEmpty()) {
                     this.g = PlayerChunkMap.this.world.getTime();
                 }
+
                 this.b.add(entityplayer);
                 // CraftBukkit start - use async chunk io
                 Runnable playerRunnable;
@@ -429,6 +428,10 @@ public class PlayerChunkMap {
                 this.players.remove(entityplayer); // CraftBukkit
                 this.b.remove(entityplayer);
                 entityplayer.chunkCoordIntPairQueue.remove(this.location);
+                org.bukkit.Chunk bukkitChunk = chunk.bukkitChunk;
+                if (bukkitChunk != null) { // TODO: Why can it be null? Investigate when I have time
+                    new io.papermc.paper.event.packet.PlayerChunkUnloadEvent(bukkitChunk, entityplayer.getBukkitEntity()).callEvent(); // PandaSpigot
+                }
                 if (this.b.isEmpty()) {
                     long i = (long) this.location.x + 2147483647L | (long) this.location.z + 2147483647L << 32;
 
@@ -594,13 +597,4 @@ public class PlayerChunkMap {
         }
     }
     // CraftBukkit end
-
-    public void resend(int chunkX, int chunkZ) {
-        PlayerChunk chunk = this.a(chunkX, chunkZ, false);
-
-        if (chunk != null) {
-            chunk.resend();
-        }
-    }
-
 }

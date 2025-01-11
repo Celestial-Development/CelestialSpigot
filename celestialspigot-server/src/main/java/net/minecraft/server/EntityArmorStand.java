@@ -1,13 +1,14 @@
 package net.minecraft.server;
 
+import java.util.List;
+
+// CraftBukkit start
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.craftbukkit.CraftEquipmentSlot;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.inventory.EquipmentSlot;
-
-import java.util.List;
 // CraftBukkit end
 
 public class EntityArmorStand extends EntityLiving {
@@ -704,4 +705,11 @@ public class EntityArmorStand extends EntityLiving {
     public boolean ad() {
         return super.ad() && !this.s();
     }
+
+    // PandaSpigot start - add an option to make armor stands not move
+    @Override
+    public void move(double motX, double motY, double motZ) {
+        super.move(motX, motY, motZ);
+    }
+    // PandaSpigot end
 }

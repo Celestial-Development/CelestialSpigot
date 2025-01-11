@@ -109,7 +109,7 @@ public class BlockCake extends Block {
         return ((Integer) iblockdata.get(BlockCake.BITES)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockCake.BITES});
     }
 

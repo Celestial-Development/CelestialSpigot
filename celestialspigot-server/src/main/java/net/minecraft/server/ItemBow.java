@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityCombustEvent; // CraftBukkit
 
 public class ItemBow extends Item {
 

@@ -1,8 +1,7 @@
 package org.bukkit.util;
 
-import org.bukkit.configuration.serialization.SerializableAs;
-
 import java.util.Map;
+import org.bukkit.configuration.serialization.SerializableAs;
 
 /**
  * A vector with a hash function that floors the X, Y, Z components, a la

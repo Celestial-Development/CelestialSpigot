@@ -1,12 +1,13 @@
 package net.minecraft.server;
 
+import java.util.Random;
+
+// CraftBukkit start
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
-import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
-
-import java.util.Random;
+import org.bukkit.event.block.BlockFadeEvent;
 // CraftBukkit end
 
 public class BlockGrass extends Block implements IBlockFragilePlantElement {
@@ -28,7 +29,8 @@ public class BlockGrass extends Block implements IBlockFragilePlantElement {
 
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         if (!world.isClientSide) {
-            if (world.getLightLevel(blockposition.up()) < 4 && world.getType(blockposition.up()).getBlock().p() > 2) {
+            int lightLevel = -1; // PandaSpigot
+            if (world.getType(blockposition.up()).getBlock().p() > 2 && (lightLevel = world.getLightLevel(blockposition.up())) < 4) { // PandaSpigot - Move light check to end to avoid unneeded light lookups
                 // CraftBukkit start
                 // world.setTypeUpdate(blockposition, Blocks.DIRT.getBlockData());
                 org.bukkit.World bworld = world.getWorld();
@@ -43,13 +45,23 @@ public class BlockGrass extends Block implements IBlockFragilePlantElement {
                 }
                 // CraftBukkit end
             } else {
-                if (world.getLightLevel(blockposition.up()) >= 9) {
+                // PandaSpigot start - If light was calculated above, reuse it, else grab it
+                if (lightLevel == -1) {
+                    lightLevel = world.getLightLevel(blockposition.up());
+                }
+                if (lightLevel >= 9) {
+                // PandaSpigot end
                     for (int i = 0; i < Math.min(4, Math.max(20, (int) (4 * 100F / world.growthOdds))); ++i) { // Spigot
                         BlockPosition blockposition1 = blockposition.a(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
                         Block block = world.getType(blockposition1.up()).getBlock();
-                        IBlockData iblockdata1 = world.getType(blockposition1);
+                        // PandaSpigot start
+                        IBlockData iblockdata1 = world.getTypeIfLoaded(blockposition1);
+                        if (iblockdata1 == null) {
+                            return;
+                        }
 
-                        if (iblockdata1.getBlock() == Blocks.DIRT && iblockdata1.get(BlockDirt.VARIANT) == BlockDirt.EnumDirtVariant.DIRT && world.getLightLevel(blockposition1.up()) >= 4 && block.p() <= 2) {
+                        if (iblockdata1.getBlock() == Blocks.DIRT && iblockdata1.get(BlockDirt.VARIANT) == BlockDirt.EnumDirtVariant.DIRT && block.p() <= 2 && world.isLightLevel(blockposition1.up(), 4)) { // Move last check before isLightLevel to avoid unneeded light checks
+                        // PandaSpigot end
                             // CraftBukkit start
                             // world.setTypeUpdate(blockposition1, Blocks.GRASS.getBlockData());
                             org.bukkit.World bworld = world.getWorld();
@@ -129,7 +141,7 @@ public class BlockGrass extends Block implements IBlockFragilePlantElement {
         return 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockGrass.SNOWY});
     }
 }

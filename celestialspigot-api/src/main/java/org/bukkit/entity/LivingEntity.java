@@ -1,6 +1,10 @@
 package org.bukkit.entity;
 
-import com.kaydeesea.spigot.knockback.KnockBackProfile;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,28 +13,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Represents a living entity, such as a monster or player
  */
 public interface LivingEntity extends Entity, Damageable, ProjectileSource {
-
-    //RageSpigot start
-    /**
-     * Gets the knockback profile of this player.
-     */
-    public KnockBackProfile getKnockbackProfile();
-
-    /**
-     * Sets the knockback profile of this player. The player's knockback
-     * profile overrides the global knockback profile.
-     */
-    public void setKnockbackProfile(KnockBackProfile profile);
-    //RageSpigot end
 
     /**
      * Gets the height of the living entity's eyes above its Location.

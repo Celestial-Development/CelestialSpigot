@@ -3,129 +3,130 @@ package net.minecraft.server;
 import java.io.IOException;
 
 public class PacketPlayOutSpawnEntity implements Packet<PacketListenerPlayOut> {
-	private int a;
-	private int b;
-	private int c;
-	private int d;
-	private int e;
-	private int f;
-	private int g;
-	private int h;
-	private int i;
-	private int j;
-	private int k;
 
-	public PacketPlayOutSpawnEntity() {
-	}
+    private int a;
+    private int b;
+    private int c;
+    private int d;
+    private int e;
+    private int f;
+    private int g;
+    private int h;
+    private int i;
+    private int j;
+    private int k;
 
-	public PacketPlayOutSpawnEntity(Entity var1, int var2) {
-		this(var1, var2, 0);
-	}
+    public PacketPlayOutSpawnEntity() {}
 
-	public PacketPlayOutSpawnEntity(Entity var1, int var2, int var3) {
-		this.a = var1.getId();
-		this.b = MathHelper.floor(var1.locX * 32.0D);
-		this.c = MathHelper.floor(var1.locY * 32.0D);
-		this.d = MathHelper.floor(var1.locZ * 32.0D);
-		this.h = MathHelper.d(var1.pitch * 256.0F / 360.0F);
-		this.i = MathHelper.d(var1.yaw * 256.0F / 360.0F);
-		this.j = var2;
-		this.k = var3;
-		if (var3 > 0) {
-			double var4 = var1.motX;
-			double var6 = var1.motY;
-			double var8 = var1.motZ;
-			double var10 = 3.9D;
-			if (var4 < -var10) {
-				var4 = -var10;
-			}
+    public PacketPlayOutSpawnEntity(Entity entity, int i) {
+        this(entity, i, 0);
+    }
 
-			if (var6 < -var10) {
-				var6 = -var10;
-			}
+    public PacketPlayOutSpawnEntity(Entity entity, int i, int j) {
+        this.a = entity.getId();
+        this.b = MathHelper.floor(entity.locX * 32.0D);
+        this.c = MathHelper.floor(entity.locY * 32.0D);
+        this.d = MathHelper.floor(entity.locZ * 32.0D);
+        this.h = MathHelper.d(entity.pitch * 256.0F / 360.0F);
+        this.i = MathHelper.d(entity.yaw * 256.0F / 360.0F);
+        this.j = i;
+        this.k = j;
+        if (j > 0) {
+            double d0 = entity.motX;
+            double d1 = entity.motY;
+            double d2 = entity.motZ;
+            double d3 = 3.9D;
 
-			if (var8 < -var10) {
-				var8 = -var10;
-			}
+            if (d0 < -d3) {
+                d0 = -d3;
+            }
 
-			if (var4 > var10) {
-				var4 = var10;
-			}
+            if (d1 < -d3) {
+                d1 = -d3;
+            }
 
-			if (var6 > var10) {
-				var6 = var10;
-			}
+            if (d2 < -d3) {
+                d2 = -d3;
+            }
 
-			if (var8 > var10) {
-				var8 = var10;
-			}
+            if (d0 > d3) {
+                d0 = d3;
+            }
 
-			this.e = (int)(var4 * 8000.0D);
-			this.f = (int)(var6 * 8000.0D);
-			this.g = (int)(var8 * 8000.0D);
-		}
+            if (d1 > d3) {
+                d1 = d3;
+            }
 
-	}
+            if (d2 > d3) {
+                d2 = d3;
+            }
 
-	public void a(PacketDataSerializer var1) throws IOException {
-		this.a = var1.e();
-		this.j = var1.readByte();
-		this.b = var1.readInt();
-		this.c = var1.readInt();
-		this.d = var1.readInt();
-		this.h = var1.readByte();
-		this.i = var1.readByte();
-		this.k = var1.readInt();
-		if (this.k > 0) {
-			this.e = var1.readShort();
-			this.f = var1.readShort();
-			this.g = var1.readShort();
-		}
+            this.e = (int) (d0 * 8000.0D);
+            this.f = (int) (d1 * 8000.0D);
+            this.g = (int) (d2 * 8000.0D);
+        }
 
-	}
+    }
 
-	public void b(PacketDataSerializer var1) throws IOException {
-		var1.b(this.a);
-		var1.writeByte(this.j);
-		var1.writeInt(this.b);
-		var1.writeInt(this.c);
-		var1.writeInt(this.d);
-		var1.writeByte(this.h);
-		var1.writeByte(this.i);
-		var1.writeInt(this.k);
-		if (this.k > 0) {
-			var1.writeShort(this.e);
-			var1.writeShort(this.f);
-			var1.writeShort(this.g);
-		}
+    public void a(PacketDataSerializer packetdataserializer) throws IOException {
+        this.a = packetdataserializer.e();
+        this.j = packetdataserializer.readByte();
+        this.b = packetdataserializer.readInt();
+        this.c = packetdataserializer.readInt();
+        this.d = packetdataserializer.readInt();
+        this.h = packetdataserializer.readByte();
+        this.i = packetdataserializer.readByte();
+        this.k = packetdataserializer.readInt();
+        if (this.k > 0) {
+            this.e = packetdataserializer.readShort();
+            this.f = packetdataserializer.readShort();
+            this.g = packetdataserializer.readShort();
+        }
 
-	}
+    }
 
-	public void a(PacketListenerPlayOut var1) {
-		var1.a(this);
-	}
+    public void b(PacketDataSerializer packetdataserializer) throws IOException {
+        packetdataserializer.b(this.a);
+        packetdataserializer.writeByte(this.j);
+        packetdataserializer.writeInt(this.b);
+        packetdataserializer.writeInt(this.c);
+        packetdataserializer.writeInt(this.d);
+        packetdataserializer.writeByte(this.h);
+        packetdataserializer.writeByte(this.i);
+        packetdataserializer.writeInt(this.k);
+        if (this.k > 0) {
+            packetdataserializer.writeShort(this.e);
+            packetdataserializer.writeShort(this.f);
+            packetdataserializer.writeShort(this.g);
+        }
 
-	public void a(int var1) {
-		this.b = var1;
-	}
+    }
 
-	public void b(int var1) {
-		this.c = var1;
-	}
+    public void a(PacketListenerPlayOut packetlistenerplayout) {
+        packetlistenerplayout.a(this);
+    }
 
-	public void c(int var1) {
-		this.d = var1;
-	}
+    public void a(int i) {
+        this.b = i;
+    }
 
-	public void d(int var1) {
-		this.e = var1;
-	}
+    public void b(int i) {
+        this.c = i;
+    }
 
-	public void e(int var1) {
-		this.f = var1;
-	}
+    public void c(int i) {
+        this.d = i;
+    }
 
-	public void f(int var1) {
-		this.g = var1;
-	}
+    public void d(int i) {
+        this.e = i;
+    }
+
+    public void e(int i) {
+        this.f = i;
+    }
+
+    public void f(int i) {
+        this.g = i;
+    }
 }

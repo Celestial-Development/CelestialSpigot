@@ -21,7 +21,7 @@ public class PingCommand extends Command {
 		// If sender is a player send the player their own ping
 		if ((args.length == 0) && sender instanceof Player) {
 			String finalString = ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getPingCommandSelf())
-					.replace("%ping%", ((Integer) ((CraftPlayer) sender).getPing()).toString());
+					.replace("%ping%", ((Integer) ((CraftPlayer) sender).getHandle().ping).toString());
 			sender.sendMessage(finalString);
 			
 			// Otherwise send the ping of the argument player if valid
@@ -31,7 +31,7 @@ public class PingCommand extends Command {
 			if (pingPlayer != null && Bukkit.getOnlinePlayers().contains(pingPlayer)) {
 				String finalString = ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getPingCommandOther())
 						.replace("%player%", pingPlayer.getName())
-						.replace("%ping%", ((Integer) pingPlayer.getPing()).toString());
+						.replace("%ping%", ((Integer) ((CraftPlayer) pingPlayer).getHandle().ping).toString());
 				sender.sendMessage(finalString);
 			} else {
 				sender.sendMessage(ChatColor.RED + "Invalid player!");

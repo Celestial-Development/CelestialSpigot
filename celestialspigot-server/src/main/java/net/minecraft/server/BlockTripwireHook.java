@@ -2,10 +2,10 @@ package net.minecraft.server;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
-import org.bukkit.event.block.BlockRedstoneEvent;
-
 import java.util.Iterator;
 import java.util.Random;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockTripwireHook extends Block {
 
@@ -278,7 +278,7 @@ public class BlockTripwireHook extends Block {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockTripwireHook.FACING, BlockTripwireHook.POWERED, BlockTripwireHook.ATTACHED, BlockTripwireHook.SUSPENDED});
     }
 

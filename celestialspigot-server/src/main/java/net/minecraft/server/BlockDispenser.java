@@ -20,6 +20,7 @@ public class BlockDispenser extends BlockContainer {
         return 4;
     }
 
+    /* // PandaSpigot - comment out - SPIGOT-1401
     public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
         super.onPlace(world, blockposition, iblockdata);
         this.e(world, blockposition, iblockdata);
@@ -49,6 +50,7 @@ public class BlockDispenser extends BlockContainer {
             world.setTypeAndData(blockposition, iblockdata.set(BlockDispenser.FACING, enumdirection).set(BlockDispenser.TRIGGERED, Boolean.valueOf(false)), 2);
         }
     }
+    */ // PandaSpigot
 
     public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumDirection enumdirection, float f, float f1, float f2) {
         if (world.isClientSide) {
@@ -188,7 +190,7 @@ public class BlockDispenser extends BlockContainer {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockDispenser.FACING, BlockDispenser.TRIGGERED});
     }
 }

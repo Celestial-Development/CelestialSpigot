@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-
 import java.util.Random;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public class BlockCocoa extends BlockDirectional implements IBlockFragilePlantElement {
 
@@ -148,7 +148,7 @@ public class BlockCocoa extends BlockDirectional implements IBlockFragilePlantEl
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockCocoa.FACING, BlockCocoa.AGE});
     }
 

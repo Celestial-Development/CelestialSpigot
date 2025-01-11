@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -84,7 +83,7 @@ public class EntitySnowman extends EntityGolem implements IRangedEntity {
         double d1 = entityliving.locX - this.locX;
         double d2 = d0 - entitysnowball.locY;
         double d3 = entityliving.locZ - this.locZ;
-        float f1 = (float) MathHelper.sqrt(d1 * d1 + d3 * d3) * 0.2F;
+        float f1 = MathHelper.sqrt(d1 * d1 + d3 * d3) * 0.2F;
 
         entitysnowball.shoot(d1, d2 + (double) f1, d3, 1.6F, 12.0F);
         this.makeSound("random.bow", 1.0F, 1.0F / (this.bc().nextFloat() * 0.4F + 0.8F));

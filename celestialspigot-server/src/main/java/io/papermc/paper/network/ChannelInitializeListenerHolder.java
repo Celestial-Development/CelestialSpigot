@@ -2,8 +2,6 @@ package io.papermc.paper.network;
 
 import io.netty.channel.Channel;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +26,7 @@ public final class ChannelInitializeListenerHolder {
      * @param key key
      * @return whether an initialization listener is registered under the given key
      */
-    public static boolean hasListener(@NotNull Key key) {
+    public static boolean hasListener(Key key) {
         return LISTENERS.containsKey(key);
     }
 
@@ -38,7 +36,7 @@ public final class ChannelInitializeListenerHolder {
      * @param key      key
      * @param listener initialization listeners
      */
-    public static void addListener(@NotNull Key key, @NotNull ChannelInitializeListener listener) {
+    public static void addListener(Key key, ChannelInitializeListener listener) {
         LISTENERS.put(key, listener);
     }
 
@@ -48,7 +46,7 @@ public final class ChannelInitializeListenerHolder {
      * @param key key
      * @return removed initialization listener if present
      */
-    public static @Nullable ChannelInitializeListener removeListener(@NotNull Key key) {
+    public static ChannelInitializeListener removeListener(Key key) {
         return LISTENERS.remove(key);
     }
 
@@ -57,7 +55,7 @@ public final class ChannelInitializeListenerHolder {
      *
      * @return immutable map of registered initialization listeners
      */
-    public static @NotNull Map<Key, ChannelInitializeListener> getListeners() {
+    public static Map<Key, ChannelInitializeListener> getListeners() {
         return IMMUTABLE_VIEW;
     }
 
@@ -66,7 +64,7 @@ public final class ChannelInitializeListenerHolder {
      *
      * @param channel channel
      */
-    public static void callListeners(@NotNull Channel channel) {
+    public static void callListeners(Channel channel) {
         for (ChannelInitializeListener listener : LISTENERS.values()) {
             listener.afterInitChannel(channel);
         }

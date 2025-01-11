@@ -1,14 +1,13 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import java.util.List;
 
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
-
-import java.util.List;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 // CraftBukkit end
 
 public class TileEntityFurnace extends TileEntityContainer implements IUpdatePlayerListBox, IWorldInventory {
@@ -207,7 +206,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
                 if (!this.isBurning() && this.cookTime > 0) {
                     this.cookTime = MathHelper.clamp(this.cookTime - 2, 0, this.cookTimeTotal);
                 }
-            } else if(this.items[1] != null && this.items[1].getItem() != Items.BUCKET) { // MinetickMod
+            } else {
                 // CraftBukkit start - Handle multiple elapsed ticks
                 if (this.burnTime <= 0 && this.canBurn()) { // CraftBukkit - == to <=
                     CraftItemStack fuel = CraftItemStack.asCraftMirror(this.items[1]);

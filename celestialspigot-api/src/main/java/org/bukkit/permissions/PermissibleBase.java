@@ -1,6 +1,5 @@
 package org.bukkit.permissions;
 
-import com.kaydeesea.spigot.CelestialBridge;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -16,11 +14,10 @@ import org.bukkit.plugin.Plugin;
  * Base Permissible for use in any Permissible object via proxy or extension
  */
 public class PermissibleBase implements Permissible {
-
     private ServerOperator opable = null;
     private Permissible parent = this;
-    private final List<PermissionAttachment> attachments = new LinkedList<>();
-    private final Map<String, PermissionAttachmentInfo> permissions = new HashMap<>();
+    private final List<PermissionAttachment> attachments = new LinkedList<PermissionAttachment>();
+    private final Map<String, PermissionAttachmentInfo> permissions = new HashMap<String, PermissionAttachmentInfo>();
 
     public PermissibleBase(ServerOperator opable) {
         this.opable = opable;
@@ -76,16 +73,10 @@ public class PermissibleBase implements Permissible {
         } else {
             Permission perm = Bukkit.getServer().getPluginManager().getPermission(name);
 
-            boolean isOp = isOp();
-
-            if (CelestialBridge.disableOpPermissions) {
-                isOp = false;
-            }
-
             if (perm != null) {
-                return perm.getDefault().getValue(isOp);
+                return perm.getDefault().getValue(isOp());
             } else {
-                return Permission.DEFAULT_PERMISSION.getValue(isOp);
+                return Permission.DEFAULT_PERMISSION.getValue(isOp());
             }
         }
     }
@@ -100,14 +91,7 @@ public class PermissibleBase implements Permissible {
         if (isPermissionSet(name)) {
             return permissions.get(name).getValue();
         }
-
-        boolean isOp = isOp();
-
-        if (CelestialBridge.disableOpPermissions) {
-            isOp = false;
-        }
-
-        return perm.getDefault().getValue(isOp);
+        return perm.getDefault().getValue(isOp());
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {

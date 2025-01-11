@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent; // CraftBukkit
 
 public abstract class EntityMonster extends EntityCreature implements IMonster {
 
@@ -107,17 +107,20 @@ public abstract class EntityMonster extends EntityCreature implements IMonster {
         if (this.world.b(EnumSkyBlock.SKY, blockposition) > this.random.nextInt(32)) {
             return false;
         } else {
-            int i = this.world.getLightLevel(blockposition);
+            // PandaSpigot start
+            // int i = this.world.getLightLevel(blockposition);
+            boolean passes;
+            // PandaSpigot end
 
             if (this.world.R()) {
                 int j = this.world.ab();
 
                 this.world.c(10);
-                i = this.world.getLightLevel(blockposition);
+                passes = !this.world.isLightLevel(blockposition, this.random.nextInt(8)); // PandaSpigot
                 this.world.c(j);
-            }
+            } else { passes = !this.world.isLightLevel(blockposition, this.random.nextInt(8)); } // PandaSpigot
 
-            return i <= this.random.nextInt(8);
+            return passes; // PandaSpigot
         }
     }
 

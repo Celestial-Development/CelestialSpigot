@@ -1,22 +1,20 @@
 package net.minecraft.server;
 
+import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-
-import java.util.Iterator;
+import org.bukkit.event.player.PlayerPickupItemEvent; // CraftBukkit
 
 public class EntityItem extends Entity {
 
     private static final Logger b = LogManager.getLogger();
-    public int age;
+    private int age;
     public int pickupDelay;
     private int e;
     private String f;
     private String g;
     public float a;
     private int lastTick = MinecraftServer.currentTick; // CraftBukkit
-    public Entity owner; // Paper
 
     public EntityItem(World world, double d0, double d1, double d2) {
         super(world);
@@ -302,11 +300,6 @@ public class EntityItem extends Entity {
 
     public void d(EntityHuman entityhuman) {
         if (!this.world.isClientSide) {
-            /*
-            if (!((EntityPlayer) entityhuman).getBukkitEntity().canSeeEntity(this.getBukkitEntity())){
-                return;
-            }
-            */
             ItemStack itemstack = this.getItemStack();
             int i = itemstack.count;
 
@@ -319,11 +312,21 @@ public class EntityItem extends Entity {
                 PlayerPickupItemEvent event = new PlayerPickupItemEvent((org.bukkit.entity.Player) entityhuman.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
                 // event.setCancelled(!entityhuman.canPickUpLoot); TODO
                 this.world.getServer().getPluginManager().callEvent(event);
-                itemstack.count = canHold + remaining;
+                //itemstack.count = canHold + remaining; // PandaSpigot - move down after new event
 
                 if (event.isCancelled()) {
                     return;
                 }
+                // PandaSpigot start - EntityPickupItemEvent
+                // Call newer event afterwards
+                org.bukkit.event.entity.EntityPickupItemEvent entityEvent = new org.bukkit.event.entity.EntityPickupItemEvent(entityhuman.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
+                // event.setCancelled(!entityhuman.canPickUpLoot); TODO
+                this.world.getServer().getPluginManager().callEvent(entityEvent);
+                if (entityEvent.isCancelled()) {
+                    return;
+                }
+                itemstack.count = canHold + remaining;
+                // PandaSpigot end
 
                 // Possibly < 0; fix here so we do not have to modify code below
                 this.pickupDelay = 0;

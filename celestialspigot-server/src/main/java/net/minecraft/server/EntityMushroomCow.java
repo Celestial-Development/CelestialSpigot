@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent; // CraftBukkit
 
 public class EntityMushroomCow extends EntityCow {
 

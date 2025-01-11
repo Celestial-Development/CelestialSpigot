@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-
 import java.util.List;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public abstract class EntityFireball extends Entity {
 
@@ -56,7 +56,7 @@ public abstract class EntityFireball extends Entity {
         d0 += this.random.nextGaussian() * 0.4D;
         d1 += this.random.nextGaussian() * 0.4D;
         d2 += this.random.nextGaussian() * 0.4D;
-        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         this.dirX = d0 / d3 * 0.1D;
         this.dirY = d1 / d3 * 0.1D;
@@ -126,12 +126,21 @@ public abstract class EntityFireball extends Entity {
                 movingobjectposition = new MovingObjectPosition(entity);
             }
 
+            // PandaSpigot start - Call ProjectileCollideEvent
+            if (movingobjectposition != null && movingobjectposition.entity != null) {
+                com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileCollideEvent(this, movingobjectposition);
+                if (event.isCancelled()) {
+                    movingobjectposition = null;
+                }
+            }
+            // PandaSpigot end
+
             if (movingobjectposition != null) {
                 this.a(movingobjectposition);
 
                 // CraftBukkit start - Fire ProjectileHitEvent
                 if (this.dead) {
-                    CraftEventFactory.callProjectileHitEvent(this);
+                    CraftEventFactory.callProjectileHitEvent(this, movingobjectposition); // PandaSpigot - movingobjectposition
                 }
                 // CraftBukkit end
             }
@@ -139,7 +148,7 @@ public abstract class EntityFireball extends Entity {
             this.locX += this.motX;
             this.locY += this.motY;
             this.locZ += this.motZ;
-            float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            float f1 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
             this.yaw = (float) (MathHelper.b(this.motZ, this.motX) * 180.0D / 3.1415927410125732D) + 90.0F;
 

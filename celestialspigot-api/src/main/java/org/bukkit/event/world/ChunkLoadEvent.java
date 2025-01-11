@@ -10,8 +10,6 @@ public class ChunkLoadEvent extends ChunkEvent {
     private static final HandlerList handlers = new HandlerList();
     private final boolean newChunk;
 
-    private boolean cancel = false;
-
     public ChunkLoadEvent(final Chunk chunk, final boolean newChunk) {
         super(chunk);
         this.newChunk = newChunk;

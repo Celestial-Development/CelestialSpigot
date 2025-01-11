@@ -70,7 +70,7 @@ public class BlockNetherWart extends BlockPlant {
         return ((Integer) iblockdata.get(BlockNetherWart.AGE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockNetherWart.AGE});
     }
 }

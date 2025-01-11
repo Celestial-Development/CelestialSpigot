@@ -1,54 +1,59 @@
 package org.bukkit.plugin;
 
-import com.google.common.collect.ImmutableSet;
-import lombok.Getter;
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommandYamlParser;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.event.*;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.FileUtil;
-import com.kaydeesea.spigot.asm.ASMEventBus;
-import com.kaydeesea.spigot.asm.ASMEventHandler;
-import com.kaydeesea.spigot.util.JavaUtil;
+
+import com.google.common.collect.ImmutableSet;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerEventException;
 import org.github.paperspigot.exception.ServerPluginEnableDisableException;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Handles all plugin management from the Server
  */
-public class SimplePluginManager implements PluginManager {
+public final class SimplePluginManager implements PluginManager {
     private final Server server;
     private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
     private final List<Plugin> plugins = new ArrayList<Plugin>();
-    @Getter
     private final Map<String, Plugin> lookupNames = new HashMap<String, Plugin>();
     private static File updateDirectory = null;
-    @Getter
     private final SimpleCommandMap commandMap;
     private final Map<String, Permission> permissions = new HashMap<String, Permission>();
     private final Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<Boolean, Set<Permission>>();
     private final Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<String, Map<Permissible, Boolean>>();
     private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();
     private boolean useTimings = false;
-    private ASMEventBus eventBus;
 
     public SimplePluginManager(Server instance, SimpleCommandMap commandMap) {
-        this.eventBus = new ASMEventBus();
-
         server = instance;
         this.commandMap = commandMap;
 
@@ -99,6 +104,11 @@ public class SimplePluginManager implements PluginManager {
      * @return A list of all plugins loaded
      */
     public Plugin[] loadPlugins(File directory) {
+        // PandaSpigot start - extra jars
+        return this.loadPlugins(directory, java.util.Collections.emptyList());
+    }
+    public Plugin[] loadPlugins(File directory, List<File> extraPluginJars) {
+        // PandaSpigot end
         Validate.notNull(directory, "Directory cannot be null");
         Validate.isTrue(directory.isDirectory(), "Directory must be a directory");
 
@@ -115,7 +125,11 @@ public class SimplePluginManager implements PluginManager {
         Map<String, Collection<String>> softDependencies = new HashMap<String, Collection<String>>();
 
         // This is where it figures out all possible plugins
-        for (File file : directory.listFiles()) {
+        // PandaSpigot start - extra jars
+        List<File> pluginJars = new ArrayList<>(java.util.Arrays.asList(directory.listFiles()));
+        pluginJars.addAll(extraPluginJars);
+        for (File file : pluginJars) {
+        // PandaSpigot end
             PluginLoader loader = null;
             for (Pattern filter : filters) {
                 Matcher match = filter.matcher(file.getName());
@@ -131,7 +145,7 @@ public class SimplePluginManager implements PluginManager {
                 description = loader.getPluginDescription(file);
                 String name = description.getName();
                 if (name.equalsIgnoreCase("bukkit") || name.equalsIgnoreCase("minecraft") || name.equalsIgnoreCase("mojang")) {
-                    server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "': Restricted Name");
+                    server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "': Restricted Name"); // PandaSpigot
                     continue;
                 } else if (description.rawName.indexOf(' ') != -1) {
                     server.getLogger().warning(String.format(
@@ -141,7 +155,7 @@ public class SimplePluginManager implements PluginManager {
                         ));
                 }
             } catch (InvalidDescriptionException ex) {
-                server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
+                server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // PandaSpigot
                 continue;
             }
 
@@ -152,7 +166,7 @@ public class SimplePluginManager implements PluginManager {
                     description.getName(),
                     file.getPath(),
                     replacedFile.getPath(),
-                    directory.getPath()
+                    file.getParentFile().getPath() // PandaSpigot
                     ));
             }
 
@@ -213,7 +227,7 @@ public class SimplePluginManager implements PluginManager {
 
                             server.getLogger().log(
                                 Level.SEVERE,
-                                "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'",
+                                "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", // PandaSpigot
                                 new UnknownDependencyException(dependency));
                             break;
                         }
@@ -250,7 +264,7 @@ public class SimplePluginManager implements PluginManager {
                         loadedPlugins.add(plugin);
                         continue;
                     } catch (InvalidPluginException ex) {
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
+                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // PandaSpigot
                     }
                 }
             }
@@ -274,7 +288,7 @@ public class SimplePluginManager implements PluginManager {
                             loadedPlugins.add(plugin);
                             break;
                         } catch (InvalidPluginException ex) {
-                            server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
+                            server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "'", ex); // PandaSpigot
                         }
                     }
                 }
@@ -287,7 +301,7 @@ public class SimplePluginManager implements PluginManager {
                     while (failedPluginIterator.hasNext()) {
                         File file = failedPluginIterator.next();
                         failedPluginIterator.remove();
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "': circular dependency detected");
+                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + file.getParentFile().getPath() + "': circular dependency detected"); // PandaSpigot
                     }
                 }
             }
@@ -311,7 +325,7 @@ public class SimplePluginManager implements PluginManager {
     public synchronized Plugin loadPlugin(File file) throws InvalidPluginException, UnknownDependencyException {
         Validate.notNull(file, "File cannot be null");
 
-        checkUpdate(file);
+        file = checkUpdate(file); // PandaSpigot - update the reference in case checkUpdate renamed it
 
         Set<Pattern> filters = fileAssociations.keySet();
         Plugin result = null;
@@ -335,16 +349,54 @@ public class SimplePluginManager implements PluginManager {
         return result;
     }
 
-    private void checkUpdate(File file) {
+    // PandaSpigot start - Update Folder Uses Plugin Name to replace
+    /**
+     * Replaces a plugin with a plugin of the same plugin name in the update folder.
+     * @param file
+     * @throws InvalidPluginException
+     */
+    private File checkUpdate(File file) throws InvalidPluginException {
         if (updateDirectory == null || !updateDirectory.isDirectory()) {
-            return;
+            return file;
         }
-
-        File updateFile = new File(updateDirectory, file.getName());
-        if (updateFile.isFile() && FileUtil.copy(updateFile, file)) {
-            updateFile.delete();
+        PluginLoader pluginLoader = getPluginLoader(file);
+        try {
+            String pluginName = pluginLoader.getPluginDescription(file).getName();
+            for (File updateFile : updateDirectory.listFiles()) {
+                if (!updateFile.isFile()) continue;
+                PluginLoader updatePluginLoader = getPluginLoader(updateFile);
+                if (updatePluginLoader == null) continue;
+                String updatePluginName;
+                try {
+                    updatePluginName = updatePluginLoader.getPluginDescription(updateFile).getName();
+                    // We failed to load this data for some reason, so, we'll skip over this
+                } catch (InvalidDescriptionException ex) {
+                    continue;
+                }
+                if (!pluginName.equals(updatePluginName)) continue;
+                if (!FileUtil.copy(updateFile, file)) continue;
+                File newName = new File(file.getParentFile(), updateFile.getName());
+                file.renameTo(newName);
+                updateFile.delete();
+                return newName;
+            }
         }
+        catch (InvalidDescriptionException e) {
+            throw new InvalidPluginException(e);
+        }
+        return file;
     }
+    private PluginLoader getPluginLoader(File file) {
+        Set<Pattern> filters = fileAssociations.keySet();
+        for (Pattern filter : filters) {
+            Matcher match = filter.matcher(file.getName());
+            if (match.find()) {
+                return fileAssociations.get(filter);
+            }
+        }
+        return null;
+    }
+    // PandaSpigot end
 
     /**
      * Checks if the given plugin is loaded and returns it when applicable
@@ -483,7 +535,6 @@ public class SimplePluginManager implements PluginManager {
      *
      * @param event Event details
      */
-    @Override
     public void callEvent(Event event) {
         if (event.isAsynchronous()) {
             if (Thread.holdsLock(this)) {
@@ -492,12 +543,10 @@ public class SimplePluginManager implements PluginManager {
             if (server.isPrimaryThread()) {
                 throw new IllegalStateException(event.getEventName() + " cannot be triggered asynchronously from primary server thread.");
             }
-            // Dispatch asynchronously using ASM event bus
-            eventBus.dispatchEvent(event);
+            fireEvent(event);
         } else {
             synchronized (this) {
-                // Dispatch synchronously using ASM event bus
-                eventBus.dispatchEvent(event);
+                fireEvent(event);
             }
         }
     }
@@ -538,25 +587,15 @@ public class SimplePluginManager implements PluginManager {
         }
     }
 
-    @Override
     public void registerEvents(Listener listener, Plugin plugin) {
         if (!plugin.isEnabled()) {
             throw new IllegalPluginAccessException("Plugin attempted to register " + listener + " while not enabled");
         }
 
-        // Iterate through all methods in the listener class to find those annotated with @EventHandler
-        for (Method method : listener.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(EventHandler.class)) {
-                // Get the event type from the method's parameter, cast to Event class
-                Class<? extends Event> eventType = (Class<? extends Event>) method.getParameterTypes()[0];
-
-                // Generate an ASM event handler for the method
-                ASMEventHandler handler = eventBus.generateHandler(listener, method, eventType);
-
-                // Register the handler with the event bus
-                eventBus.registerListener(listener, eventType, handler);
-            }
+        for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry : plugin.getPluginLoader().createRegisteredListeners(listener, plugin).entrySet()) {
+            getEventListeners(getRegistrationClass(entry.getKey())).registerAll(entry.getValue());
         }
+
     }
 
     public void registerEvent(Class<? extends Event> event, Listener listener, EventPriority priority, EventExecutor executor, Plugin plugin) {
@@ -758,5 +797,4 @@ public class SimplePluginManager implements PluginManager {
     public void useTimings(boolean use) {
         co.aikar.timings.Timings.setTimingsEnabled(use); // Spigot
     }
-
 }

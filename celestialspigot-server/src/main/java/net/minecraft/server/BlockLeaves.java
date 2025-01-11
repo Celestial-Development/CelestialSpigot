@@ -1,10 +1,9 @@
 package net.minecraft.server;
 
-import com.kaydeesea.spigot.CelestialConfig;
-import com.kaydeesea.spigot.CelestialSpigot;
-import org.bukkit.event.block.LeavesDecayEvent;
-
 import java.util.Random;
+
+import com.kaydeesea.spigot.CelestialSpigot;
+import org.bukkit.event.block.LeavesDecayEvent; // CraftBukkit
 
 public abstract class BlockLeaves extends BlockTransparent {
 
@@ -71,7 +70,7 @@ public abstract class BlockLeaves extends BlockTransparent {
                     for (k1 = -b0; k1 <= b0; ++k1) {
                         for (l1 = -b0; l1 <= b0; ++l1) {
                             for (i2 = -b0; i2 <= b0; ++i2) {
-                                Block block = world.getType(blockposition_mutableblockposition.c(j + k1, k + l1, l + i2)).getBlock();
+                                Block block = world.getTypeIfLoaded(blockposition_mutableblockposition.c(j + k1, k + l1, l + i2)).getBlock(); // PandaSpigot - Use getTypeIfLoaded
 
                                 if (block != Blocks.LOG && block != Blocks.LOG2) {
                                     if (block.getMaterial() == Material.LEAVES) {

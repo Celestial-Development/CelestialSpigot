@@ -1,7 +1,10 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
+
+// CraftBukkit start
 import org.bukkit.craftbukkit.util.BlockStateListPopulator;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 // CraftBukkit end
 
@@ -126,7 +129,7 @@ public class BlockPumpkin extends BlockDirectional {
         return ((EnumDirection) iblockdata.get(BlockPumpkin.FACING)).b();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPumpkin.FACING});
     }
 

@@ -191,7 +191,7 @@ public class BlockFlowerPot extends BlockContainer {
         return new TileEntityFlowerPot(Item.getItemOf((Block) object), j);
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockFlowerPot.CONTENTS, BlockFlowerPot.LEGACY_DATA});
     }
 

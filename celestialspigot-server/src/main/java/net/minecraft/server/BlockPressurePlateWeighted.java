@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
 
 public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
 
@@ -30,7 +30,6 @@ public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
 
             if (entity instanceof EntityHuman) {
                 cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-//                cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null);
             } else {
                 cancellable = new EntityInteractEvent(entity.getBukkitEntity(), world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
                 world.getServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
@@ -74,7 +73,7 @@ public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
         return ((Integer) iblockdata.get(BlockPressurePlateWeighted.POWER)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPressurePlateWeighted.POWER});
     }
 }

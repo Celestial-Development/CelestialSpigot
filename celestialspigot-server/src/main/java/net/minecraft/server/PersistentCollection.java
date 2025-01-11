@@ -2,9 +2,18 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.bukkit.Bukkit;
+import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -178,15 +187,4 @@ public class PersistentCollection {
             return oshort.shortValue();
         }
     }
-
-    // MinetickMod start
-    public void removeTrackedPlayer(EntityHuman entityhuman) {
-        for(Object o: this.c) {
-            if(o instanceof WorldMap) {
-                WorldMap map = (WorldMap) o;
-                map.untrackPlayer(entityhuman);
-            }
-        }
-    }
-    // MinetickMod end
 }

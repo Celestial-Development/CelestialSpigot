@@ -90,7 +90,7 @@ public final class CraftItemStack extends ItemStack {
         return new CraftItemStack(CraftMagicNumbers.getMaterial(item), amount, (short) 0, null);
     }
 
-    net.minecraft.server.ItemStack handle;
+    public net.minecraft.server.ItemStack handle; // PandaSpigot - public
 
     /**
      * Mirror

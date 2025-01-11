@@ -3,28 +3,24 @@ package net.minecraft.server;
 import java.io.IOException;
 
 public class PacketPlayOutKeepAlive implements Packet<PacketListenerPlayOut> {
+
     private int a;
 
-    public PacketPlayOutKeepAlive() {
+    public PacketPlayOutKeepAlive() {}
+
+    public PacketPlayOutKeepAlive(int i) {
+        this.a = i;
     }
 
-    public PacketPlayOutKeepAlive(int var1) {
-        this.a = var1;
+    public void a(PacketListenerPlayOut packetlistenerplayout) {
+        packetlistenerplayout.a(this);
     }
 
-    public void a(PacketListenerPlayOut var1) {
-        var1.a(this);
+    public void a(PacketDataSerializer packetdataserializer) throws IOException {
+        this.a = packetdataserializer.e();
     }
 
-    public void a(PacketDataSerializer var1) throws IOException {
-        this.a = var1.e();
-    }
-
-    public void b(PacketDataSerializer var1) throws IOException {
-        var1.b(this.a);
-    }
-
-    public int getA() {
-        return a;
+    public void b(PacketDataSerializer packetdataserializer) throws IOException {
+        packetdataserializer.b(this.a);
     }
 }

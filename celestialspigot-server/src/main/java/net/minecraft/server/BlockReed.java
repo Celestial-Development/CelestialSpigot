@@ -110,7 +110,7 @@ public class BlockReed extends Block {
         return ((Integer) iblockdata.get(BlockReed.AGE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockReed.AGE});
     }
 }

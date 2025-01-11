@@ -5,18 +5,36 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
-import org.apache.commons.io.IOUtils;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import org.apache.commons.io.IOUtils;
 
 public class UserCache {
 
@@ -63,19 +81,23 @@ public class UserCache {
             }
         };
 
-        minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
-        if (!minecraftserver.getOnlineMode() && agameprofile[0] == null) {
-            UUID uuid = EntityHuman.a(new GameProfile(null, s));
+        // PandaSpigot start - Handle via setting
+
+            minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
+
+        // PandaSpigot end
+            UUID uuid = EntityHuman.a(new GameProfile((UUID) null, s));
             GameProfile gameprofile = new GameProfile(uuid, s);
 
             profilelookupcallback.onProfileLookupSucceeded(gameprofile);
-        }
+
 
         return agameprofile[0];
     }
 
+    public void saveProfile(GameProfile gameprofile) { this.a(gameprofile); } // PandaSpigot - OBFHELPER
     public void a(GameProfile gameprofile) {
-        this.a(gameprofile, null);
+        this.a(gameprofile, (Date) null);
     }
 
     private void a(GameProfile gameprofile, Date date) {
@@ -133,6 +155,12 @@ public class UserCache {
         if( !org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly ) this.c(); // Spigot - skip saving if disabled
         return usercache_usercacheentry == null ? null : usercache_usercacheentry.a();
     }
+    // PandaSpigot start
+    public GameProfile getProfileIfCached(String name) {
+        UserCache.UserCacheEntry entry = this.c.get(name.toLowerCase(Locale.ROOT));
+        return entry == null ? null : entry.b;
+    }
+    // PandaSpigot end
 
     public String[] a() {
         ArrayList arraylist = Lists.newArrayList(this.c.keySet());
@@ -140,6 +168,7 @@ public class UserCache {
         return (String[]) arraylist.toArray(new String[arraylist.size()]);
     }
 
+    public GameProfile getProfile(UUID uuid) { return this.a(uuid); } // PandaSpigot - OBFHELPER
     public GameProfile a(UUID uuid) {
         UserCache.UserCacheEntry usercache_usercacheentry = (UserCache.UserCacheEntry) this.d.get(uuid);
 
@@ -181,7 +210,7 @@ public class UserCache {
         } catch (FileNotFoundException filenotfoundexception) {
             ;
         // Spigot Start
-        } catch (com.google.gson.JsonSyntaxException ex) {
+        } catch (com.google.gson.JsonSyntaxException | NullPointerException ex) { // PandaSpigot - Add additional catch to handle NPE on usercache loading
             JsonList.a.warn( "Usercache.json is corrupted or has bad formatting. Deleting it to prevent further issues." );
             this.g.delete();
         // Spigot End

@@ -1,10 +1,9 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-
 import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 // CraftBukkit end
 
 public class EntityExperienceOrb extends Entity {
@@ -146,13 +145,13 @@ public class EntityExperienceOrb extends Entity {
     public void b(NBTTagCompound nbttagcompound) {
         nbttagcompound.setShort("Health", (short) ((byte) this.d));
         nbttagcompound.setShort("Age", (short) this.b);
-        nbttagcompound.setShort("Value", (short) this.value);
+        nbttagcompound.setInt("Value", this.value); // PandaSpigot - save as Integer
     }
 
     public void a(NBTTagCompound nbttagcompound) {
         this.d = nbttagcompound.getShort("Health") & 255;
         this.b = nbttagcompound.getShort("Age");
-        this.value = nbttagcompound.getShort("Value");
+        this.value = nbttagcompound.getInt("Value"); // PandaSpigot - save as Integer
     }
 
     public void d(EntityHuman entityhuman) {

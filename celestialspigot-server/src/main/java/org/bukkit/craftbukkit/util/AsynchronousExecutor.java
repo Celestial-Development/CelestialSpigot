@@ -24,7 +24,7 @@ import org.apache.commons.lang.Validate;
  * @param <T> The type of object you provide. This is created in stage 1, and passed to stage 2, 3, and returned if get() is called.
  * @param <C> The type of callback you provide. You may register many of these to be passed to the provider in stage 3, one at a time.
  * @param <E> A type of exception you may throw and expect to be handled by the main thread
- * @author Wesley Wolfe (setServerIp) 2012, 2014
+ * @author Wesley Wolfe (c) 2012, 2014
  */
 public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
 

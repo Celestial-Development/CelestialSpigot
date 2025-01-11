@@ -17,7 +17,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
     public String shooterName;
     private int i;
     private int ar;
-    Boolean healPotion;
 
     public EntityProjectile(World world) {
         super(world);
@@ -60,16 +59,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
     }
 
     public void shoot(double d0, double d1, double d2, float f, float f1) {
-        /*
-        if (this instanceof EntityPotion && this.shooter.isSprinting()) {
-            Player player = (Player) this.shooter.getBukkitEntity();
-            for (PotionEffect effect : player.getActivePotionEffects()) {
-                if (effect.getType().equals(PotionEffectType.SPEED)) {
-                    f += (effect.getAmplifier() + 1) * 0.0415F;
-                }
-            }
-        } */
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
@@ -80,11 +70,10 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         d0 *= (double) f;
         d1 *= (double) f;
         d2 *= (double) f;
-
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -140,11 +129,8 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
                 if (o.ad() && (o != entityliving || this.ar >= 5)) {
                     float f = 0.3F;
-                    AxisAlignedBB axisalignedbb = o.getBoundingBox().grow(f, f, f);
+                    AxisAlignedBB axisalignedbb = o.getBoundingBox().grow((double) f, (double) f, (double) f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
-                    if (healPotion && CelestialSpigot.INSTANCE.getConfig().isSmoothHealPotions() && movingobjectposition1 == null && o == entityliving && ticksLived % 3 == 0 && !o.inWater && !o.ab() && !o.isSneaking()) {
-                        movingobjectposition1 = new MovingObjectPosition(o);
-                    }
                     if (movingobjectposition1 != null) {
                         double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
 
@@ -169,6 +155,15 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         }
         // PaperSpigot end
 
+        // PandaSpigot start - Call ProjectileCollideEvent
+        if (movingobjectposition != null && movingobjectposition.entity != null) {
+            com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileCollideEvent(this, movingobjectposition);
+            if (event.isCancelled()) {
+                movingobjectposition = null;
+            }
+        }
+        // PandaSpigot end
+
         if (movingobjectposition != null) {
             if (movingobjectposition.type == MovingObjectPosition.EnumMovingObjectType.BLOCK && this.world.getType(movingobjectposition.a()).getBlock() == Blocks.PORTAL) {
                 this.d(movingobjectposition.a());
@@ -176,7 +171,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                 this.a(movingobjectposition);
                 // CraftBukkit start
                 if (this.dead) {
-                    org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this);
+                    org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, movingobjectposition); // PandaSpigot - movingobjectposition
                 }
                 // CraftBukkit end
             }
@@ -185,7 +180,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.locX += this.motX;
         this.locY += this.motY;
         this.locZ += this.motZ;
-        float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+        float f1 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
         this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 

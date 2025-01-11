@@ -1,19 +1,26 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.util.CraftMagicNumbers;
-import org.github.paperspigot.exception.ServerInternalException;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicInteger; // PaperSpigot
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists; // CraftBukkit
+import org.bukkit.Bukkit; // CraftBukkit
+import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+import org.github.paperspigot.event.ServerExceptionEvent;
+import org.github.paperspigot.exception.ServerInternalException;
 
 public class Chunk {
 
@@ -122,6 +129,8 @@ public class Chunk {
     }
     // CraftBukkit end
 
+    private final ChunkCoordIntPair chunkCoords; // PandaSpigot
+
     public Chunk(World world, int i, int j) {
         this.sections = new ChunkSection[16];
         this.e = new byte[256];
@@ -147,6 +156,7 @@ public class Chunk {
         if (!(this instanceof EmptyChunk)) {
             this.bukkitChunk = new org.bukkit.craftbukkit.CraftChunk(this);
         }
+        this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // PandaSpigot
     }
 
     public org.bukkit.Chunk bukkitChunk;
@@ -324,7 +334,7 @@ public class Chunk {
     private void a(int i, int j, int k, int l) {
         if (l > k && this.world.areChunksLoaded(new BlockPosition(i, 0, j), 16)) {
             for (int i1 = k; i1 < l; ++i1) {
-                this.world.updateLight(EnumSkyBlock.SKY, new BlockPosition(i, i1, j)); // PaperSpigot - Asynchronous lighting updates
+                this.world.updateBrightness(EnumSkyBlock.SKY, new BlockPosition(i, i1, j), this); // PaperSpigot - Asynchronous lighting updates // PandaSpigot - Optimize Light Recalculations
             }
 
             this.q = true;
@@ -491,11 +501,16 @@ public class Chunk {
     }
 
     // PaperSpigot start - Optimize getBlockData
+    // PandaSpigot start
     public IBlockData getBlockData(final BlockPosition blockposition) {
-        if (blockposition.getY() >= 0 && blockposition.getY() >> 4 < this.sections.length) {
-            ChunkSection chunksection = this.sections[blockposition.getY() >> 4];
+        return this.getBlockData(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+    }
+    public IBlockData getBlockData(int x, int y, int z) {
+        if (y >= 0 && y >> 4 < this.sections.length) {
+            ChunkSection chunksection = this.sections[y >> 4];
             if (chunksection != null) {
-                return chunksection.getType(blockposition.getX() & 15, blockposition.getY() & 15, blockposition.getZ() & 15);
+                return chunksection.getType(x & 15, y & 15, z & 15);
+    // PandaSpigot end
             }
         }
         return Blocks.AIR.getBlockData();
@@ -685,6 +700,7 @@ public class Chunk {
 
     }
 
+    public final int getLightSubtracted(BlockPosition blockposition, int i) { return this.a(blockposition, i); } // PandaSpigot - OBFHELPER
     public int a(BlockPosition blockposition, int i) {
         int j = blockposition.getX() & 15;
         int k = blockposition.getY();
@@ -715,7 +731,7 @@ public class Chunk {
         if (i != this.locX || j != this.locZ) {
             // CraftBukkit start
             Bukkit.getLogger().warning("Wrong location for " + entity + " in world '" + world.getWorld().getName() + "'!");
-            // Chunk.setServerIp.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.locX + ", " + this.locZ + "), " + entity, new Object[] { entity});
+            // Chunk.c.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.locX + ", " + this.locZ + "), " + entity, new Object[] { entity});
             Bukkit.getLogger().warning("Entity is at " + entity.locX + "," + entity.locZ + " (chunk " + i + "," + j + ") but was stored in chunk " + this.locX + "," + this.locZ);
             // CraftBukkit end
             entity.die();
@@ -774,7 +790,7 @@ public class Chunk {
             i = this.entitySlices.length - 1;
         }
 
-        this.entitySlices[i].remove(entity);
+        if (!this.entitySlices[i].remove(entity)) return; // PandaSpigot
         // PaperSpigot start - update counts
         if (entity instanceof EntityItem) {
             itemCounts[i]--;
@@ -977,7 +993,7 @@ public class Chunk {
                 Iterator iterator = this.entitySlices[k].iterator();
                 // PaperSpigot start - Don't search for inventories if we have none, and that is all we want
                 /*
-                 * We check if they want inventories by seeing if it is the static `IEntitySelector.setServerIp`
+                 * We check if they want inventories by seeing if it is the static `IEntitySelector.c`
                  *
                  * Make sure the inventory selector stays in sync.
                  * It should be the one that checks `var1 instanceof IInventory && var1.isAlive()`
@@ -1018,7 +1034,7 @@ public class Chunk {
 
         // PaperSpigot start
         int[] counts;
-        if (ItemStack.class.isAssignableFrom(oclass)) {
+        if (EntityItem.class.isAssignableFrom(oclass)) { // PandaSpigot
             counts = itemCounts;
         } else if (IInventory.class.isAssignableFrom(oclass)) {
             counts = inventoryEntityCounts;
@@ -1046,7 +1062,7 @@ public class Chunk {
             if (this.r && this.world.getTime() != this.lastSaved || this.q) {
                 return true;
             }
-        } else if (this.r && this.world.getTime() >= this.lastSaved + MinecraftServer.getServer().autosavePeriod * 4L) { // Spigot - Only save if we've passed 2 auto save intervals without modification
+        } else if (this.r && this.world.getTime() >= this.lastSaved + MinecraftServer.getServer().autosavePeriod * 4) { // Spigot - Only save if we've passed 2 auto save intervals without modification
             return true;
         }
 
@@ -1194,7 +1210,7 @@ public class Chunk {
     }
 
     public ChunkCoordIntPair j() {
-        return new ChunkCoordIntPair(this.locX, this.locZ);
+        return this.chunkCoords; // PandaSpigot
     }
 
     public boolean c(int i, int j) {

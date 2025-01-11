@@ -1,7 +1,5 @@
 package org.bukkit.craftbukkit.chunkio;
 
-import com.kaydeesea.spigot.CelestialConfig;
-import com.kaydeesea.spigot.CelestialSpigot;
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkProviderServer;
 import net.minecraft.server.ChunkRegionLoader;

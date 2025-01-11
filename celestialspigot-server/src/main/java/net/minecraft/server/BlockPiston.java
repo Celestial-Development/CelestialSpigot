@@ -1,12 +1,17 @@
 package net.minecraft.server;
 
+import java.util.List;
+
+// CraftBukkit start
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ListIterator;
+
 import com.google.common.collect.ImmutableList;
 import org.bukkit.craftbukkit.block.CraftBlock;
-import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
-
-import java.util.AbstractList;
-import java.util.List;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 // CraftBukkit end
 
 public class BlockPiston extends Block {
@@ -426,7 +431,7 @@ public class BlockPiston extends Block {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPiston.FACING, BlockPiston.EXTENDED});
     }
 

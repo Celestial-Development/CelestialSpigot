@@ -1,7 +1,11 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import org.bukkit.Bukkit;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+// CraftBukkit start
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.util.BlockStateListPopulator;
@@ -9,10 +13,7 @@ import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.bukkit.Bukkit;
 // CraftBukkit end
 
 public class EntityEnderDragon extends EntityInsentient implements IComplex, IMonster {
@@ -101,7 +102,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
             this.world.addParticle(EnumParticle.EXPLOSION_LARGE, this.locX + (double) f, this.locY + 2.0D + (double) f1, this.locZ + (double) f2, 0.0D, 0.0D, 0.0D, new int[0]);
         } else {
             this.n();
-            f = 0.2F / (float) (MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ) * 10.0F + 1.0F);
+            f = 0.2F / (MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ) * 10.0F + 1.0F);
             f *= (float) Math.pow(2.0D, this.motY);
             if (this.bx) {
                 this.bv += f * 0.5F;
@@ -200,7 +201,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
                     }
 
                     this.bb *= 0.8F;
-                    float f5 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ) * 1.0F + 1.0F;
+                    float f5 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ) * 1.0F + 1.0F;
                     double d10 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ) * 1.0D + 1.0D;
 
                     if (d10 > 40.0D) {
@@ -241,9 +242,9 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
                 this.bt.width = 4.0F;
                 f1 = (float) (this.b(5, 1.0F)[1] - this.b(10, 1.0F)[1]) * 10.0F / 180.0F * 3.1415927F;
                 f2 = MathHelper.cos(f1);
-                float f9 = (float) -MathHelper.sin(f1);
+                float f9 = -MathHelper.sin(f1);
                 float f10 = this.yaw * 3.1415927F / 180.0F;
-                float f11 = (float) MathHelper.sin(f10);
+                float f11 = MathHelper.sin(f10);
                 float f12 = MathHelper.cos(f10);
 
                 this.bo.t_();
@@ -261,7 +262,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
                 double[] adouble = this.b(5, 1.0F);
                 double[] adouble1 = this.b(0, 1.0F);
 
-                f3 = (float) MathHelper.sin(this.yaw * 3.1415927F / 180.0F - this.bb * 0.01F);
+                f3 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F - this.bb * 0.01F);
                 float f13 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F - this.bb * 0.01F);
 
                 this.bn.t_();
@@ -284,7 +285,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
 
                     double[] adouble2 = this.b(12 + j * 2, 1.0F);
                     float f14 = this.yaw * 3.1415927F / 180.0F + this.b(adouble2[0] - adouble[0]) * 3.1415927F / 180.0F * 1.0F;
-                    float f15 = (float) MathHelper.sin(f14);
+                    float f15 = MathHelper.sin(f14);
                     float f16 = MathHelper.cos(f14);
                     float f17 = 1.5F;
                     float f18 = (float) (j + 1) * 2.0F;
@@ -513,7 +514,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         }
 
         float f1 = this.yaw * 3.1415927F / 180.0F;
-        float f2 = (float) MathHelper.sin(f1);
+        float f2 = MathHelper.sin(f1);
         float f3 = MathHelper.cos(f1);
 
         this.a = this.locX + (double) (f2 * 5.0F) + (double) ((this.random.nextFloat() - 0.5F) * 2.0F);

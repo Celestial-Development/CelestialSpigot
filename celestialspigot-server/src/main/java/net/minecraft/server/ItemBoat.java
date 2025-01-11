@@ -18,14 +18,13 @@ public class ItemBoat extends Item {
         double d2 = entityhuman.lastZ + (entityhuman.locZ - entityhuman.lastZ) * (double) f;
         Vec3D vec3d = new Vec3D(d0, d1, d2);
         float f3 = MathHelper.cos(-f2 * 0.017453292F - 3.1415927F);
-        float f4 = (float) MathHelper.sin(-f2 * 0.017453292F - 3.1415927F);
+        float f4 = MathHelper.sin(-f2 * 0.017453292F - 3.1415927F);
         float f5 = -MathHelper.cos(-f1 * 0.017453292F);
-        float f6 = (float) MathHelper.sin(-f1 * 0.017453292F);
+        float f6 = MathHelper.sin(-f1 * 0.017453292F);
         float f7 = f4 * f5;
         float f8 = f3 * f5;
         double d3 = 5.0D;
         Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
-        //TODO: Fucking Raytrace but its a boat so who cares bro
         MovingObjectPosition movingobjectposition = world.rayTrace(vec3d, vec3d1, true);
 
         if (movingobjectposition == null) {
@@ -57,7 +56,6 @@ public class ItemBoat extends Item {
 
                     // CraftBukkit start - Boat placement
                     org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent(entityhuman, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockposition, movingobjectposition.direction, itemstack);
-//                    org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent(entityhuman, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockposition, itemstack);
 
                     if (event.isCancelled()) {
                         return itemstack;

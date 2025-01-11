@@ -1,11 +1,12 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.craftbukkit.util.BlockStateListPopulator;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import java.util.Iterator;
 import java.util.Random;
+
+// CraftBukkit start
+import org.bukkit.craftbukkit.util.BlockStateListPopulator;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 // CraftBukkit end
 
 public class BlockSkull extends BlockContainer {
@@ -238,7 +239,7 @@ public class BlockSkull extends BlockContainer {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockSkull.FACING, BlockSkull.NODROP});
     }
 

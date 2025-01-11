@@ -1,13 +1,12 @@
 package org.bukkit.util.noise;
 
-import org.bukkit.World;
-
 import java.util.Random;
+import org.bukkit.World;
 
 /**
  * Generates simplex-based noise.
  * <p>
- * This is a modified version of the freely published version in the spigot by
+ * This is a modified version of the freely published version in the paper by
  * Stefan Gustavson at
  * <a href="http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">
  * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf</a>

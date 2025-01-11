@@ -2,9 +2,13 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.bukkit.event.block.BlockRedstoneEvent;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Set;
 
-import java.util.*;
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockRedstoneWire extends Block {
 
@@ -368,7 +372,7 @@ public class BlockRedstoneWire extends Block {
         return ((Integer) iblockdata.get(BlockRedstoneWire.POWER)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockRedstoneWire.NORTH, BlockRedstoneWire.EAST, BlockRedstoneWire.SOUTH, BlockRedstoneWire.WEST, BlockRedstoneWire.POWER});
     }
 

@@ -1,11 +1,12 @@
 package net.minecraft.server;
 
-import org.bukkit.entity.Fish;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerFishEvent;
-
 import java.util.Arrays;
 import java.util.List;
+
+// CraftBukkit start
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Fish;
+import org.bukkit.event.player.PlayerFishEvent;
 // CraftBukkit end
 
 public class EntityFishingHook extends Entity {
@@ -66,7 +67,7 @@ public class EntityFishingHook extends Entity {
     protected void h() {}
 
     public void c(double d0, double d1, double d2, float f, float f1) {
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
@@ -80,7 +81,7 @@ public class EntityFishingHook extends Entity {
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -194,8 +195,17 @@ public class EntityFishingHook extends Entity {
             }
             // PaperSpigot end
 
+            // PandaSpigot start - Call ProjectileCollideEvent
+            if (movingobjectposition != null && movingobjectposition.entity != null) {
+                com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileCollideEvent(this, movingobjectposition);
+                if (event.isCancelled()) {
+                    movingobjectposition = null;
+                }
+            }
+            // PandaSpigot end
+
             if (movingobjectposition != null) {
-                org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this); // Craftbukkit - Call event
+                org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, movingobjectposition); // CraftBukkit - Call event // PandaSpigot - movingobjectposition
                 if (movingobjectposition.entity != null) {
                     if (movingobjectposition.entity.damageEntity(DamageSource.projectile(this, this.owner), 0.0F)) {
                         this.hooked = movingobjectposition.entity;
@@ -207,7 +217,7 @@ public class EntityFishingHook extends Entity {
 
             if (!this.as) {
                 this.move(this.motX, this.motY, this.motZ);
-                float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                float f1 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
                 this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 
@@ -292,7 +302,7 @@ public class EntityFishingHook extends Entity {
                             } else {
                                 this.ay = (float) ((double) this.ay + this.random.nextGaussian() * 4.0D);
                                 f3 = this.ay * 0.017453292F;
-                                f5 = (float) MathHelper.sin(f3);
+                                f5 = MathHelper.sin(f3);
                                 f4 = MathHelper.cos(f3);
                                 d8 = this.locX + (double) (f5 * (float) this.ax * 0.1F);
                                 d12 = (double) ((float) MathHelper.floor(this.getBoundingBox().b) + 1.0F);
@@ -359,6 +369,7 @@ public class EntityFishingHook extends Entity {
                 this.motY *= (double) f2;
                 this.motZ *= (double) f2;
                 this.setPosition(this.locX, this.locY, this.locZ);
+                if (this.ak) this.die(); // PandaSpigot - Prevent going through portals
             }
         }
     }

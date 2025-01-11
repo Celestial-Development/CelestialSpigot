@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +19,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
         this.b = chunk.locZ;
         this.d = flag;
         this.c = chunk.getChunkMap(flag, i); // PaperSpigot
+        chunk.world.spigotConfig.antiXrayInstance.obfuscateSync(chunk.locX, chunk.locZ, c.b, c.a, chunk.world);
     }
 
     public void a(PacketDataSerializer packetdataserializer) throws IOException {

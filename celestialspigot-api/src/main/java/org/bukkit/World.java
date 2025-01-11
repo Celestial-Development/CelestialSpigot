@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -104,14 +103,6 @@ public interface World extends PluginMessageRecipient, Metadatable {
      * @return Highest non-empty block
      */
     public Block getHighestBlockAt(Location location);
-
-    /**
-     * Finds an entity in this world that has the uuid.
-     *
-     * @param uuid
-     * @return
-     */
-    public Entity getEntity(UUID uuid);
 
     /**
      * Gets the {@link Chunk} at the given coordinates
@@ -324,16 +315,6 @@ public interface World extends PluginMessageRecipient, Metadatable {
      * @return ItemDrop entity created as a result of this method
      */
     public Item dropItemNaturally(Location location, ItemStack item);
-
-    /**
-     * Drops an item at the specified {@link Location} with a random offset
-     *
-     * @param location Location to drop the item
-     * @param item ItemStack to drop
-     * @param player Player dropping the item
-     * @return ItemDrop entity created as a result of this method
-     */
-    public Item dropItemNaturally(Location location, ItemStack item, Player player);
 
     /**
      * Creates an {@link Arrow} entity at the given {@link Location}
@@ -730,6 +711,26 @@ public interface World extends PluginMessageRecipient, Metadatable {
      *     {@link Entity} requested cannot be spawned
      */
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException;
+
+    // PandaSpigot start
+    /**
+     * Spawn an entity of a specific class at the given {@link Location}, with
+     * the supplied function run before the entity is added to the world.
+     * <br>
+     * Note that when the function is run, the entity will not be actually in
+     * the world. Any operation involving such as teleporting the entity is undefined
+     * until after this function returns.
+     *
+     * @param location the {@link Location} to spawn the entity at
+     * @param clazz the class of the {@link Entity} to spawn
+     * @param function the function to be run before the entity is spawned.
+     * @param <T> the class of the {@link Entity} to spawn
+     * @return an instance of the spawned {@link Entity}
+     * @throws IllegalArgumentException if either parameter is null or the
+     *     {@link Entity} requested cannot be spawned
+     */
+    public <T extends Entity> T spawn(Location location, Class<T> clazz, java.util.function.Consumer<T> function) throws IllegalArgumentException;
+    // PandaSpigot end
 
     /**
      * Spawn a {@link FallingBlock} entity at the given {@link Location} of

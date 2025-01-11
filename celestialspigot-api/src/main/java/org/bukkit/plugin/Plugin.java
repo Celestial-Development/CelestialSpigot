@@ -1,14 +1,15 @@
 package org.bukkit.plugin;
 
-import com.avaje.ebean.EbeanServer;
+import java.io.File;
+import java.io.InputStream;
+import java.util.logging.Logger;
+
 import org.bukkit.Server;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.generator.ChunkGenerator;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.logging.Logger;
+import com.avaje.ebean.EbeanServer;
 
 /**
  * Represents a Plugin
@@ -175,6 +176,7 @@ public interface Plugin extends TabExecutor {
      * @return Logger associated with this plugin
      */
     public Logger getLogger();
+
 
     /**
      * Returns the name of the plugin.

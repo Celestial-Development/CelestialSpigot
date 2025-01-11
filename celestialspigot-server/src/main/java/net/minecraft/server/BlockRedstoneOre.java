@@ -1,9 +1,10 @@
 package net.minecraft.server;
 
+import java.util.Random;
+
+// CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityInteractEvent;
-
-import java.util.Random;
 // CraftBukkit end
 
 public class BlockRedstoneOre extends Block {
@@ -34,7 +35,6 @@ public class BlockRedstoneOre extends Block {
         // super.a(world, blockposition, entity);
         if (entity instanceof EntityHuman) {
             org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-//            org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null);
             if (!event.isCancelled()) {
                 this.e(world, blockposition, entity); // add entity
                 super.a(world, blockposition, entity);

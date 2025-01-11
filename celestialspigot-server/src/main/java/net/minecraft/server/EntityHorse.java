@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
-
 import java.util.Iterator;
 import java.util.List;
+
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason; // CraftBukkit
 
 public class EntityHorse extends EntityAnimal implements IInventoryListener {
 
@@ -924,7 +924,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
                 this.m(true);
                 this.ai = true;
                 if (f1 > 0.0F) {
-                    float f2 = (float) MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
+                    float f2 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
                     float f3 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
 
                     this.motX += (double) (-0.4F * f2 * this.br);
@@ -950,7 +950,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
             this.aA = this.aB;
             double d0 = this.locX - this.lastX;
             double d1 = this.locZ - this.lastZ;
-            float f4 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
+            float f4 = MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
 
             if (f4 > 1.0F) {
                 f4 = 1.0F;
@@ -1237,7 +1237,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
     public void al() {
         super.al();
         if (this.bK > 0.0F) {
-            float f = (float) MathHelper.sin(this.aI * 3.1415927F / 180.0F);
+            float f = MathHelper.sin(this.aI * 3.1415927F / 180.0F);
             float f1 = MathHelper.cos(this.aI * 3.1415927F / 180.0F);
             float f2 = 0.7F * this.bK;
             float f3 = 0.15F * this.bK;

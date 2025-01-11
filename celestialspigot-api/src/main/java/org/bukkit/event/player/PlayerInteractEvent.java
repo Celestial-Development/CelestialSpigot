@@ -1,13 +1,13 @@
 package org.bukkit.event.player;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.Action;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Called when a player interacts with an object or air.
@@ -25,7 +25,6 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
     private Result useItemInHand;
 
     public PlayerInteractEvent(final Player who, final Action action, final ItemStack item, final Block clickedBlock, final BlockFace clickedFace) {
-//    public PlayerInteractEvent(final Player who, final Action action, final ItemStack item, final Block clickedBlock) {
         super(who);
         this.action = action;
         this.item = item;
@@ -139,7 +138,6 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
      *
      * @return BlockFace returns the face of the block that was clicked
      */
-
     public BlockFace getBlockFace() {
         return blockFace;
     }

@@ -1,6 +1,7 @@
 package org.bukkit.command.defaults;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.BanList;
@@ -10,7 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 @Deprecated
 public class BanCommand extends VanillaCommand {

@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import java.util.Random;
+
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason; // CraftBukkit
 
 public class BlockMonsterEggs extends Block {
 
@@ -72,7 +72,7 @@ public class BlockMonsterEggs extends Block {
         return ((BlockMonsterEggs.EnumMonsterEggVarient) iblockdata.get(BlockMonsterEggs.VARIANT)).a();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockMonsterEggs.VARIANT});
     }
 

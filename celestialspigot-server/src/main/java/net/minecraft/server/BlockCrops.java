@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-
 import java.util.Random;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement {
 
@@ -26,7 +26,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
 
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         super.b(world, blockposition, iblockdata, random);
-        if (world.getLightLevel(blockposition.up()) >= 9) {
+        if (world.isLightLevel(blockposition.up(), 9)) { // PandaSpigot - Use isLightLevel
             int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue();
 
             if (i < 7) {
@@ -153,7 +153,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
         return ((Integer) iblockdata.get(BlockCrops.AGE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockCrops.AGE});
     }
 }

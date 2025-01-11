@@ -31,7 +31,7 @@ public enum CelestialSpigot {
     @Setter
 	private LagCompensator lagCompensator;
 
-    public static String version = "1.2.0";
+	public static String version = "1.5.0";
     private final Set<PacketHandler> packetHandlers = new HashSet<>();
     private final Set<MovementHandler> movementHandlers = new HashSet<>();
 

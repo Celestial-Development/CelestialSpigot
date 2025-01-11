@@ -1,8 +1,5 @@
 package net.minecraft.server;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.block.BlockFromToEvent;
-
 import java.util.Iterator;
 import java.util.Random;
 
@@ -151,18 +148,13 @@ public abstract class BlockFluids extends Block {
             if (flag) {
                 Integer integer = (Integer) iblockdata.get(BlockFluids.LEVEL);
 
-                final org.bukkit.World bWorld = world.getWorld();
-                final org.bukkit.block.Block block2 = bWorld.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
-
                 if (integer.intValue() == 0) {
-                    Bukkit.getServer().getPluginManager().callEvent(new BlockFromToEvent(block2, block2));
                     world.setTypeUpdate(blockposition, Blocks.OBSIDIAN.getBlockData());
                     this.fizz(world, blockposition);
                     return true;
                 }
 
                 if (integer.intValue() > 0) { // PaperSpigot
-                    Bukkit.getServer().getPluginManager().callEvent(new BlockFromToEvent(block2, block2));
                     world.setTypeUpdate(blockposition, Blocks.COBBLESTONE.getBlockData());
                     this.fizz(world, blockposition);
                     return true;
@@ -194,7 +186,7 @@ public abstract class BlockFluids extends Block {
         return ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockFluids.LEVEL});
     }
 

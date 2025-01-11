@@ -1,6 +1,6 @@
 package org.bukkit.map;
 
-import java.awt.*;
+import java.awt.Image;
 
 /**
  * Represents a canvas for drawing to a map. Each canvas is associated with a

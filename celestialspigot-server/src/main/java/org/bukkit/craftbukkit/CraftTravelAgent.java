@@ -11,7 +11,7 @@ public class CraftTravelAgent extends PortalTravelAgent implements TravelAgent {
 
     public static TravelAgent DEFAULT = null;
 
-    private int searchRadius = 128;
+    private int searchRadius = a.paperSpigotConfig.portalSearchRadius; // PandaSpigot - Configurable portal search radius
     private int creationRadius = 16;
     private boolean canCreatePortal = true;
 
@@ -44,12 +44,13 @@ public class CraftTravelAgent extends PortalTravelAgent implements TravelAgent {
     @Override
     public Location findPortal(Location location) {
         PortalTravelAgent pta = ((CraftWorld) location.getWorld()).getHandle().getTravelAgent();
-        // MinetickMod start
+        // PandaSpigot start - Search proximity first and then do the larger search if the proximity search fails
+        // TODO: If a player sets the portal search radius to some value equal to or less than 10 we can use normal logic
         BlockPosition found = pta.findPortal(location.getX(), location.getY(), location.getZ(), 10);
         if (found == null) {
             found = pta.findPortal(location.getX(), location.getY(), location.getZ(), this.getSearchRadius());
         }
-        // MinetickMod end
+        // PandaSpigot end
         return found != null ? new Location(location.getWorld(), found.getX(), found.getY(), found.getZ(), location.getYaw(), location.getPitch()) : null;
     }
 

@@ -1,12 +1,13 @@
 package org.bukkit.potion;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collection;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Represents a minecraft potion

@@ -108,7 +108,7 @@ public class BlockSnow extends Block {
         return ((Integer) iblockdata.get(BlockSnow.LAYERS)).intValue() - 1;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockSnow.LAYERS});
     }
 }

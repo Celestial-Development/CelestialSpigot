@@ -5,7 +5,7 @@ import java.io.IOException;
 public class PacketPlayOutBlockChange implements Packet<PacketListenerPlayOut> {
 
     private BlockPosition a;
-    public IBlockData block; // CraftBukkit - public
+    public IBlockData block;
 
     public PacketPlayOutBlockChange() {}
 
@@ -26,9 +26,5 @@ public class PacketPlayOutBlockChange implements Packet<PacketListenerPlayOut> {
 
     public void a(PacketListenerPlayOut packetlistenerplayout) {
         packetlistenerplayout.a(this);
-    }
-
-    public BlockPosition getPosition() {
-        return a;
     }
 }

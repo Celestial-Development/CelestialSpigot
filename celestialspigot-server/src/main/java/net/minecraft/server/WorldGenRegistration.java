@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -126,7 +125,7 @@ public class WorldGenRegistration {
         private boolean h;
         private static final List<StructurePieceTreasure> i = Lists.newArrayList(new StructurePieceTreasure[] { new StructurePieceTreasure(Items.DIAMOND, 0, 1, 3, 3), new StructurePieceTreasure(Items.IRON_INGOT, 0, 1, 5, 10), new StructurePieceTreasure(Items.GOLD_INGOT, 0, 2, 7, 15), new StructurePieceTreasure(Items.EMERALD, 0, 1, 3, 2), new StructurePieceTreasure(Items.BONE, 0, 4, 6, 20), new StructurePieceTreasure(Items.ROTTEN_FLESH, 0, 3, 7, 16), new StructurePieceTreasure(Items.SADDLE, 0, 1, 1, 3), new StructurePieceTreasure(Items.IRON_HORSE_ARMOR, 0, 1, 1, 1), new StructurePieceTreasure(Items.GOLDEN_HORSE_ARMOR, 0, 1, 1, 1), new StructurePieceTreasure(Items.DIAMOND_HORSE_ARMOR, 0, 1, 1, 1)});
         private static final List<StructurePieceTreasure> j = Lists.newArrayList(new StructurePieceTreasure[] { new StructurePieceTreasure(Items.ARROW, 0, 2, 7, 30)});
-        private static WorldGenRegistration.WorldGenJungleTemple.WorldGenJungleTemple$WorldGenJungleTemplePiece k = new WorldGenRegistration.WorldGenJungleTemple.WorldGenJungleTemple$WorldGenJungleTemplePiece((WorldGenRegistration.SyntheticClass_1) null);
+        private static WorldGenRegistration.WorldGenJungleTemple.WorldGenJungleTemplePiece k = new WorldGenRegistration.WorldGenJungleTemple.WorldGenJungleTemplePiece((WorldGenRegistration.SyntheticClass_1) null);
 
         public WorldGenJungleTemple() {}
 
@@ -331,9 +330,9 @@ public class WorldGenRegistration {
             }
         }
 
-        static class WorldGenJungleTemple$WorldGenJungleTemplePiece extends StructurePiece.StructurePieceBlockSelector {
+        static class WorldGenJungleTemplePiece extends StructurePiece.StructurePieceBlockSelector {
 
-            private WorldGenJungleTemple$WorldGenJungleTemplePiece() {}
+            private WorldGenJungleTemplePiece() {}
 
             public void a(Random random, int i, int j, int k, boolean flag) {
                 if (random.nextFloat() < 0.4F) {
@@ -344,7 +343,7 @@ public class WorldGenRegistration {
 
             }
 
-            WorldGenJungleTemple$WorldGenJungleTemplePiece(WorldGenRegistration.SyntheticClass_1 worldgenregistration_syntheticclass_1) {
+            WorldGenJungleTemplePiece(WorldGenRegistration.SyntheticClass_1 worldgenregistration_syntheticclass_1) {
                 this();
             }
         }

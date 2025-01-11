@@ -35,31 +35,6 @@ public class CraftInventory implements Inventory {
         return inventory;
     }
 
-    @Override
-    public void removeAmount(Material material, int amount) {
-        int removed = 0;
-        for (int i = 0; i < this.getSize(); i++) {
-            if (removed >= amount) {
-                return;
-            }
-
-            ItemStack itemStack = this.getItem(i);
-            if (itemStack == null) {
-                continue;
-            }
-
-            if (itemStack.getType() == material) {
-                removed += itemStack.getAmount();
-                int newAmount = itemStack.getAmount() - amount;
-                if (newAmount <= 0) {
-                    this.setItem(i, null);
-                } else {
-                    itemStack.setAmount(newAmount);
-                }
-            }
-        }
-    }
-
     public int getSize() {
         return getInventory().getSize();
     }

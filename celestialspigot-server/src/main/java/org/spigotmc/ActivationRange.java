@@ -1,10 +1,36 @@
 package org.spigotmc;
 
-import com.kaydeesea.spigot.CelestialSpigot;
-
+import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.server.*;
+import java.util.Set;
+import net.minecraft.server.AxisAlignedBB;
+import net.minecraft.server.Chunk;
+import net.minecraft.server.Entity;
+import net.minecraft.server.EntityAmbient;
+import net.minecraft.server.EntityAnimal;
+import net.minecraft.server.EntityArrow;
+import net.minecraft.server.EntityComplexPart;
+import net.minecraft.server.EntityCreature;
+import net.minecraft.server.EntityCreeper;
+import net.minecraft.server.EntityEnderCrystal;
+import net.minecraft.server.EntityEnderDragon;
+import net.minecraft.server.EntityFallingBlock;
+import net.minecraft.server.EntityFireball;
+import net.minecraft.server.EntityFireworks;
+import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EntityLiving;
+import net.minecraft.server.EntityMonster;
+import net.minecraft.server.EntityProjectile;
+import net.minecraft.server.EntitySheep;
+import net.minecraft.server.EntitySlice;
+import net.minecraft.server.EntitySlime;
+import net.minecraft.server.EntityTNTPrimed;
+import net.minecraft.server.EntityVillager;
+import net.minecraft.server.EntityWeather;
+import net.minecraft.server.EntityWither;
+import net.minecraft.server.MathHelper;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.World;
 import co.aikar.timings.SpigotTimings;
 
 
@@ -41,6 +67,7 @@ public class ActivationRange
      * These entities are excluded from Activation range checks.
      *
      * @param entity
+     * @param world
      * @return boolean If it should always tick.
      */
     public static boolean initializeEntityActivationState(Entity entity, SpigotWorldConfig config)
@@ -72,16 +99,12 @@ public class ActivationRange
      *
      * @param world
      */
-    public static void activateEntities(World world) {
-        if (!CelestialSpigot.INSTANCE.getConfig().isEntityActivation()) {
-            return;
-        }
-
+    public static void activateEntities(World world)
+    {
         SpigotTimings.entityActivationCheckTimer.startTiming();
-
-	    final int miscActivationRange = world.spigotConfig.miscActivationRange;
-	    final int animalActivationRange = world.spigotConfig.animalActivationRange;
-	    final int monsterActivationRange = world.spigotConfig.monsterActivationRange;
+        final int miscActivationRange = world.spigotConfig.miscActivationRange;
+        final int animalActivationRange = world.spigotConfig.animalActivationRange;
+        final int monsterActivationRange = world.spigotConfig.monsterActivationRange;
 
         int maxRange = Math.max( monsterActivationRange, animalActivationRange );
         maxRange = Math.max( maxRange, miscActivationRange );
@@ -105,9 +128,12 @@ public class ActivationRange
             {
                 for ( int j1 = k; j1 <= l; ++j1 )
                 {
-                    if ( world.getWorld().isChunkLoaded( i1, j1 ) )
+                    // PandaSpigot start - Avoid Looking up the same chunk twice in same method
+                    Chunk chunk = world.getChunkIfLoaded( i1, j1 );
+                    if ( chunk != null )
                     {
-                        activateChunkEntities( world.getChunkAt( i1, j1 ) );
+                        activateChunkEntities( chunk );
+                    // PandaSpigot end
                     }
                 }
             }

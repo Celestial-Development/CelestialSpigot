@@ -1,7 +1,22 @@
 package net.minecraft.server;
 
+import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+// CraftBukkit start
+import java.util.Random;
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -9,17 +24,8 @@ import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.craftbukkit.util.LongHashSet;
 import org.bukkit.craftbukkit.util.LongObjectHashMap;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.PreChunkLoadEvent;
-import com.kaydeesea.spigot.CelestialSpigot;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 // CraftBukkit end
 
 public class ChunkProviderServer implements IChunkProvider {
@@ -28,13 +34,13 @@ public class ChunkProviderServer implements IChunkProvider {
     public LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
     public Chunk emptyChunk;
     public IChunkProvider chunkProvider;
-    public IChunkLoader chunkLoader; // KigPaper - private -> public
+    private IChunkLoader chunkLoader;
     public boolean forceChunkLoad = false; // CraftBukkit - true -> false
     public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>();
     public WorldServer world;
 
     public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, IChunkProvider ichunkprovider) {
-        this.emptyChunk = new EmptyChunk(worldserver, Integer.MIN_VALUE, Integer.MIN_VALUE); // MinetickMod
+        this.emptyChunk = new EmptyChunk(worldserver, Integer.MIN_VALUE, Integer.MIN_VALUE); // PandaSpigot - Occasional Client Side Unloading of 0,0 chunk
         this.world = worldserver;
         this.chunkLoader = ichunkloader;
         this.chunkProvider = ichunkprovider;
@@ -52,11 +58,12 @@ public class ChunkProviderServer implements IChunkProvider {
     }
 
     public void queueUnload(int i, int j) {
+        long key = LongHash.toLong(i, j); // PandaSpigot - Only create key once
         // PaperSpigot start - Asynchronous lighting updates
         if (CelestialSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
             return;
         }
-        Chunk chunk = chunks.get(LongHash.toLong(i, j));
+        Chunk chunk = chunks.get(key); // PandaSpigot - Reuse key
         if (chunk != null && chunk.world.paperSpigotConfig.useAsyncLighting && (chunk.pendingLightUpdates.get() > 0 || chunk.world.getTime() - chunk.lightUpdateTime < 20)) {
             return;
         }
@@ -77,7 +84,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 // CraftBukkit start
                 this.unloadQueue.add(i, j);
 
-                Chunk c = chunks.get(LongHash.toLong(i, j));
+                Chunk c = chunks.get(key); // PandaSpigot - Reuse key
                 if (c != null) {
                     c.mustSave = true;
                 }
@@ -87,7 +94,7 @@ public class ChunkProviderServer implements IChunkProvider {
             // CraftBukkit start
             this.unloadQueue.add(i, j);
 
-            Chunk c = chunks.get(LongHash.toLong(i, j));
+            Chunk c = chunks.get(key); // PandaSpigot - Reuse key
             if (c != null) {
                 c.mustSave = true;
             }
@@ -145,24 +152,11 @@ public class ChunkProviderServer implements IChunkProvider {
         return chunk;
     }
     public Chunk originalGetChunkAt(int i, int j) {
+        long key = LongHash.toLong(i, j); // PandaSpigot - Only create key once
         this.unloadQueue.remove(i, j);
-        Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
+        Chunk chunk = (Chunk) this.chunks.get(key); // PandaSpigot - Reuse key
         boolean newChunk = false;
         // CraftBukkit end
-
-        Server server = world.getServer();
-        if (server != null) {
-                /*
-                 * If it's a new world, the first few chunks are generated inside
-                 * the World constructor. We can't reliably alter that, so we have
-                 * no way of creating a CraftWorld/CraftServer at that point.
-                 */
-            PreChunkLoadEvent event = new PreChunkLoadEvent();
-            server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return null;
-            }
-        }
 
         if (chunk == null) {
             world.timings.syncChunkLoadTimer.startTiming(); // Spigot
@@ -186,11 +180,12 @@ public class ChunkProviderServer implements IChunkProvider {
                 newChunk = true; // CraftBukkit
             }
 
-            this.chunks.put(LongHash.toLong(i, j), chunk);
+            this.chunks.put(key, chunk); // PandaSpigot - Reuse key
             
             chunk.addEntities();
-
+            
             // CraftBukkit start
+            Server server = world.getServer();
             if (server != null) {
                 /*
                  * If it's a new world, the first few chunks are generated inside
@@ -244,8 +239,6 @@ public class ChunkProviderServer implements IChunkProvider {
         // CraftBukkit end
     }
 
-    Executor executor = Executors.newCachedThreadPool();
-
     public Chunk loadChunk(int i, int j) {
         if (this.chunkLoader == null) {
             return null;
@@ -264,8 +257,11 @@ public class ChunkProviderServer implements IChunkProvider {
 
                 return chunk;
             } catch (Exception exception) {
-                ChunkProviderServer.b.error("Couldn\'t load chunk", exception);
-                ChunkProviderServer.b.error("Couldn't load chunk", exception);
+                // Paper start
+                String msg = "Couldn\'t load chunk";
+                ChunkProviderServer.b.error(msg, exception);
+                ServerInternalException.reportInternalException(exception);
+                // Paper end
                 return null;
             }
         }

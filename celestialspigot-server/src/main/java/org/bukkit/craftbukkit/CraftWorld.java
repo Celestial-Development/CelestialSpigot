@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import net.minecraft.server.*;
 
@@ -41,7 +39,6 @@ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.PoweredMinecart;
@@ -135,7 +132,6 @@ public class CraftWorld implements World {
                 callback.onLoad(cps.getChunkAt(x, z).bukkitChunk);
             }
         });
-        cps.getChunkAt(x, z, () -> callback.onLoad(cps.getChunkAt(x, z).bukkitChunk));
     }
     public void getChunkAtAsync(Block block, ChunkLoadCallback callback) {
         getChunkAtAsync(block.getX() >> 4, block.getZ() >> 4, callback);
@@ -273,18 +269,15 @@ public class CraftWorld implements World {
         return world.getPlayerChunkMap().isChunkInUse(x, z);
     }
 
-    Executor executor = Executors.newCachedThreadPool();
-
-    @Override
     public boolean loadChunk(int x, int z, boolean generate) {
-        org.spigotmc.AsyncCatcher.catchOp("chunk load"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp( "chunk load"); // Spigot
         chunkLoadCount++;
         if (generate) {
             // Use the default variant of loadChunk when generate == true.
             return world.chunkProviderServer.getChunkAt(x, z) != null;
         }
 
-        world.chunkProviderServer.unloadQueue.remove(LongHash.toLong(x, z)); // TacoSpigot - invoke LongHash directly
+        world.chunkProviderServer.unloadQueue.remove(x, z);
         net.minecraft.server.Chunk chunk = world.chunkProviderServer.chunks.get(LongHash.toLong(x, z));
 
         if (chunk == null) {
@@ -336,16 +329,11 @@ public class CraftWorld implements World {
         return world;
     }
 
-    public Item dropItem(Location loc, ItemStack item) {
-        return this.dropItem(loc, item, null);
-    }
-
-    public Item dropItem(Location loc, ItemStack item, net.minecraft.server.Entity owner) {
+    public org.bukkit.entity.Item dropItem(Location loc, ItemStack item) {
         Validate.notNull(item, "Cannot drop a Null item.");
         Validate.isTrue(item.getTypeId() != 0, "Cannot drop AIR.");
         EntityItem entity = new EntityItem(world, loc.getX(), loc.getY(), loc.getZ(), CraftItemStack.asNMSCopy(item));
         entity.pickupDelay = 10;
-        entity.owner = owner;
         world.addEntity(entity);
         // TODO this is inconsistent with how Entity.getBukkitEntity() works.
         // However, this entity is not at the moment backed by a server entity class so it may be left.
@@ -374,19 +362,10 @@ public class CraftWorld implements World {
         }
         if (loc.getZ() >= Math.ceil(prevZ)) {
             loc.setZ(Math.ceil(prevZ - 0.01));
-            }
+        }
     }
 
-    @Override
-    public Item dropItemNaturally(Location location, ItemStack item, Player player) {
-        return dropItemNaturally(location, item, ((CraftPlayer) player).getHandle());
-    }
-
-    public Item dropItemNaturally(Location loc, ItemStack item) {
-        return dropItemNaturally(loc, item, (net.minecraft.server.Entity) null);
-    }
-
-    public Item dropItemNaturally(Location loc, ItemStack item, net.minecraft.server.Entity owner) {
+    public org.bukkit.entity.Item dropItemNaturally(Location loc, ItemStack item) {
         double xs = world.random.nextFloat() * 0.7F - 0.35D;
         double ys = world.random.nextFloat() * 0.7F - 0.35D;
         double zs = world.random.nextFloat() * 0.7F - 0.35D;
@@ -394,7 +373,7 @@ public class CraftWorld implements World {
         // Makes sure the new item is created within the block the location points to.
         // This prevents item spill in 1-block wide farms.
         randomLocationWithinBlock(loc, xs, ys, zs);
-        return dropItem(loc, item, owner);
+        return dropItem(loc, item);
     }
 
     public Arrow spawnArrow(Location loc, Vector velocity, float speed, float spread) {
@@ -639,17 +618,6 @@ public class CraftWorld implements World {
 
     public Block getHighestBlockAt(Location location) {
         return getHighestBlockAt(location.getBlockX(), location.getBlockZ());
-    }
-
-    // Kab - API Change
-    @Override
-    public Entity getEntity(UUID uuid){
-        for (Entity ent : getEntities()){
-            if(ent.getUniqueId() == uuid){
-                return ent;
-            }
-        }
-        return null;
     }
 
     public Biome getBiome(int x, int z) {
@@ -913,7 +881,14 @@ public class CraftWorld implements World {
     }
 
     public <T extends Entity> T spawn(Location location, Class<T> clazz) throws IllegalArgumentException {
-        return spawn(location, clazz, SpawnReason.CUSTOM);
+        // PandaSpigot start - function param
+        return spawn(location, clazz, null, SpawnReason.CUSTOM);
+    }
+
+    @Override
+    public <T extends Entity> T spawn(Location location, Class<T> clazz, java.util.function.Consumer<T> function) throws IllegalArgumentException {
+        return spawn(location, clazz, function, SpawnReason.CUSTOM);
+        // PandaSpigot end
     }
 
     public FallingBlock spawnFallingBlock(Location location, org.bukkit.Material material, byte data) throws IllegalArgumentException {
@@ -1183,20 +1158,32 @@ public class CraftWorld implements World {
 
     @SuppressWarnings("unchecked")
     public <T extends Entity> T addEntity(net.minecraft.server.Entity entity, SpawnReason reason) throws IllegalArgumentException {
+        // PandaSpigot start - function param
+        return addEntity(entity, reason, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> T addEntity(net.minecraft.server.Entity entity, SpawnReason reason, java.util.function.Consumer<T> function) throws IllegalArgumentException {
+        // PandaSpigot end
         Preconditions.checkArgument(entity != null, "Cannot spawn null entity");
 
         if (entity instanceof EntityInsentient) {
             ((EntityInsentient) entity).prepare(getHandle().E(new BlockPosition(entity)), (GroupDataEntity) null);
         }
+        // PandaSpigot start
+        if (function != null) {
+            function.accept((T) entity.getBukkitEntity());
+        }
+        // PandaSpigot end
 
         world.addEntity(entity, reason);
         return (T) entity.getBukkitEntity();
     }
 
-    public <T extends Entity> T spawn(Location location, Class<T> clazz, SpawnReason reason) throws IllegalArgumentException {
+    public <T extends Entity> T spawn(Location location, Class<T> clazz, java.util.function.Consumer<T> function, SpawnReason reason) throws IllegalArgumentException { // PandaSpigot - function param
         net.minecraft.server.Entity entity = createEntity(location, clazz);
 
-        return addEntity(entity, reason);
+        return addEntity(entity, reason, function); // PandaSpigot - function param
     }
 
     public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {

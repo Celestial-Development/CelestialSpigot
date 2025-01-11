@@ -6,20 +6,21 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.GenericFutureListener;
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bukkit.craftbukkit.util.Waitable;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
-
-import javax.crypto.SecretKey;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.crypto.SecretKey;
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+// CraftBukkit start
+import org.bukkit.craftbukkit.util.Waitable;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 // CraftBukkit end
 
 public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBox {
@@ -37,6 +38,12 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     private SecretKey loginKey;
     private EntityPlayer l;
     public String hostname = ""; // CraftBukkit - add field
+    // PandaSpigot start - Cache threads
+    private static final AtomicInteger threadId = new AtomicInteger(0);
+    private static final java.util.concurrent.ExecutorService authenticatorPool = java.util.concurrent.Executors.newCachedThreadPool(
+            r -> new Thread(r, "User Authenticator #" + threadId.incrementAndGet())
+    );
+    // PandaSpigot end
 
     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {
         this.g = LoginListener.EnumProtocolState.HELLO;
@@ -161,7 +168,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
         } else {
             // Spigot start
             initUUID();
-            new Thread(new Runnable() {
+            authenticatorPool.execute(new Runnable() { // PandaSpigot - Cache authenticator threads
 
                 @Override
                 public void run() {
@@ -172,7 +179,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                         server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + i.getName(), ex);
                     }
                 }
-            }).start();
+            }); // PandaSpigot - Remove start()
             // Spigot end
         }
 
@@ -188,7 +195,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             this.loginKey = packetlogininencryptionbegin.a(privatekey);
             this.g = LoginListener.EnumProtocolState.AUTHENTICATING;
             this.networkManager.a(this.loginKey);
-            (new Thread("User Authenticator #" + LoginListener.b.incrementAndGet()) {
+            authenticatorPool.execute(new Runnable() { // PandaSpigot - Cache authenticator threads
                 public void run() {
                     GameProfile gameprofile = LoginListener.this.i;
 
@@ -228,7 +235,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     }
 
                 }
-            }).start();
+            }); // PandaSpigot - Remove start()
         }
     }
 
@@ -241,16 +248,22 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                             java.util.UUID uniqueId = i.getId();
                             final org.bukkit.craftbukkit.CraftServer server = LoginListener.this.server.server;
 
-                            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
+                            // PandaSpigot start - Ability to change PlayerProfile in AsyncPreLoginEvent
+                            com.destroystokyo.paper.profile.PlayerProfile profile = com.destroystokyo.paper.profile.CraftPlayerProfile.asBukkitCopy(i);
+                            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId, profile);
                             server.getPluginManager().callEvent(asyncEvent);
+                            profile = asyncEvent.getPlayerProfile();
+                            profile.complete();
+                            i = com.destroystokyo.paper.profile.CraftPlayerProfile.asAuthlib(profile);
+                            playerName = i.getName();
+                            uniqueId = i.getId();
+                            // PandaSpigot end
 
                             if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
                                 final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
-
                                 if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
                                     event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
                                 }
-
                                 Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
                                     @Override
                                     protected PlayerPreLoginEvent.Result evaluate() {

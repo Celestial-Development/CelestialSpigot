@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityInteractEvent;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
 
 public class BlockTripwire extends Block {
 
@@ -171,7 +171,6 @@ public class BlockTripwire extends Block {
 
                     if (object instanceof EntityHuman) {
                         cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) object, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-//                        cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) object, org.bukkit.event.block.Action.PHYSICAL, blockposition, null);
                     } else if (object instanceof Entity) {
                         cancellable = new EntityInteractEvent(((Entity) object).getBukkitEntity(), block);
                         manager.callEvent((EntityInteractEvent) cancellable);
@@ -249,7 +248,7 @@ public class BlockTripwire extends Block {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockTripwire.POWERED, BlockTripwire.SUSPENDED, BlockTripwire.ATTACHED, BlockTripwire.DISARMED, BlockTripwire.NORTH, BlockTripwire.EAST, BlockTripwire.WEST, BlockTripwire.SOUTH});
     }
 }

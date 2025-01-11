@@ -35,7 +35,7 @@ public class SecondaryWorldServer extends WorldServer {
                 SecondaryWorldServer.this.getWorldBorder().setDamageAmount(d0);
             }
 
-            public void setServerIp(WorldBorder worldborder, double d0) {
+            public void c(WorldBorder worldborder, double d0) {
                 SecondaryWorldServer.this.getWorldBorder().setDamageBuffer(d0);
             }
         });

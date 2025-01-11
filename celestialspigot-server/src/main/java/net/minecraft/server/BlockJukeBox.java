@@ -103,7 +103,7 @@ public class BlockJukeBox extends BlockContainer {
         return ((Boolean) iblockdata.get(BlockJukeBox.HAS_RECORD)).booleanValue() ? 1 : 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockJukeBox.HAS_RECORD});
     }
 

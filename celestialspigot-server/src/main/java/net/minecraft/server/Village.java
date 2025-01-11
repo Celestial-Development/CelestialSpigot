@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -38,11 +37,35 @@ public class Village {
         this.a = world;
     }
 
+    // PandaSpigot start
+    private BlockPosition[] positions = null;
+    private void calculateNewCheckPositions() {
+        if(this.d == null || this.d.equals(BlockPosition.ZERO)) {
+            this.positions = null;
+        } else {
+            this.positions = new BlockPosition[] { this.d.a(-this.e, 0, -this.e),
+                    this.d.a(-this.e, 0, this.e),
+                    this.d.a(this.e, 0, -this.e),
+                    this.d.a(this.e, 0, this.e),
+                    this.d};
+        }
+    }
+    public boolean isVillageAreaLoaded() {
+        for(int i = 0; this.positions != null && i < this.positions.length; i++) {
+            if(this.a.isLoaded(this.positions[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // PandaSpigot end
+
     public void a(World world) {
         this.a = world;
     }
 
     public void a(int i) {
+        if(!this.isVillageAreaLoaded()) return; // PandaSpigot - avoid loading chunks
         this.g = i;
         this.m();
         this.l();
@@ -342,6 +365,7 @@ public class Village {
 
             this.e = Math.max(32, (int) Math.sqrt((double) j) + 1);
         }
+        this.calculateNewCheckPositions(); // PandaSpigot
     }
 
     public int a(String s) {
@@ -396,6 +420,7 @@ public class Village {
                 this.j.put(nbttagcompound2.getString("Name"), Integer.valueOf(nbttagcompound2.getInt("S")));
             }
         }
+        this.calculateNewCheckPositions(); // PandaSpigot
 
     }
 

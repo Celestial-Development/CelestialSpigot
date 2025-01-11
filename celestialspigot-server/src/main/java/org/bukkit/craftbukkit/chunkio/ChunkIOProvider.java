@@ -14,8 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntitySlice;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.PreChunkLoadEvent;
 
 class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChunk, Chunk, Runnable, RuntimeException> {
     private final AtomicInteger threadNumber = new AtomicInteger(1);
@@ -45,15 +43,6 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
             return;
         }
 
-        Server server = queuedChunk.provider.world.getServer();
-        if (server != null) {
-            PreChunkLoadEvent event = new PreChunkLoadEvent();
-            server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
-        }
-
         queuedChunk.loader.loadEntities(chunk, queuedChunk.compound.getCompound("Level"), queuedChunk.world);
         chunk.setLastSaved(queuedChunk.provider.world.getTime());
         queuedChunk.provider.chunks.put(LongHash.toLong(queuedChunk.x, queuedChunk.z), chunk);
@@ -65,6 +54,7 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
             queuedChunk.provider.world.timings.syncChunkLoadStructuresTimer.stopTiming(); // Spigot
         }
 
+        Server server = queuedChunk.provider.world.getServer();
         if (server != null) {
             server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(chunk.bukkitChunk, false));
         }

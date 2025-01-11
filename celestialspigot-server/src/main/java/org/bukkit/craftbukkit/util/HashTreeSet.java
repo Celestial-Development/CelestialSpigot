@@ -6,37 +6,14 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-// MinetickMod start
-import java.util.LinkedHashSet;
-import java.util.PriorityQueue;
-// MinetickMod end
-
 public class HashTreeSet<V> implements Set<V> {
 
-    private LinkedHashSet<V> hash = new LinkedHashSet<V>(); // MinetickMod - HashSet -> LinkedHashSet
-    private PriorityQueue<V> tree = new PriorityQueue<V>(); // MinetickMod - TreeSet -> PriorityQueue
+    private HashSet<V> hash = new HashSet<V>();
+    private TreeSet<V> tree = new TreeSet<V>();
 
     public HashTreeSet() {
 
     }
-
-    // MinetickMod start
-    public boolean checkConsistency() {
-        int sizeHash = hash.size();
-        int sizeQueue = tree.size();
-        if(sizeHash != sizeQueue) {
-            if(sizeHash > sizeQueue) {
-                tree.clear();
-                tree.addAll(hash);
-            } else if(sizeHash < sizeQueue) {
-                hash.clear();
-                hash.addAll(tree);
-            }
-            return false;
-        }
-        return true;
-    }
-    // MinetickMod end
 
     @Override
     public int size() {
@@ -134,7 +111,7 @@ public class HashTreeSet<V> implements Set<V> {
     }
 
     public V first() {
-        return tree.peek(); // MinetickMod
+        return tree.first();
     }
 
 }

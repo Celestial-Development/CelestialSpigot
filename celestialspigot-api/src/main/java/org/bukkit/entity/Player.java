@@ -1,14 +1,27 @@
 package org.bukkit.entity;
 
-import org.bukkit.*;
+import java.net.InetSocketAddress;
+
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
+import org.bukkit.Achievement;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
+import org.bukkit.WeatherType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.bukkit.scoreboard.Scoreboard;
+// PaperSpigot start
 import org.github.paperspigot.Title;
-
-import java.net.InetSocketAddress;
 // PaperSpigot end
 
 /**
@@ -74,13 +87,6 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param loc Location to point to
      */
     public void setCompassTarget(Location loc);
-
-    /**
-     * Get the player's ping.
-     *
-     * @return The player's ping
-     */
-    public int getPing();
 
     /**
      * Get the previously set compass target.
@@ -1194,6 +1200,36 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     // Paper - Undeprecate
     public void resetTitle();
 
+    // PandaSpigot start
+    /**
+     * Gets a copy of this players profile
+     * @return The players profile object
+     */
+    com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile();
+    
+    /**
+     * Changes the PlayerProfile for this player. This will cause this player
+     * to be reregistered to all clients that can currently see this player
+     * @param profile The new profile to use
+     */
+    void setPlayerProfile(com.destroystokyo.paper.profile.PlayerProfile profile);
+
+    /**
+     * Send the equipment change of an entity. This fakes the equipment change
+     * of an entity for a user. This will not actually change the inventory of
+     * the specified entity in any way.
+     *
+     * @param entity The entity that the player will see the change for
+     * @param slot The slot of the spoofed equipment change
+     * @param item The ItemStack to display for the player
+     */
+    public void sendEquipmentChange(LivingEntity entity, org.bukkit.inventory.EquipmentSlot slot, org.bukkit.inventory.ItemStack item);
+
+    void setKnockbackProfile(KnockBackProfile profile);
+
+    KnockBackProfile getKnockbackProfile();
+    // PandaSpigot end
+
     // Spigot start
     public class Spigot extends Entity.Spigot
     {
@@ -1254,7 +1290,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
         }
 
         /**
-         * Gets all players hidden with {@link hidePlayer(org.bukkit.entity.Player)}.
+         * Gets all players hidden with {@link #hidePlayer(org.bukkit.entity.Player)}.
          *
          * @return a Set with all hidden players
          */

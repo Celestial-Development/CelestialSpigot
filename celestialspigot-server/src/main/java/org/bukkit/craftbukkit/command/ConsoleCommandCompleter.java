@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.util.Waitable;
 
-import jline.console.completer.Completer;
+//import jline.console.completer.Completer; // PandaSpigot - Remove jline2 import
 
-public class ConsoleCommandCompleter implements Completer {
+public class ConsoleCommandCompleter /*implements Completer*/ { // PandaSpigot - This class is no longer used
     private final CraftServer server;
 
     public ConsoleCommandCompleter(CraftServer server) {

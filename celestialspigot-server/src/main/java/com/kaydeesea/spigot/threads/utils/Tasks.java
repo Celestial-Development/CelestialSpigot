@@ -2,14 +2,7 @@ package com.kaydeesea.spigot.threads.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * This Project is property of Refine Development © 2021
- * Redistribution of this Project is not allowed
- *
- * @author Drizzy
- * Created: 9/4/2021
- * Project: CarbonSpigot
- */
+
 
 public class Tasks {
 

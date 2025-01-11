@@ -1,14 +1,15 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.potion.PotionSplashEvent;
-import com.kaydeesea.spigot.CelestialSpigot;
-
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+// CraftBukkit start
+import java.util.HashMap;
+
+import com.kaydeesea.spigot.CelestialSpigot;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
+// CraftBukkit end
 
 public class EntityPotion extends EntityProjectile {
 
@@ -25,13 +26,11 @@ public class EntityPotion extends EntityProjectile {
     public EntityPotion(World world, EntityLiving entityliving, ItemStack itemstack) {
         super(world, entityliving);
         this.item = itemstack;
-        this.healPotion = item.getData() == 16421;
     }
 
     public EntityPotion(World world, double d0, double d1, double d2, ItemStack itemstack) {
         super(world, d0, d1, d2);
         this.item = itemstack;
-        this.healPotion = item.getData() == 16421;
     }
 
     protected float m() {
@@ -66,15 +65,15 @@ public class EntityPotion extends EntityProjectile {
         if (!this.world.isClientSide) {
             List list = Items.POTION.h(this.item);
 
-            if (true || list != null && !list.isEmpty()) {
+            if (true || list != null && !list.isEmpty()) { // CraftBukkit - Call event even if no effects to apply
                 AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0D, 2.0D, 4.0D);
                 List list1 = this.world.a(EntityLiving.class, axisalignedbb);
 
-                if (true || !list1.isEmpty()) {
+                if (true || !list1.isEmpty()) { // CraftBukkit - Run code even if there are no entities around
                     Iterator iterator = list1.iterator();
 
                     // CraftBukkit
-                    HashMap<LivingEntity, Double> affected = new HashMap<>();
+                    HashMap<LivingEntity, Double> affected = new HashMap<LivingEntity, Double>();
 
                     while (iterator.hasNext()) {
                         EntityLiving entityliving = (EntityLiving) iterator.next();
@@ -87,33 +86,21 @@ public class EntityPotion extends EntityProjectile {
                                 d1 = 1.0D;
                             }
 
+                            // CraftBukkit start
                             affected.put((LivingEntity) entityliving.getBukkitEntity(), d1);
                         }
                     }
 
-                    PotionSplashEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPotionSplashEvent(this, affected);
-
-                    if (event.getEntity().getShooter() instanceof Player) {
-                        Player shooter = (Player) event.getEntity().getShooter();
-
-                        if (shooter.isSprinting() && event.getIntensity(shooter) > 0.5D) {
-                            event.setIntensity(shooter, 1.0D);
-                        }
-                    }
-
-                    if (!event.isCancelled() && list != null && !list.isEmpty()) {
+                    org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPotionSplashEvent(this, affected);
+                    if (!event.isCancelled() && list != null && !list.isEmpty()) { // do not process effects if there are no effects to process
                         for (LivingEntity victim : event.getAffectedEntities()) {
                             if (!(victim instanceof CraftLivingEntity)) {
                                 continue;
                             }
 
                             EntityLiving entityliving = ((CraftLivingEntity) victim).getHandle();
-
-                            if (entityliving instanceof EntityPlayer && !((EntityPlayer) entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity())) {
-                                continue;
-                            }
-
                             double d1 = event.getIntensity(victim);
+                            // CraftBukkit end
 
                             Iterator iterator1 = list.iterator();
 
@@ -143,11 +130,7 @@ public class EntityPotion extends EntityProjectile {
                 }
             }
 
-            if (this.getShooter() instanceof EntityHuman) {
-                this.world.a((EntityHuman) this.getShooter(), 2002, new BlockPosition(this), this.getPotionValue());
-            } else {
-                this.world.triggerEffect(2002, new BlockPosition(this), this.getPotionValue());
-            }
+            this.world.triggerEffect(2002, new BlockPosition(this), this.getPotionValue());
             this.die();
         }
 

@@ -1,111 +1,104 @@
 package net.minecraft.server;
 
-/**
- * @since 11/12/2017
- */
 import java.util.Random;
 
 public class BlockStone extends Block {
-	public static final BlockStateEnum<BlockStone.EnumStoneVariant> VARIANT = BlockStateEnum.of("variant", BlockStone.EnumStoneVariant.class);
 
-	public BlockStone() {
-		super(Material.STONE);
-		this.j(this.blockStateList.getBlockData().set(VARIANT, BlockStone.EnumStoneVariant.STONE));
-		this.a(CreativeModeTab.b);
-	}
+    public static final BlockStateEnum<BlockStone.EnumStoneVariant> VARIANT = BlockStateEnum.of("variant", BlockStone.EnumStoneVariant.class);
 
-	public String getName() {
-		return LocaleI18n.get(this.a() + "." + BlockStone.EnumStoneVariant.STONE.d() + ".name");
-	}
+    public BlockStone() {
+        super(Material.STONE);
+        this.j(this.blockStateList.getBlockData().set(BlockStone.VARIANT, BlockStone.EnumStoneVariant.STONE));
+        this.a(CreativeModeTab.b);
+    }
 
-	public MaterialMapColor g(IBlockData var1) {
-		return ((BlockStone.EnumStoneVariant)var1.get(VARIANT)).c();
-	}
+    public String getName() {
+        return LocaleI18n.get(this.a() + "." + BlockStone.EnumStoneVariant.STONE.d() + ".name");
+    }
 
-	public Item getDropType(IBlockData var1, Random var2, int var3) {
-		return var1.get(VARIANT) == BlockStone.EnumStoneVariant.STONE ? Item.getItemOf(Blocks.COBBLESTONE) : Item.getItemOf(Blocks.STONE);
-	}
+    public MaterialMapColor g(IBlockData iblockdata) {
+        return ((BlockStone.EnumStoneVariant) iblockdata.get(BlockStone.VARIANT)).c();
+    }
 
-	public int getDropData(IBlockData var1) {
-		return ((BlockStone.EnumStoneVariant)var1.get(VARIANT)).a();
-	}
+    public Item getDropType(IBlockData iblockdata, Random random, int i) {
+        return iblockdata.get(BlockStone.VARIANT) == BlockStone.EnumStoneVariant.STONE ? Item.getItemOf(Blocks.COBBLESTONE) : Item.getItemOf(Blocks.STONE);
+    }
 
-	public IBlockData fromLegacyData(int var1) {
-		return this.getBlockData().set(VARIANT, BlockStone.EnumStoneVariant.a(var1));
-	}
+    public int getDropData(IBlockData iblockdata) {
+        return ((BlockStone.EnumStoneVariant) iblockdata.get(BlockStone.VARIANT)).a();
+    }
 
-	public int toLegacyData(IBlockData var1) {
-		return ((BlockStone.EnumStoneVariant)var1.get(VARIANT)).a();
-	}
+    public IBlockData fromLegacyData(int i) {
+        return this.getBlockData().set(BlockStone.VARIANT, BlockStone.EnumStoneVariant.a(i));
+    }
 
-	public BlockStateList getStateList() {
-		return new BlockStateList(this, new IBlockState[]{VARIANT});
-	}
+    public int toLegacyData(IBlockData iblockdata) {
+        return ((BlockStone.EnumStoneVariant) iblockdata.get(BlockStone.VARIANT)).a();
+    }
 
-	public static enum EnumStoneVariant implements INamable {
-		STONE(0, MaterialMapColor.m, "stone");
-		/*GRANITE(1, MaterialMapColor.l, "granite"),
-		GRANITE_SMOOTH(2, MaterialMapColor.l, "smooth_granite", "graniteSmooth"),
-		DIORITE(3, MaterialMapColor.p, "diorite"),
-		DIORITE_SMOOTH(4, MaterialMapColor.p, "smooth_diorite", "dioriteSmooth"),
-		ANDESITE(5, MaterialMapColor.m, "andesite"),
-		ANDESITE_SMOOTH(6, MaterialMapColor.m, "smooth_andesite", "andesiteSmooth");*/
+    protected BlockStateList getStateList() {
+        return new BlockStateList(this, new IBlockState[] { BlockStone.VARIANT});
+    }
 
-		private static final BlockStone.EnumStoneVariant[] h = new BlockStone.EnumStoneVariant[values().length];
-		private final int i;
-		private final String j;
-		private final String k;
-		private final MaterialMapColor l;
+    public static enum EnumStoneVariant implements INamable {
 
-		private EnumStoneVariant(int var3, MaterialMapColor var4, String var5) {
-			this(var3, var4, var5, var5);
-		}
+        STONE(0, MaterialMapColor.m, "stone"), GRANITE(1, MaterialMapColor.l, "granite"), GRANITE_SMOOTH(2, MaterialMapColor.l, "smooth_granite", "graniteSmooth"), DIORITE(3, MaterialMapColor.p, "diorite"), DIORITE_SMOOTH(4, MaterialMapColor.p, "smooth_diorite", "dioriteSmooth"), ANDESITE(5, MaterialMapColor.m, "andesite"), ANDESITE_SMOOTH(6, MaterialMapColor.m, "smooth_andesite", "andesiteSmooth");
 
-		private EnumStoneVariant(int var3, MaterialMapColor var4, String var5, String var6) {
-			this.i = var3;
-			this.j = var5;
-			this.k = var6;
-			this.l = var4;
-		}
+        private static final BlockStone.EnumStoneVariant[] h = new BlockStone.EnumStoneVariant[values().length];
+        private final int i;
+        private final String j;
+        private final String k;
+        private final MaterialMapColor l;
 
-		public int a() {
-			return this.i;
-		}
+        private EnumStoneVariant(int i, MaterialMapColor materialmapcolor, String s) {
+            this(i, materialmapcolor, s, s);
+        }
 
-		public MaterialMapColor c() {
-			return this.l;
-		}
+        private EnumStoneVariant(int i, MaterialMapColor materialmapcolor, String s, String s1) {
+            this.i = i;
+            this.j = s;
+            this.k = s1;
+            this.l = materialmapcolor;
+        }
 
-		public String toString() {
-			return this.j;
-		}
+        public int a() {
+            return this.i;
+        }
 
-		public static BlockStone.EnumStoneVariant a(int var0) {
-			if (var0 < 0 || var0 >= h.length) {
-				var0 = 0;
-			}
+        public MaterialMapColor c() {
+            return this.l;
+        }
 
-			return h[var0];
-		}
+        public String toString() {
+            return this.j;
+        }
 
-		public String getName() {
-			return this.j;
-		}
+        public static BlockStone.EnumStoneVariant a(int i) {
+            if (i < 0 || i >= BlockStone.EnumStoneVariant.h.length) {
+                i = 0;
+            }
 
-		public String d() {
-			return this.k;
-		}
+            return BlockStone.EnumStoneVariant.h[i];
+        }
 
-		static {
-			BlockStone.EnumStoneVariant[] var0 = values();
-			int var1 = var0.length;
+        public String getName() {
+            return this.j;
+        }
 
-			for(int var2 = 0; var2 < var1; ++var2) {
-				BlockStone.EnumStoneVariant var3 = var0[var2];
-				h[var3.a()] = var3;
-			}
+        public String d() {
+            return this.k;
+        }
 
-		}
-	}
+        static {
+            BlockStone.EnumStoneVariant[] ablockstone_enumstonevariant = values();
+            int i = ablockstone_enumstonevariant.length;
+
+            for (int j = 0; j < i; ++j) {
+                BlockStone.EnumStoneVariant blockstone_enumstonevariant = ablockstone_enumstonevariant[j];
+
+                BlockStone.EnumStoneVariant.h[blockstone_enumstonevariant.a()] = blockstone_enumstonevariant;
+            }
+
+        }
+    }
 }
-

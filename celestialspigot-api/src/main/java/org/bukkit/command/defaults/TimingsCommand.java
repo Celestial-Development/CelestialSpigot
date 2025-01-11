@@ -19,6 +19,19 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+// Spigot start
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+
+import org.bukkit.command.RemoteConsoleCommandSender;
+import org.bukkit.plugin.SimplePluginManager;
+import org.spigotmc.CustomTimingsHandler;
+// Spigot end
+
 public class TimingsCommand extends BukkitCommand {
     public static final List<String> TIMINGS_SUBCOMMANDS = ImmutableList.of("merged", "reset", "separate");
 
@@ -117,7 +130,7 @@ public class TimingsCommand extends BukkitCommand {
         Validate.notNull(alias, "Alias cannot be null");
 
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], TIMINGS_SUBCOMMANDS, new ArrayList<>(TIMINGS_SUBCOMMANDS.size()));
+            return StringUtil.copyPartialMatches(args[0], TIMINGS_SUBCOMMANDS, new ArrayList<String>(TIMINGS_SUBCOMMANDS.size()));
         }
         return ImmutableList.of();
     }

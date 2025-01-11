@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 
 public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
@@ -86,6 +84,10 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     public int getSleepTicks() {
         return getHandle().sleepTicks;
+    }
+
+    public boolean isOp() {
+        return op;
     }
 
     public boolean isPermissionSet(String name) {
@@ -360,5 +362,4 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     public int getExpToLevel() {
         return getHandle().getExpToLevel();
     }
-
 }

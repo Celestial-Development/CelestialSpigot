@@ -1,18 +1,19 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import org.bukkit.Location;
-import org.bukkit.event.entity.EntityPortalExitEvent;
-import org.bukkit.util.Vector;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+// CraftBukkit start
+import org.bukkit.Location;
+import org.bukkit.event.entity.EntityPortalExitEvent;
+import org.bukkit.util.Vector;
 // CraftBukkit end
 
 public class PortalTravelAgent {
 
-    private final WorldServer a;
+    protected final WorldServer a; // PandaSpigot - private -> protected
     private final Random b;
     private final LongHashMap<PortalTravelAgent.ChunkCoordinatesPortal> c = new LongHashMap();
     private final List<Long> d = Lists.newArrayList();
@@ -93,13 +94,13 @@ public class PortalTravelAgent {
 
     public boolean b(Entity entity, float f) {
         // CraftBukkit start - Modularize portal search process and entity teleportation
-        // MinetickMod start
+        // PandaSpigot start - Search proximity first and then do the larger search if the proximity search fails
+        // TODO: If a player sets the portal search radius to some value equal to or less than 10 we can use normal logic
         BlockPosition found = this.findPortal(entity.locX, entity.locY, entity.locZ, 10);
         if (found == null) {
-            found = this.findPortal(entity.locX, entity.locY, entity.locZ, 128);
+            found = this.findPortal(entity.locX, entity.locY, entity.locZ, a.paperSpigotConfig.portalSearchRadius); // PandaSpigot - Respect the Paper portal search radius configuration
         }
-        // MinetickMod end
-
+        // PandaSpigot end
         if (found == null) {
             return false;
         }
@@ -138,33 +139,26 @@ public class PortalTravelAgent {
         } else {
             BlockPosition blockposition = new BlockPosition(x, y, z);
 
-            // MinetickMod start
-            BlockPosition.MutableBlockPosition mutableblockposition = new BlockPosition.MutableBlockPosition();
-            int range = searchRadius;
+            for (int l = -searchRadius; l <= searchRadius; ++l) {   // Paper - actually use search radius
+                BlockPosition blockposition1;
 
-            int zOffset = 0, yOffset = 0;
-            for (int xDiff = -range; xDiff <= range; ++xDiff) {
-                zOffset = (zOffset + 1) % 2;
-                for (int zDiff = -range + zOffset; zDiff <= range; zDiff = zDiff + 2) { // skipping every 2nd block in z direction and alternating from row to row in x direction
-                    yOffset = (yOffset + 1) % 3;
-                    for (int yPos = this.a.V() - (1 + yOffset); yPos >= 0; yPos = yPos - 3) { // checking only every 3rd block in y direction and alternating in height in each column
-                        mutableblockposition.c(blockposition.getX() + xDiff, yPos, blockposition.getZ() + zDiff);
-                        if (this.a.getType(mutableblockposition).getBlock() == Blocks.PORTAL) {
-                            int lowestCorrectHeight = mutableblockposition.getY();
-                            while (this.a.getType(mutableblockposition.c(mutableblockposition.getX(), mutableblockposition.getY() - 1, mutableblockposition.getZ())).getBlock() == Blocks.PORTAL) {
-                                lowestCorrectHeight = mutableblockposition.getY();
+                for (int i1 = -searchRadius; i1 <= searchRadius; ++i1) {    // Paper - actually use search radius
+                    for (BlockPosition blockposition2 = blockposition.a(l, this.a.V() - 1 - blockposition.getY(), i1); blockposition2.getY() >= 0; blockposition2 = blockposition1) {
+                        blockposition1 = blockposition2.down();
+                        if (this.a.getType(blockposition2).getBlock() == Blocks.PORTAL) {
+                            while (this.a.getType(blockposition1 = blockposition2.down()).getBlock() == Blocks.PORTAL) {
+                                blockposition2 = blockposition1;
+                            }
 
-                                double d1 = mutableblockposition.c(mutableblockposition.getX(), lowestCorrectHeight, mutableblockposition.getZ()).i(blockposition);
+                            double d1 = blockposition2.i(blockposition);
 
-                                if (d0 < 0.0D || d1 < d0) {
-                                    d0 = d1;
-                                    object = new BlockPosition(mutableblockposition);
-                                }
+                            if (d0 < 0.0D || d1 < d0) {
+                                d0 = d1;
+                                object = blockposition2;
                             }
                         }
                     }
                 }
-                // MinetickMod end
             }
         }
 

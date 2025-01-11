@@ -57,7 +57,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.potion.PotionSplashEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.meta.BookMeta;
@@ -189,26 +188,29 @@ public class CraftEventFactory {
         if (action != Action.LEFT_CLICK_AIR && action != Action.RIGHT_CLICK_AIR) {
             throw new IllegalArgumentException(String.format("%s performing %s with %s", who, action, itemstack)); // Spigot
         }
-        return callPlayerInteractEvent(who, action, new BlockPosition(0, 256, 0), EnumDirection.SOUTH, itemstack);
+        return callPlayerInteractEvent(who, action, null, EnumDirection.SOUTH, itemstack); // PandaSpigot - SPIGOT-2380 - Change BlockPosition to null
     }
 
     public static PlayerInteractEvent callPlayerInteractEvent(EntityHuman who, Action action, BlockPosition position, EnumDirection direction, ItemStack itemstack) {
-        return callPlayerInteractEvent(who, action, position, itemstack, false, direction);
+        return callPlayerInteractEvent(who, action, position, direction, itemstack, false);
     }
     
-    public static PlayerInteractEvent callPlayerInteractEvent(EntityHuman who, Action action, BlockPosition position, ItemStack itemstack, boolean cancelledBlock, EnumDirection direction) {
-//    public static PlayerInteractEvent callPlayerInteractEvent(EntityHuman who, Action action, BlockPosition position, ItemStack itemstack, boolean cancelledBlock) {
+    public static PlayerInteractEvent callPlayerInteractEvent(EntityHuman who, Action action, BlockPosition position, EnumDirection direction, ItemStack itemstack, boolean cancelledBlock) {
         Player player = (who == null) ? null : (Player) who.getBukkitEntity();
         CraftItemStack itemInHand = CraftItemStack.asCraftMirror(itemstack);
 
         CraftWorld craftWorld = (CraftWorld) player.getWorld();
         CraftServer craftServer = (CraftServer) player.getServer();
 
-        Block blockClicked = craftWorld.getBlockAt(position.getX(), position.getY(), position.getZ());
+        //Block blockClicked = craftWorld.getBlockAt(position.getX(), position.getY(), position.getZ()); // PandaSpigot - move down
         BlockFace blockFace = CraftBlock.notchToBlockFace(direction);
 
-        if (position.getY() > 255) {
-            blockClicked = null;
+        // PandaSpigot start - SPIGOT-2380
+        Block blockClicked = null;
+        if (position != null) {
+            blockClicked = craftWorld.getBlockAt(position.getX(), position.getY(), position.getZ());
+        } else {
+        // PandaSpigot end
             switch (action) {
             case LEFT_CLICK_BLOCK:
                 action = Action.LEFT_CLICK_AIR;
@@ -224,11 +226,9 @@ public class CraftEventFactory {
         }
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked, blockFace);
-//        PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked);
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
         }
-
         craftServer.getPluginManager().callEvent(event);
 
         return event;
@@ -386,7 +386,7 @@ public class CraftEventFactory {
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR || stack.getAmount() == 0) continue;
 
-            world.dropItemNaturally(entity.getLocation(), stack, victim);
+            world.dropItemNaturally(entity.getLocation(), stack);
         }
 
         return event;
@@ -396,7 +396,7 @@ public class CraftEventFactory {
         CraftPlayer entity = victim.getBukkitEntity();
         PlayerDeathEvent event = new PlayerDeathEvent(entity, drops, victim.getExpReward(), 0, deathMessage);
         event.setKeepInventory(keepInventory);
-        CraftWorld world = (CraftWorld) entity.getWorld();
+        org.bukkit.World world = entity.getWorld();
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         victim.keepLevel = event.getKeepLevel();
@@ -412,7 +412,7 @@ public class CraftEventFactory {
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR) continue;
 
-            world.dropItemNaturally(entity.getLocation(), stack, victim);
+            world.dropItemNaturally(entity.getLocation(), stack);
         }
 
         return event;
@@ -752,6 +752,16 @@ public class CraftEventFactory {
         return CraftItemStack.asNMSCopy(bitem);
     }
 
+    // PandaSpigot start
+    public static com.destroystokyo.paper.event.entity.ProjectileCollideEvent callProjectileCollideEvent(Entity entity, MovingObjectPosition position) {
+        Projectile projectile = (Projectile) entity.getBukkitEntity();
+        org.bukkit.entity.Entity collided = position.entity.getBukkitEntity();
+        com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = new com.destroystokyo.paper.event.entity.ProjectileCollideEvent(projectile, collided);
+        Bukkit.getPluginManager().callEvent(event);
+        return event;
+    }
+    // PandaSpigot end
+
     public static ProjectileLaunchEvent callProjectileLaunchEvent(Entity entity) {
         Projectile bukkitEntity = (Projectile) entity.getBukkitEntity();
         ProjectileLaunchEvent event = new ProjectileLaunchEvent(bukkitEntity);
@@ -759,8 +769,26 @@ public class CraftEventFactory {
         return event;
     }
 
-    public static ProjectileHitEvent callProjectileHitEvent(Entity entity) {
-        ProjectileHitEvent event = new ProjectileHitEvent((Projectile) entity.getBukkitEntity());
+    // PandaSpigot start
+    public static ProjectileHitEvent callProjectileHitEvent(Entity entity, MovingObjectPosition position) {
+        if (position.type == MovingObjectPosition.EnumMovingObjectType.MISS) {
+            return null;
+        }
+
+        Block hitBlock = null;
+        BlockFace hitFace = null;
+        if (position.type == MovingObjectPosition.EnumMovingObjectType.BLOCK) {
+            BlockPosition pos = position.a();
+            hitBlock = entity.world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+            hitFace = CraftBlock.notchToBlockFace(position.direction);
+        }
+
+        org.bukkit.entity.Entity hitEntity = null;
+        if (position.entity != null) {
+            hitEntity = position.entity.getBukkitEntity();
+        }
+        ProjectileHitEvent event = new ProjectileHitEvent((Projectile) entity.getBukkitEntity(), hitEntity, hitBlock, hitFace);
+    // PandaSpigot end
         entity.world.getServer().getPluginManager().callEvent(event);
         return event;
     }

@@ -2,7 +2,6 @@ package org.bukkit.craftbukkit.projectiles;
 
 import java.util.Random;
 
-import net.minecraft.server.MathHelper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -36,6 +35,7 @@ import net.minecraft.server.EntityWitherSkull;
 import net.minecraft.server.EnumDirection;
 import net.minecraft.server.IPosition;
 import net.minecraft.server.IProjectile;
+import net.minecraft.server.MathHelper;
 import net.minecraft.server.SourceBlock;
 import net.minecraft.server.TileEntityDispenser;
 

@@ -1,12 +1,14 @@
 package net.minecraft.server;
 
+import java.util.Random;
+
+// CraftBukkit start
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.TreeType;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.world.StructureGrowEvent;
-
-import java.util.List;
-import java.util.Random;
 // CraftBukkit end
 
 public class BlockSapling extends BlockPlant implements IBlockFragilePlantElement {
@@ -30,7 +32,7 @@ public class BlockSapling extends BlockPlant implements IBlockFragilePlantElemen
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         if (!world.isClientSide) {
             super.b(world, blockposition, iblockdata, random);
-            if (world.getLightLevel(blockposition.up()) >= 9 && (random.nextInt(Math.max(2, (int) ((world.growthOdds / world.spigotConfig.saplingModifier * 7) + 0.5F))) == 0)) { // Spigot) {
+            if (world.isLightLevel(blockposition.up(), 9) && (random.nextInt(Math.max(2, (int) ((world.growthOdds / world.spigotConfig.saplingModifier * 7) + 0.5F))) == 0)) { // Spigot) { // PandaSpigot - Use isLightLevel
                 // CraftBukkit start
                 world.captureTreeGeneration = true;
                 // CraftBukkit end
@@ -223,7 +225,7 @@ public class BlockSapling extends BlockPlant implements IBlockFragilePlantElemen
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockSapling.TYPE, BlockSapling.STAGE});
     }
 

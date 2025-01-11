@@ -1,7 +1,8 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.event.block.BlockRedstoneEvent;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockTrapdoor extends Block {
 
@@ -204,7 +205,7 @@ public class BlockTrapdoor extends Block {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockTrapdoor.FACING, BlockTrapdoor.OPEN, BlockTrapdoor.HALF});
     }
 

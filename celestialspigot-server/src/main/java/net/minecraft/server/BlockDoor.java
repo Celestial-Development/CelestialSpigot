@@ -1,9 +1,9 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.event.block.BlockRedstoneEvent;
-
 import java.util.Random;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockDoor extends Block {
 
@@ -305,7 +305,7 @@ public class BlockDoor extends Block {
         return (i & 16) != 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockDoor.HALF, BlockDoor.FACING, BlockDoor.OPEN, BlockDoor.HINGE, BlockDoor.POWERED});
     }
 

@@ -13,21 +13,12 @@ public class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
     private boolean cancel;
     private float radius;
     private boolean fire;
-    private boolean damageBlocks; // joeleoli
 
     public ExplosionPrimeEvent(final Entity what, final float radius, final boolean fire) {
         super(what);
         this.cancel = false;
         this.radius = radius;
         this.fire = fire;
-    }
-
-    public ExplosionPrimeEvent(final Entity what, final float radius, final boolean fire, final boolean damageBlocks) {
-        super(what);
-        this.cancel = false;
-        this.radius = radius;
-        this.fire = fire;
-        this.damageBlocks = damageBlocks;
     }
 
     public ExplosionPrimeEvent(final Explosive explosive) {
@@ -77,16 +68,6 @@ public class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
     public void setFire(boolean fire) {
         this.fire = fire;
     }
-
-    // joeleoli start
-    public boolean isDamageBlocks() {
-        return damageBlocks;
-    }
-
-    public void setDamageBlocks(boolean damageBlocks) {
-        this.damageBlocks = damageBlocks;
-    }
-    // joeleoli end
 
     @Override
     public HandlerList getHandlers() {

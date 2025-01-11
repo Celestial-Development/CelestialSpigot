@@ -1,12 +1,21 @@
 package net.minecraft.server;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+// CraftBukkit start
+import java.util.UUID;
+
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.github.paperspigot.exception.ServerInternalException;
-
-import java.io.*;
-import java.util.UUID;
 // CraftBukkit end
 
 public class WorldNBTStorage implements IDataManager, IPlayerFileData {
@@ -31,13 +40,6 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
         }
 
         this.h();
-
-        // manually check lock on startup
-        try {
-            checkSession0();
-        } catch (Throwable t) {
-            org.spigotmc.SneakyThrow.sneaky(t);
-        }
     }
 
     private void h() {
@@ -61,9 +63,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
         return this.baseDir;
     }
 
-    public void checkSession() throws ExceptionWorldConflict {} // CraftBukkit - throws ExceptionWorldConflict
-
-    private void checkSession0() throws ExceptionWorldConflict { // we can safely do so as the server will stop upon detecting a session conflict on startup
+    public void checkSession() throws ExceptionWorldConflict {
         try {
             File file = new File(this.baseDir, "session.lock");
             DataInputStream datainputstream = new DataInputStream(new FileInputStream(file));

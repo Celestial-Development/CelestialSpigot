@@ -1,11 +1,12 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import org.bukkit.event.block.BlockRedstoneEvent;
-
+import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockRedstoneTorch extends BlockTorch {
 
@@ -115,9 +116,17 @@ public class BlockRedstoneTorch extends BlockTorch {
         boolean flag = this.g(world, blockposition, iblockdata);
         List list = (List) BlockRedstoneTorch.b.get(world);
 
-        while (list != null && !list.isEmpty() && world.getTime() - ((BlockRedstoneTorch.RedstoneUpdateInfo) list.get(0)).b > 60L) {
-            list.remove(0);
+        // PandaSpigot start - Faster redstone torch rapid clock removal
+        if (list != null) {
+            int index = 0;
+            while (index < list.size() && world.getTime() - ((BlockRedstoneTorch.RedstoneUpdateInfo) list.get(index)).getTime() > 60L) {
+                index++;
+            }
+            if (index > 0) {
+                list.subList(0, index).clear();
+            }
         }
+        // PandaSpigot end
 
         // CraftBukkit start
         org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
@@ -196,7 +205,7 @@ public class BlockRedstoneTorch extends BlockTorch {
     static class RedstoneUpdateInfo {
 
         BlockPosition a;
-        long b;
+        long b; final long getTime() { return this.b; } // PandaSpigot - OBFHELPER
 
         public RedstoneUpdateInfo(BlockPosition blockposition, long i) {
             this.a = blockposition;

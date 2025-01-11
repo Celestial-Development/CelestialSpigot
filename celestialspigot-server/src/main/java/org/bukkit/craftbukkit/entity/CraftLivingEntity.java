@@ -7,12 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.kaydeesea.spigot.knockback.KnockBackProfile;
-import org.bukkit.event.player.PlayerHealthChangeEvent;
 import net.minecraft.server.DamageSource;
 import net.minecraft.server.EntityArmorStand;
 import net.minecraft.server.EntityArrow;
 import net.minecraft.server.EntityEgg;
+import net.minecraft.server.EntityEnderDragon;
 import net.minecraft.server.EntityEnderPearl;
 import net.minecraft.server.EntityFishingHook;
 import net.minecraft.server.EntityHuman;
@@ -65,19 +64,6 @@ import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 public class CraftLivingEntity extends CraftEntity implements LivingEntity {
-
-    // SpigotX start
-    @Override
-    public KnockBackProfile getKnockbackProfile() {
-        return getHandle().getKnockbackProfile();
-    }
-
-    @Override
-    public void setKnockbackProfile(KnockBackProfile profile) {
-        getHandle().setKnockbackProfile(profile);
-    }
-    // SpigotX end
-
     private CraftEntityEquipment equipment;
 
     public CraftLivingEntity(final CraftServer server, final EntityLiving entity) {
@@ -93,10 +79,6 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
     }
 
     public void setHealth(double health) {
-        if(this instanceof CraftPlayer) {
-            PlayerHealthChangeEvent event = new PlayerHealthChangeEvent((Player)this, getHealth(), health);
-            server.getPluginManager().callEvent(event);
-        }
         if ((health < 0) || (health > getMaxHealth())) {
             throw new IllegalArgumentException("Health must be between 0 and " + getMaxHealth() + ", but was " + health
                 + ". (attribute base value: " + this.getHandle().getAttributeInstance(GenericAttributes.maxHealth).b()
@@ -309,12 +291,10 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
         return getHandle().killer == null ? null : (Player) getHandle().killer.getBukkitEntity();
     }
 
-    @Override
     public boolean addPotionEffect(PotionEffect effect) {
         return addPotionEffect(effect, false);
     }
 
-    @Override
     public boolean addPotionEffect(PotionEffect effect, boolean force) {
         if (hasPotionEffect(effect.getType())) {
             if (!force) {
@@ -322,12 +302,10 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
             }
             removePotionEffect(effect.getType());
         }
-        getHandle().addEffect(new MobEffect(effect.getType().getId(), effect.getDuration(), effect.getAmplifier(),
-                effect.isAmbient(), effect.hasParticles()));
+        getHandle().addEffect(new MobEffect(effect.getType().getId(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles()));
         return true;
     }
 
-    @Override
     public boolean addPotionEffects(Collection<PotionEffect> effects) {
         boolean success = true;
         for (PotionEffect effect : effects) {
@@ -336,23 +314,21 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
         return success;
     }
 
-    @Override
     public boolean hasPotionEffect(PotionEffectType type) {
         return getHandle().hasEffect(MobEffectList.byId[type.getId()]);
     }
 
-    @Override
     public void removePotionEffect(PotionEffectType type) {
         getHandle().removeEffect(type.getId());
     }
 
-    @Override
     public Collection<PotionEffect> getActivePotionEffects() {
         List<PotionEffect> effects = new ArrayList<PotionEffect>();
-        for (MobEffect raw : getHandle().effects.values()) {
-            MobEffect handle = raw;
-            effects.add(new PotionEffect(PotionEffectType.getById(handle.getEffectId()), handle.getDuration(),
-                    handle.getAmplifier(), handle.isAmbient(), handle.isShowParticles()));
+        for (Object raw : getHandle().effects.values()) {
+            if (!(raw instanceof MobEffect))
+                continue;
+            MobEffect handle = (MobEffect) raw;
+            effects.add(new PotionEffect(PotionEffectType.getById(handle.getEffectId()), handle.getDuration(), handle.getAmplifier(), handle.isAmbient(), handle.isShowParticles()));
         }
         return effects;
     }

@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.event.block.BlockRedstoneEvent;
-
 import java.util.Random;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public abstract class BlockPressurePlateAbstract extends Block {
 

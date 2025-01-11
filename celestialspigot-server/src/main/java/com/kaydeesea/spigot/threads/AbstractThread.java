@@ -13,14 +13,7 @@ import net.openhft.affinity.AffinityStrategies;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * This Project is property of Refine Development © 2021
- * Redistribution of this Project is not allowed
- *
- * @author Drizzy
- * Created: 9/4/2021
- * Project: CarbonSpigot
- */
+
 
 public abstract class AbstractThread {
 

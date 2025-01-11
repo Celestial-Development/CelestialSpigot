@@ -1,9 +1,9 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityInteractEvent;
-
 import java.util.Iterator;
 import java.util.List;
+
+import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
 
 public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
 
@@ -55,7 +55,6 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
 
                     if (entity instanceof EntityHuman) {
                         cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-//                        cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null);
                     } else {
                         cancellable = new EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
                         manager.callEvent((EntityInteractEvent) cancellable);
@@ -85,7 +84,7 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
         return ((Boolean) iblockdata.get(BlockPressurePlateBinary.POWERED)).booleanValue() ? 1 : 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPressurePlateBinary.POWERED});
     }
 

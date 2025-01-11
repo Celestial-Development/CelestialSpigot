@@ -1,13 +1,16 @@
 package net.minecraft.server;
 
+import com.google.common.collect.Sets;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+// CraftBukkit start
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.craftbukkit.util.LongHashSet;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.github.paperspigot.exception.ServerInternalException;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 // CraftBukkit end
 
 public final class SpawnerCreature {
@@ -20,6 +23,15 @@ public final class SpawnerCreature {
     // Spigot start - get entity count only from chunks being processed in b
     private int getEntityCount(WorldServer server, Class oClass)
     {
+        // PandaSpigot start - use entire world, not just active chunks. Spigot broke vanilla expectations.
+        if (true) {
+            int sum = 0;
+            for (Chunk c : server.chunkProviderServer.chunks.values()) {
+                sum += c.entityCount.get(oClass);
+            }
+            return sum;
+        }
+        // PandaSpigot end
         int i = 0;
         Iterator<Long> it = this.b.iterator();
         while ( it.hasNext() )
@@ -116,10 +128,10 @@ public final class SpawnerCreature {
                     k = worldserver.a(enumcreaturetype.a());
                     int l1 = limit * i / a; // CraftBukkit - use per-world limits
 
-                    if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 256) {
+                    if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 289) { // PandaSpigot - use 17x17 like vanilla (a at top of file)
                         Iterator iterator1 = this.b.iterator();
 
-                        int moblimit = (limit * i / 256) - mobcnt + 1; // Spigot - up to 1 more than limit
+                        int moblimit = (limit * i / 289) - mobcnt + 1; // Spigot - up to 1 more than limit // PandaSpigot - use 17x17 like vanilla (a at top of file)
                         label115:
                         while (iterator1.hasNext() && (moblimit > 0)) { // Spigot - while more allowed
                             // CraftBukkit start = use LongHash and LongObjectHashMap
@@ -148,7 +160,7 @@ public final class SpawnerCreature {
                                         if (i4 < 4) {
                                             label108: {
                                                 j3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
-                                                k3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1);
+                                                //k3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1); // PandaSpigot
                                                 l3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
                                                 BlockPosition blockposition2 = new BlockPosition(j3, k3, l3);
                                                 float f = (float) j3 + 0.5F;

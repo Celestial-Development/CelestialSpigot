@@ -1,12 +1,13 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Maps;
+import java.util.Map;
+import java.util.Random;
+
+// CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
-
-import java.util.Map;
-import java.util.Random;
 // CraftBukkit end
 
 public class BlockFire extends Block {
@@ -175,6 +176,7 @@ public class BlockFire extends Block {
                                 }
 
                                 BlockPosition blockposition1 = blockposition.a(j, l, k);
+                                if (!world.isLoaded(blockposition1)) continue; // PandaSpigot - Prevent Fire from loading chunks
                                 int j1 = this.m(world, blockposition1);
 
                                 if (j1 > 0) {
@@ -243,10 +245,14 @@ public class BlockFire extends Block {
     }
 
     private void a(World world, BlockPosition blockposition, int i, Random random, int j) {
-        int k = this.c(world.getType(blockposition).getBlock());
+        // PandaSpigot start - Prevent Fire from loading chunks
+        final IBlockData iblockdata = world.getTypeIfLoaded(blockposition);
+        if (iblockdata == null) return;
+        int k = this.c(iblockdata.getBlock());
+        // PandaSpigot end
 
         if (random.nextInt(i) < k) {
-            IBlockData iblockdata = world.getType(blockposition);
+            //IBlockData iblockdata = world.getType(blockposition); // PandaSpigot - removed since assigned if loaded just above
 
             // CraftBukkit start
             org.bukkit.block.Block theBlock = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
@@ -304,7 +310,11 @@ public class BlockFire extends Block {
             for (int k = 0; k < j; ++k) {
                 EnumDirection enumdirection = aenumdirection[k];
 
-                i = Math.max(this.d(world.getType(blockposition.shift(enumdirection)).getBlock()), i);
+                // PandaSpigot start - only assign i if chunk is loaded; otherwise skip
+                final IBlockData type = world.getTypeIfLoaded(blockposition.shift(enumdirection));
+                if (type == null) continue;
+                i = Math.max(this.d(type.getBlock()), i);
+                // PandaSpigot end
             }
 
             return i;
@@ -352,7 +362,7 @@ public class BlockFire extends Block {
         return ((Integer) iblockdata.get(BlockFire.AGE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockFire.AGE, BlockFire.NORTH, BlockFire.EAST, BlockFire.SOUTH, BlockFire.WEST, BlockFire.UPPER, BlockFire.FLIP, BlockFire.ALT});
     }
 

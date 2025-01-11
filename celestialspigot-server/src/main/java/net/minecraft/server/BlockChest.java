@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-
 import java.util.Iterator;
 
 public class BlockChest extends BlockContainer {
@@ -51,7 +50,12 @@ public class BlockChest extends BlockContainer {
         while (iterator.hasNext()) {
             EnumDirection enumdirection = (EnumDirection) iterator.next();
             BlockPosition blockposition1 = blockposition.shift(enumdirection);
-            IBlockData iblockdata1 = world.getType(blockposition1);
+            IBlockData iblockdata1 = world.getTypeIfLoaded(blockposition1);
+            // PandaSpigot start - Use getTypeIfLoaded
+            if (iblockdata1 == null) {
+                continue;
+            }
+            // PandaSpigot end
 
             if (iblockdata1.getBlock() == this) {
                 this.e(world, blockposition1, iblockdata1);
@@ -455,7 +459,7 @@ public class BlockChest extends BlockContainer {
         return ((EnumDirection) iblockdata.get(BlockChest.FACING)).a();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockChest.FACING});
     }
 }

@@ -3,10 +3,20 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+// CraftBukkit start
 import org.bukkit.Bukkit;
 import org.bukkit.WeatherType;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -15,8 +25,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-
-import java.util.*;
+// CraftBukkit end
 
 public class EntityPlayer extends EntityHuman implements ICrafting {
 
@@ -28,7 +37,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     public double d;
     public double e;
     public final List<ChunkCoordIntPair> chunkCoordIntPairQueue = Lists.newLinkedList();
-    public final List<Integer> removeQueue = Lists.newLinkedList();
+    public final java.util.Deque<Integer> removeQueue = new java.util.ArrayDeque<>(); // PandaSpigot
     private final ServerStatisticManager bK;
     private float bL = Float.MIN_VALUE;
     private float bM = -1.0E8F;
@@ -44,6 +53,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     public boolean g;
     public int ping;
     public boolean viewingCredits;
+
+    // CraftBukkit start
     public String displayName;
     public IChatBaseComponent listName;
     public org.bukkit.Location compassTarget;
@@ -53,23 +64,34 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     public boolean keepLevel = false;
     public double maxHealthCache;
     public boolean joining = true;
+    // CraftBukkit end
+    // Spigot start
     public boolean collidesWithEntities = true;
-    public int viewDistance;
-    private int containerUpdateDelay;
-    private boolean fakePlayer;
-    private boolean fakingDeath;
+    public int viewDistance; // PaperSpigot - Player view distance API
+    private int containerUpdateDelay; // PaperSpigot
+
+    @Override
+    public void setKnockbackProfile(KnockBackProfile knockbackProfile) {
+        super.setKnockbackProfile(knockbackProfile);
+    }
+
+    @Override
+    public KnockBackProfile getKnockbackProfile() {
+        return super.getKnockbackProfile();
+    }
 
     @Override
     public boolean ad()
     {
-        return this.collidesWithEntities && super.ad();
+        return this.collidesWithEntities && super.ad(); // (first !this.isDead near bottom of EntityLiving)
     }
 
     @Override
     public boolean ae()
     {
-        return this.collidesWithEntities && super.ae();
+        return this.collidesWithEntities && super.ae(); // (second !this.isDead near bottom of EntityLiving)
     }
+    // Spigot end
 
     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
         super(worldserver, gameprofile);
@@ -191,9 +213,9 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         }
         
         // PaperSpigot start - Configurable container update tick rate
-        if (/*--containerUpdateDelay <= 0*/ true) {
+        if (--containerUpdateDelay <= 0) {
             this.activeContainer.b();
-            /*containerUpdateDelay = world.paperSpigotConfig.containerUpdateTickRate;*/
+            containerUpdateDelay = world.paperSpigotConfig.containerUpdateTickRate;
         }
         // PaperSpigot end
         if (!this.world.isClientSide && !this.activeContainer.a((EntityHuman) this)) {
@@ -204,13 +226,20 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         while (!this.removeQueue.isEmpty()) {
             int i = Math.min(this.removeQueue.size(), Integer.MAX_VALUE);
             int[] aint = new int[i];
-            Iterator iterator = this.removeQueue.iterator();
+            //Iterator iterator = this.removeQueue.iterator(); // PandaSpigot
             int j = 0;
 
-            while (iterator.hasNext() && j < i) {
+            // PandaSpigot start
+            /* while (iterator.hasNext() && j < i) {
                 aint[j++] = ((Integer) iterator.next()).intValue();
                 iterator.remove();
+            } */
+
+            Integer integer;
+            while (j < i && (integer = this.removeQueue.poll()) != null) {
+                aint[j++] = integer.intValue();
             }
+            // PandaSpigot end
 
             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(aint));
         }
@@ -232,6 +261,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                             arraylist.add(chunk);
                             arraylist1.addAll(chunk.tileEntities.values()); // CraftBukkit - Get tile entities directly from the chunk instead of the world
                             iterator1.remove();
+                            new io.papermc.paper.event.packet.PlayerChunkLoadEvent(chunk.bukkitChunk, this.getBukkitEntity()).callEvent(); // PandaSpigot
                         }
                     }
                 } else {
@@ -337,7 +367,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             }
 
             if (this.oldLevel != this.expLevel) {
-                CraftEventFactory.callPlayerLevelChangeEvent(this.world.getServer().getPlayer(this), this.oldLevel, this.expLevel);
+                CraftEventFactory.callPlayerLevelChangeEvent(this.world.getServer().getPlayer((EntityPlayer) this), this.oldLevel, this.expLevel);
                 this.oldLevel = this.expLevel;
             }
             // CraftBukkit end
@@ -421,7 +451,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
         String deathMessage = event.getDeathMessage();
 
-        if (deathMessage != null && deathMessage.length() > 0 && this.world.getGameRules().getBoolean("showDeathMessages")) { // TODO: allow plugins to override?
+        if (deathMessage != null && !deathMessage.isEmpty() && this.world.getGameRules().getBoolean("showDeathMessages")) { // TODO: allow plugins to override?
             if (deathMessage.equals(deathmessage)) {
                 this.server.getPlayerList().sendMessage(chatmessage);
             } else {
@@ -431,13 +461,9 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
         // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
         if (!event.getKeepInventory()) {
-            for (int i = 0; i < this.inventory.items.length; ++i) {
-                this.inventory.items[i] = null;
-            }
+            Arrays.fill(this.inventory.items, null);
 
-            for (int i = 0; i < this.inventory.armor.length; ++i) {
-                this.inventory.armor[i] = null;
-            }
+            Arrays.fill(this.inventory.armor, null);
         }
 
         this.closeInventory();
@@ -445,19 +471,17 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         // CraftBukkit end
 
         // CraftBukkit - Get our scores instead
-        Collection collection = this.world.getServer().getScoreboardManager().getScoreboardScores(IScoreboardCriteria.d, this.getName(), new java.util.ArrayList<ScoreboardScore>());
-        Iterator iterator = collection.iterator();
+        Collection<ScoreboardScore> collection = this.world.getServer().getScoreboardManager().getScoreboardScores(IScoreboardCriteria.d, this.getName(), new java.util.ArrayList<ScoreboardScore>());
 
-        while (iterator.hasNext()) {
-            ScoreboardScore scoreboardscore = (ScoreboardScore) iterator.next(); // CraftBukkit - Use our scores instead
+        for (ScoreboardScore o : collection) {
 
-            scoreboardscore.incrementScore();
+            o.incrementScore();
         }
 
         EntityLiving entityliving = this.bt();
 
         if (entityliving != null) {
-            EntityTypes.MonsterEggInfo entitytypes_monsteregginfo = (EntityTypes.MonsterEggInfo) EntityTypes.eggInfo.get(Integer.valueOf(EntityTypes.a(entityliving)));
+            EntityTypes.MonsterEggInfo entitytypes_monsteregginfo = EntityTypes.eggInfo.get(EntityTypes.a(entityliving));
 
             if (entitytypes_monsteregginfo != null) {
                 this.b(entitytypes_monsteregginfo.e);
@@ -910,7 +934,12 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         this.lastSentExp = -1;
         this.bM = -1.0F;
         this.bN = -1;
-        this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
+        // this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue); // PandaSpigot
+        // PandaSpigot start
+        if (this.removeQueue != ((EntityPlayer) entityhuman).removeQueue) {
+            this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
+        }
+        // PandaSpigot end
     }
 
     protected void a(MobEffect mobeffect) {
@@ -1206,22 +1235,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             this.giveExp(this.newExp);
         }
         this.keepLevel = false;
-    }
-
-    public void setFakePlayer(boolean flag) {
-        this.fakePlayer = flag;
-    }
-
-    public boolean isFakePlayer() {
-        return fakePlayer;
-    }
-
-    public void setFakingDeath(boolean fakingDeath) {
-        this.fakingDeath = fakingDeath;
-    }
-
-    public boolean isFakingDeath() {
-        return this.fakingDeath;
     }
 
     @Override

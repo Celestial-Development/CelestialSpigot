@@ -76,8 +76,19 @@ public final class Bukkit {
         }
 
         Bukkit.server = server;
-        server.getLogger().info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");
+        server.getLogger().info(getVersionMessage()); // PandaSpigot - Use Bukkit.getVersionMessage
     }
+
+    // PandaSpigot start
+    /**
+     * Gets message describing the version server is running.
+     *
+     * @return message describing the version server is running
+     */
+    public static String getVersionMessage() {
+        return "This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")";
+    }
+    // PandaSpgiot end
 
     /**
      * Gets the name of this server implementation.
@@ -1161,6 +1172,54 @@ public final class Bukkit {
         return server.getCommandMap();
     }
     // Paper end
+
+    // PandaSpigot start - PlayerProfile API
+    /**
+     * Creates a PlayerProfile for the specified uuid, with name as null
+     * @param uuid UUID to create profile for
+     * @return A PlayerProfile object
+     */
+    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(UUID uuid) {
+        return server.createProfile(uuid);
+    }
+    
+    /**
+     * Creates a PlayerProfile for the specified name, with UUID as null
+     * @param name Name to create profile for
+     * @return A PlayerProfile object
+     */
+    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(String name) {
+        return server.createProfile(name);
+    }
+    
+    /**
+     * Creates a PlayerProfile for the specified name/uuid
+     *
+     * Both UUID and Name can not be null at same time. One must be supplied.
+     *
+     * @param uuid UUID to create profile for
+     * @param name Name to create profile for
+     * @return A PlayerProfile object
+     */
+    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(UUID uuid, String name) {
+        return server.createProfile(uuid, name);
+    }
+    // PandaSpigot end
+
+    // PandaSpigot start
+    /**
+     * Returns the de facto plugins directory, generally used for storing plugin jars to be loaded,
+     * as well as their {@link org.bukkit.plugin.Plugin#getDataFolder() data folders}.
+     *
+     * <p>Plugins should use {@link org.bukkit.plugin.Plugin#getDataFolder()} rather than traversing this
+     * directory manually when determining the location in which to store their data and configuration files.</p>
+     *
+     * @return plugins directory
+     */
+    public static File getPluginsFolder() {
+        return server.getPluginsFolder();
+    }
+    // PandaSpigot end
 
     public static Server.Spigot spigot()
     {

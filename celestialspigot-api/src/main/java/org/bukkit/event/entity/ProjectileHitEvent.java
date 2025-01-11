@@ -1,49 +1,48 @@
 package org.bukkit.event.entity;
 
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.HandlerList;
+// PandaSpigot start
+import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+// PandaSpigot end
 
 /**
  * Called when a projectile hits an object
  */
 public class ProjectileHitEvent extends EntityEvent {
     private static final HandlerList handlers = new HandlerList();
+    // PandaSpigot start
     private final Entity hitEntity;
     private final Block hitBlock;
-    private final org.bukkit.block.BlockFace hitBlockFace; // Paper
-
+    private final BlockFace hitFace;
     public ProjectileHitEvent(final Projectile projectile) {
         this(projectile, null, null);
     }
-
     public ProjectileHitEvent(final Projectile projectile, Entity hitEntity) {
         this(projectile, hitEntity, null);
     }
-
     public ProjectileHitEvent(final Projectile projectile, Block hitBlock) {
         this(projectile, null, hitBlock);
     }
-
     public ProjectileHitEvent(final Projectile projectile, Entity hitEntity, Block hitBlock) {
-        // Paper Start - Add a constructor that includes a BlockFace parameter
         this(projectile, hitEntity, hitBlock, null);
     }
-
-    public ProjectileHitEvent(final Projectile projectile, Entity hitEntity, Block hitBlock, org.bukkit.block.BlockFace hitBlockFace) {
-        // Paper End
+    public ProjectileHitEvent(final Projectile projectile, Entity hitEntity, Block hitBlock, BlockFace hitFace) {
         super(projectile);
         this.hitEntity = hitEntity;
         this.hitBlock = hitBlock;
-        this.hitBlockFace = hitBlockFace; // Paper
+        this.hitFace = hitFace;
     }
+    // PandaSpigot end
 
     @Override
     public Projectile getEntity() {
         return (Projectile) entity;
     }
 
+    // PandaSpigot start
     /**
      * Gets the block that was hit, if it was a block that was hit.
      *
@@ -53,16 +52,15 @@ public class ProjectileHitEvent extends EntityEvent {
         return hitBlock;
     }
 
-    // Paper Start
     /**
-     * Gets the face of the block that the projectile has hit.
+     * Gets the block face that was hit, if it was a block that was hit and the
+     * face was provided in the vent.
      *
-     * @return hit block face or else null
+     * @return hit face or else null
      */
-    public org.bukkit.block.BlockFace getHitBlockFace() {
-        return hitBlockFace;
+    public BlockFace getHitBlockFace() {
+        return hitFace;
     }
-    // Paper End
 
     /**
      * Gets the entity that was hit, if it was an entity that was hit.
@@ -72,6 +70,7 @@ public class ProjectileHitEvent extends EntityEvent {
     public Entity getHitEntity() {
         return hitEntity;
     }
+    // PandaSpigot end
 
     @Override
     public HandlerList getHandlers() {

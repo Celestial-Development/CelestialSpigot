@@ -461,7 +461,7 @@ public enum Material {
     private final Constructor<? extends MaterialData> ctor;
     private static Material[] byId = new Material[383];
     private final static Map<String, Material> BY_NAME = Maps.newHashMap();
-    private final int maxStack;
+    private int maxStack; // PandaSpigot - Make non-final
     private final short durability;
 
     private Material(final int id) {
@@ -517,6 +517,21 @@ public enum Material {
     public int getMaxStackSize() {
         return maxStack;
     }
+    
+    // PandaSpigot start - Add setMaxStackSize()
+    /**
+     * Sets the maximum amount of this material that can be held in a stack.
+     * <p>
+     * <b>This method is for internal use only. Use at your own risk.</b>
+     *
+     * @param maxStack The new maximum stack size for this material.
+     * @deprecated For internal use only.
+     */
+    @Deprecated
+    public void setMaxStackSize(int maxStack) {
+        this.maxStack = maxStack;
+    }
+    // PandaSpigot end
 
     /**
      * Gets the maximum durability of this material

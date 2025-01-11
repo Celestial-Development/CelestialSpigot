@@ -4,7 +4,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.pandaspigot.event.sound.EntitySoundEvent;
+import com.kaydeesea.pandaspigot.event.sound.PlayerSoundEvent;
+import com.kaydeesea.pandaspigot.event.sound.SoundEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftServer;
@@ -15,15 +18,17 @@ import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
-import com.kaydeesea.spigot.CelestialSpigot;
-import com.kaydeesea.spigot.optimized.OptimizedWorldTileEntitySet;
-import org.github.paperspigot.event.ServerExceptionEvent;
-import org.github.paperspigot.exception.ServerInternalException;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+
+// PaperSpigot start
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.github.paperspigot.event.ServerExceptionEvent;
+import org.github.paperspigot.exception.ServerInternalException;
+// PaperSpigot end
 
 // CraftBukkit start
 // CraftBukkit end
@@ -33,21 +38,26 @@ public abstract class World implements IBlockAccess {
     private int a = 63;
     protected boolean e;
     // Spigot start - guard entity list from removals
-    public final List<Entity> entityList = new java.util.ArrayList<>() {
+    public final List<Entity> entityList = new java.util.ArrayList<Entity>()
+    {
         @Override
-        public Entity remove(int index) {
+        public Entity remove(int index)
+        {
             guard();
-            return super.remove(index);
+            return super.remove( index );
         }
 
         @Override
-        public boolean remove(Object o) {
+        public boolean remove(Object o)
+        {
             guard();
-            return super.remove(o);
+            return super.remove( o );
         }
 
-        private void guard() {
-            if (guardEntityList) {
+        private void guard()
+        {
+            if ( guardEntityList )
+            {
                 throw new java.util.ConcurrentModificationException();
             }
         }
@@ -55,14 +65,14 @@ public abstract class World implements IBlockAccess {
     // Spigot end
     protected final Set<Entity> g = Sets.newHashSet(); // Paper
     //public final List<TileEntity> h = Lists.newArrayList(); // PaperSpigot - Remove unused list
-    public final OptimizedWorldTileEntitySet tileEntityList = new OptimizedWorldTileEntitySet();
+    public final List<TileEntity> tileEntityList = Lists.newArrayList();
     private final List<TileEntity> b = Lists.newArrayList();
     private final Set<TileEntity> c = Sets.newHashSet(); // Paper
     public final List<EntityHuman> players = Lists.newArrayList();
     public final List<Entity> k = Lists.newArrayList();
-    protected final IntHashMap<Entity> entitiesById = new IntHashMap<>();
+    protected final IntHashMap<Entity> entitiesById = new IntHashMap();
     private long d = 16777215L;
-    private int I;
+    private int I; private int getSkylightSubtracted() { return this.I; } // PandaSpigot - OBFHELPER
     protected int m = (new Random()).nextInt();
     protected final int n = 1013904223;
     protected float o;
@@ -100,16 +110,18 @@ public abstract class World implements IBlockAccess {
 
     public boolean captureBlockStates = false;
     public boolean captureTreeGeneration = false;
-    public ArrayList<BlockState> capturedBlockStates= new ArrayList<>() {
+    public ArrayList<BlockState> capturedBlockStates= new ArrayList<BlockState>(){
         @Override
-        public boolean add(BlockState blockState) {
-            for (BlockState blockState1 : this) {
-                if (blockState1.getLocation().equals(blockState.getLocation())) {
+        public boolean add( BlockState blockState ) {
+            Iterator<BlockState> blockStateIterator = this.iterator();
+            while( blockStateIterator.hasNext() ) {
+                BlockState blockState1 = blockStateIterator.next();
+                if ( blockState1.getLocation().equals( blockState.getLocation() ) ) {
                     return false;
                 }
             }
 
-            return super.add(blockState);
+            return super.add( blockState );
         }
     };
     public long ticksPerAnimalSpawns;
@@ -125,15 +137,19 @@ public abstract class World implements IBlockAccess {
     private final byte chunkTickRadius;
     public static boolean haveWeSilencedAPhysicsCrash;
     public static String blockLocation;
+    // PandaSpigot start - Remove unused code
+    /*
     private org.spigotmc.TickLimiter entityLimiter;
     private org.spigotmc.TickLimiter tileLimiter;
+    */
+    // PandaSpigot end
     private int tileTickPosition;
-    public ExecutorService lightingExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Paper - Lighting Thread").build()); // PaperSpigot - Asynchronous lighting updates
+    public ExecutorService lightingExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("PaperSpigot - Lighting Thread").build()); // PaperSpigot - Asynchronous lighting updates
     public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<Explosion.CacheKey, Float>(); // PaperSpigot - Optimize explosions
 
     public static long chunkToKey(int x, int z)
     {
-        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ((((long) x) & 0x0000FFFFL));
+        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ( ( ( (long) x ) & 0x0000FFFFL ) << 0 );
         k |= ( ( ( (long) z ) & 0xFFFF0000L ) << 32 ) | ( ( ( (long) z ) & 0x0000FFFFL ) << 16 );
         return k;
     }
@@ -153,6 +169,7 @@ public abstract class World implements IBlockAccess {
 
     public final org.github.paperspigot.PaperSpigotWorldConfig paperSpigotConfig; // PaperSpigot
 
+
     public final co.aikar.timings.WorldTimingsHandler timings; // Spigot
 
     public CraftWorld getWorld() {
@@ -163,17 +180,14 @@ public abstract class World implements IBlockAccess {
         return (CraftServer) Bukkit.getServer();
     }
 
+    // PandaSpigot start
+    public Chunk getChunkIfLoaded(BlockPosition position) {
+        return ((ChunkProviderServer) this.chunkProvider).getChunkIfLoaded(position.getX() >> 4, position.getZ() >> 4);
+    }
+    // PandaSpigot end
+
     public Chunk getChunkIfLoaded(int x, int z) {
         return ((ChunkProviderServer) this.chunkProvider).getChunkIfLoaded(x, z);
-    }
-
-    public Entity getEntity(UUID uuid){
-        for (Entity ent : entityList){
-            if(ent.uniqueID == uuid){
-                return ent;
-            }
-        }
-        return null;
     }
 
     protected World(IDataManager idatamanager, WorldData worlddata, WorldProvider worldprovider, MethodProfiler methodprofiler, boolean flag, ChunkGenerator gen, org.bukkit.World.Environment env) {
@@ -231,8 +245,12 @@ public abstract class World implements IBlockAccess {
         // CraftBukkit end
         this.keepSpawnInMemory = this.paperSpigotConfig.keepSpawnInMemory; // PaperSpigot
         timings = new co.aikar.timings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings
+        // PandaSpigot start - Remove unused code
+        /*
         this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
         this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
+        */
+        // PandaSpigot end
     }
 
     public World b() {
@@ -286,15 +304,20 @@ public abstract class World implements IBlockAccess {
     }
 
     private boolean isValidLocation(BlockPosition blockposition) {
-        return blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() < 30000000 && blockposition.getY() >= 0 && blockposition.getY() < 256;
+    // PandaSpigot start
+        return this.isValidLocation(blockposition.getX(), blockposition.getY(), blockposition.getZ());
     }
+    private boolean isValidLocation(int x, int y, int z) {
+        return x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000 && y >= 0 && y < 256;
+    }
+    // PandaSpigot end
 
     public boolean isEmpty(BlockPosition blockposition) {
         return this.getType(blockposition).getBlock().getMaterial() == Material.AIR;
     }
 
     public boolean isLoaded(BlockPosition blockposition) {
-        return this.a(blockposition, true);
+        return getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4) != null; // PandaSpigot
     }
 
     public boolean a(BlockPosition blockposition, boolean flag) {
@@ -351,8 +374,13 @@ public abstract class World implements IBlockAccess {
     }
 
     public Chunk getChunkAtWorldCoords(BlockPosition blockposition) {
-        return this.getChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4);
+    // PandaSpigot start
+        return this.getChunkAtWorldCoords(blockposition.getX(), blockposition.getZ());
     }
+    public Chunk getChunkAtWorldCoords(int x, int z) {
+        return this.getChunkAt(x >> 4, z >> 4);
+    }
+    // PandaSpigot end
 
     public Chunk getChunkAt(int i, int j) {
         return this.chunkProvider.getOrCreateChunk(i, j);
@@ -533,6 +561,7 @@ public abstract class World implements IBlockAccess {
         this.d(blockposition.up(), block);
         this.d(blockposition.north(), block);
         this.d(blockposition.south(), block);
+        spigotConfig.antiXrayInstance.updateNearbyBlocks(this, blockposition); // Spigot
     }
 
     public void a(BlockPosition blockposition, Block block, EnumDirection enumdirection) {
@@ -569,7 +598,7 @@ public abstract class World implements IBlockAccess {
             try {
                 // CraftBukkit start
                 CraftWorld world = ((WorldServer) this).getWorld();
-                if (world != null) {
+                if (world != null && ((WorldServer) this).hasPhysicsEvent) { // PandaSpigot - hasPhysicsEvent
                     BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), CraftMagicNumbers.getId(block));
                     this.getServer().getPluginManager().callEvent(event);
 
@@ -647,10 +676,46 @@ public abstract class World implements IBlockAccess {
         }
     }
 
+    // PandaSpigot start - test if meets light level, return faster
+    // logic copied from below
+    public boolean isLightLevel(BlockPosition blockposition, int level) {
+        if (isValidLocation(blockposition)) {
+            if (this.getType(blockposition).getBlock().s()) {
+                if (this.c(blockposition.up(), false) >= level) {
+                    return true;
+                }
+                if (this.c(blockposition.east(), false) >= level) {
+                    return true;
+                }
+                if (this.c(blockposition.west(), false) >= level) {
+                    return true;
+                }
+                if (this.c(blockposition.south(), false) >= level) {
+                    return true;
+                }
+                if (this.c(blockposition.north(), false) >= level) {
+                    return true;
+                }
+                return false;
+            } else {
+                if (blockposition.getY() >= 256) {
+                    blockposition = new BlockPosition(blockposition.getX(), 255, blockposition.getZ());
+                }
+
+                Chunk chunk = this.getChunkAtWorldCoords(blockposition);
+                return chunk.getLightSubtracted(blockposition, this.getSkylightSubtracted()) >= level;
+            }
+        } else {
+            return true;
+        }
+    }
+    // PandaSpigot end
+
     public int getLightLevel(BlockPosition blockposition) {
         return this.c(blockposition, true);
     }
 
+    public final int getLight(BlockPosition blockposition, boolean checkNeighbors) { return this.c(blockposition, checkNeighbors); } // PandaSpigot - OBFHELPER
     public int c(BlockPosition blockposition, boolean flag) {
         if (blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() < 30000000) {
             if (flag && this.getType(blockposition).getBlock().s()) {
@@ -761,33 +826,58 @@ public abstract class World implements IBlockAccess {
         return this.worldProvider.p()[this.getLightLevel(blockposition)];
     }
 
+    // PandaSpigot start - Add getTypeIfLoaded
+    public IBlockData getTypeIfLoaded(BlockPosition blockposition) {
+        if (this.captureTreeGeneration) {
+            for (BlockState previous : this.capturedBlockStates) {
+                if (previous.getX() == blockposition.getX() && previous.getY() == blockposition.getY() && previous.getZ() == blockposition.getZ()) {
+                    return CraftMagicNumbers.getBlock(previous.getTypeId()).fromLegacyData(previous.getRawData());
+                }
+            }
+        }
+        Chunk chunk = this.getChunkIfLoaded(blockposition);
+        if (chunk != null) {
+            return this.isValidLocation(blockposition) ? chunk.getBlockData(blockposition) : Blocks.AIR.getBlockData();
+        }
+        return null;
+    }
+    // PandaSpigot end
     // Spigot start
     public IBlockData getType(BlockPosition blockposition)
     {
         return getType( blockposition, true );
     }
     
+    // PandaSpigot start
+    public IBlockData getType(int blockposition_x, int blockposition_y, int blockposition_z) {
+        return getType( blockposition_x, blockposition_y, blockposition_z, true );
+    }
+
     public IBlockData getType(BlockPosition blockposition, boolean useCaptured) {
+        return this.getType(blockposition.getX(), blockposition.getY(), blockposition.getZ(), useCaptured);
+    }
+    public IBlockData getType(int x, int y, int z, boolean useCaptured) {
         // CraftBukkit start - tree generation
         if (captureTreeGeneration && useCaptured) {
     // Spigot end
             Iterator<BlockState> it = capturedBlockStates.iterator();
             while (it.hasNext()) {
                 BlockState previous = it.next();
-                if (previous.getX() == blockposition.getX() && previous.getY() == blockposition.getY() && previous.getZ() == blockposition.getZ()) {
+                if (previous.getX() == x && previous.getY() == y && previous.getZ() == z) {
                     return CraftMagicNumbers.getBlock(previous.getTypeId()).fromLegacyData(previous.getRawData());
                 }
             }
         }
         // CraftBukkit end
-        if (!this.isValidLocation(blockposition)) {
+        if (!this.isValidLocation(x, y, z)) {
             return Blocks.AIR.getBlockData();
         } else {
-            Chunk chunk = this.getChunkAtWorldCoords(blockposition);
+            Chunk chunk = this.getChunkAtWorldCoords(x, z);
 
-            return chunk.getBlockData(blockposition);
+            return chunk.getBlockData(x, y, z);
         }
     }
+    // PandaSpigot end
 
     public boolean w() {
         return this.I < 4;
@@ -811,7 +901,10 @@ public abstract class World implements IBlockAccess {
                 int i1 = MathHelper.floor(vec3d.b);
                 int j1 = MathHelper.floor(vec3d.c);
                 BlockPosition blockposition = new BlockPosition(l, i1, j1);
-                IBlockData iblockdata = this.getType(blockposition);
+                // PandaSpigot start - avoid loading chunks
+                IBlockData iblockdata = this.getTypeIfLoaded(blockposition);
+                if (iblockdata == null) return null;
+                // PandaSpigot end
                 Block block = iblockdata.getBlock();
 
                 if ((!flag1 || block.a(this, blockposition, iblockdata) != null) && block.a(iblockdata, flag)) {
@@ -913,7 +1006,10 @@ public abstract class World implements IBlockAccess {
                     i1 = MathHelper.floor(vec3d.b) - (enumdirection == EnumDirection.UP ? 1 : 0);
                     j1 = MathHelper.floor(vec3d.c) - (enumdirection == EnumDirection.SOUTH ? 1 : 0);
                     blockposition = new BlockPosition(l, i1, j1);
-                    IBlockData iblockdata1 = this.getType(blockposition);
+                    // PandaSpigot start - ray tracing into an unloaded chunk should be treated as a miss, this saves a ton of lag for when AI tries to raytrace near unloaded chunks.
+                    IBlockData iblockdata1 = this.getTypeIfLoaded(blockposition);
+                    if (iblockdata1 == null) return null;
+                    // PandaSpigot end
                     Block block1 = iblockdata1.getBlock();
 
                     if (!flag1 || block1.a(this, blockposition, iblockdata1) != null) {
@@ -939,25 +1035,54 @@ public abstract class World implements IBlockAccess {
     }
 
     public void makeSound(Entity entity, String s, float f, float f1) {
-        if (entity instanceof EntityHuman) {
-            for (IWorldAccess anU : this.u) {
-                anU.a((EntityHuman) entity, s, entity.locX, entity.locY, entity.locZ, f, f1);
-            }
-        } else {
-            for (IWorldAccess anU : this.u) {
-                anU.a(s, entity.locX, entity.locY, entity.locZ, f, f1);
-            }
+        // PandaSpigot start - EntitySoundEvent
+        EntitySoundEvent event = new EntitySoundEvent(
+                entity.getBukkitEntity(), s, f, f1);
+        if (!event.callEvent()) return;
+
+        org.bukkit.Location loc = event.getLocation();
+        s = event.getSound();
+        f = event.getVolume();
+        f1 = event.getPitch();
+        // PandaSpigot end
+        for (int i = 0; i < this.u.size(); ++i) {
+            ((IWorldAccess) this.u.get(i)).a(s, loc.getX(), loc.getY(), loc.getZ(), f, f1); // PandaSpigot - Use x, y, z from event
         }
+
     }
 
     public void a(EntityHuman entityhuman, String s, float f, float f1) {
+        // PandaSpigot start - PlayerSoundEvent
+        PlayerSoundEvent event = new PlayerSoundEvent(
+                (org.bukkit.entity.Player) entityhuman.getBukkitEntity(), s, f, f1);
+        if (!event.callEvent()) return;
+
+        org.bukkit.Location loc = event.getLocation();
+        s = event.getSound();
+        f = event.getVolume();
+        f1 = event.getPitch();
+        // PandaSpigot end
         for (int i = 0; i < this.u.size(); ++i) {
-            ((IWorldAccess) this.u.get(i)).a(entityhuman, s, entityhuman.locX, entityhuman.locY, entityhuman.locZ, f, f1);
+            ((IWorldAccess) this.u.get(i)).a(entityhuman, s, loc.getX(), loc.getY(), loc.getZ(), f, f1); // PandaSpigot - Use x, y, z from event
         }
 
     }
 
     public void makeSound(double d0, double d1, double d2, String s, float f, float f1) {
+        // PandaSpigot start - SoundEvent
+        SoundEvent event = new SoundEvent(
+                new org.bukkit.Location(this.world, d0, d1, d2), s, f, f1);
+        if (!event.callEvent()) return;
+
+        org.bukkit.Location loc = event.getLocation();
+        d0 = loc.getX();
+        d1 = loc.getY();
+        d2 = loc.getZ();
+
+        s = event.getSound();
+        f = event.getVolume();
+        f1 = event.getPitch();
+        // PandaSpigot end
         for (int i = 0; i < this.u.size(); ++i) {
             ((IWorldAccess) this.u.get(i)).a(s, d0, d1, d2, f, f1);
         }
@@ -995,7 +1120,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean addEntity(Entity entity, SpawnReason spawnReason) { // Changed signature, added SpawnReason
-        org.spigotmc.AsyncCatcher.catchOp("entity add"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp( "entity add"); // Spigot
         if (entity == null) return false;
         // CraftBukkit end
         int i = MathHelper.floor(entity.locX / 16.0D);
@@ -1053,39 +1178,32 @@ public abstract class World implements IBlockAccess {
         if (!flag && !this.isChunkLoaded(i, j, true)) {
             entity.dead = true;
             return false;
-        }
-        if (entity instanceof EntityHuman) {
-            EntityHuman entityhuman = (EntityHuman) entity;
+        } else {
+            if (entity instanceof EntityHuman) {
+                EntityHuman entityhuman = (EntityHuman) entity;
 
-            this.players.add(entityhuman);
-            this.everyoneSleeping();
-        }
+                this.players.add(entityhuman);
+                this.everyoneSleeping();
+            }
 
-        this.getChunkAt(i, j).a(entity);
-        this.entityList.add(entity);
-        this.a(entity);
-        // ClubSpigot start - configurable entity hit delay
-        if (entity instanceof EntityLiving) {
-            EntityLiving living = (EntityLiving) entity;
-            if(living.getKnockbackProfile() == null) living.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
-            ((EntityLiving) entity).maxNoDamageTicks = living.getKnockbackProfile().getHitDelay();
+            this.getChunkAt(i, j).a(entity);
+            this.entityList.add(entity);
+            this.a(entity);
+            return true;
         }
-        // ClubSpigot stop
-        return true;
-
     }
 
     protected void a(Entity entity) {
-        for (IWorldAccess iWorldAccess : this.u) {
-            iWorldAccess.a(entity);
+        for (int i = 0; i < this.u.size(); ++i) {
+            ((IWorldAccess) this.u.get(i)).a(entity);
         }
 
         entity.valid = true; // CraftBukkit
     }
 
     protected void b(Entity entity) {
-        for (IWorldAccess iWorldAccess : this.u) {
-            iWorldAccess.b(entity);
+        for (int i = 0; i < this.u.size(); ++i) {
+            ((IWorldAccess) this.u.get(i)).b(entity);
         }
 
         entity.valid = false; // CraftBukkit
@@ -1131,7 +1249,6 @@ public abstract class World implements IBlockAccess {
         entity.die();
         if (entity instanceof EntityHuman) {
             this.players.remove(entity);
-            this.worldMaps.removeTrackedPlayer((EntityHuman) entity); // MinetickMod
             this.everyoneSleeping();
         }
 
@@ -1241,6 +1358,9 @@ public abstract class World implements IBlockAccess {
         // Spigot end
 
         if (entity instanceof EntityItem) return arraylist; // PaperSpigot - Optimize item movement
+        if (entity instanceof EntityTNTPrimed) return arraylist; // PandaSpigot - Optimize tnt entity movement
+        if (entity instanceof EntityFallingBlock) return arraylist; // PandaSpigot - Optimize falling block movement
+        if (entity instanceof EntityArmorStand) return arraylist; // PandaSpigot - Optimize armor stand movement
 
         double d0 = 0.25D;
         List list = this.getEntities(entity, axisalignedbb.grow(d0, d0, d0));
@@ -1319,12 +1439,12 @@ public abstract class World implements IBlockAccess {
     public int a(float f) {
         float f1 = this.c(f);
         float f2 = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
+
         f2 = MathHelper.a(f2, 0.0F, 1.0F);
         f2 = 1.0F - f2;
         f2 = (float) ((double) f2 * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
         f2 = (float) ((double) f2 * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
         f2 = 1.0F - f2;
-
         return (int) (f2 * 11.0F);
     }
 
@@ -1437,12 +1557,12 @@ public abstract class World implements IBlockAccess {
         guardEntityList = true; // Spigot
         // CraftBukkit start - Use field for loop variable
         co.aikar.timings.TimingHistory.entityTicks += this.entityList.size(); // Spigot
-        int entitiesThisCycle = 0;
+        // int entitiesThisCycle = 0; // PandaSpigot - Remove unused code
         // PaperSpigot start - Disable tick limiters
         //if (tickPosition < 0) tickPosition = 0;
         for (tickPosition = 0; tickPosition < entityList.size(); tickPosition++) {
             // PaperSpigot end
-            tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
+            // tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0; // PandaSpigot - Remove redundant code
             entity = (Entity) this.entityList.get(this.tickPosition);
             // CraftBukkit end
             if (entity.vehicle != null) {
@@ -1498,26 +1618,26 @@ public abstract class World implements IBlockAccess {
         this.M = true;
         // CraftBukkit start - From below, clean up tile entities before ticking them
         if (!this.c.isEmpty()) {
-            // SpigotX start - use OptimizedRemoveUtil
-            //this.tileEntityList.removeAll(this.setServerIp);
-            this.tileEntityList.removeAll(this.c);
-            // SpigotX end
-            //this.h.removeAll(this.setServerIp); // PaperSpigot - Remove unused list
+            // PandaSpigot start - Use alternate implementation with faster contains
+            java.util.Set<TileEntity> toRemove = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+            toRemove.addAll(c);
+            this.tileEntityList.removeAll(toRemove);
+            // PandaSpigot end
+            //this.h.removeAll(this.c); // PaperSpigot - Remove unused list
             this.c.clear();
         }
         // CraftBukkit end
 
         // Spigot start
-        int tilesThisCycle = 0;
-        Iterator<TileEntity> tileIterator = this.tileEntityList.tickIterator(this.getTime());
-        while (tileIterator.hasNext()) { // PaperSpigot - Disable tick limiters
-            tileTickPosition = (tileTickPosition < tileEntityList.size()) ? tileTickPosition : 0;
-            TileEntity tileentity = (TileEntity) tileIterator.next();
+        // int tilesThisCycle = 0; // PandaSpigot - Remove unused code
+        for (tileTickPosition = 0; tileTickPosition < tileEntityList.size(); tileTickPosition++) { // PaperSpigot - Disable tick limiters
+            // tileTickPosition = (tileTickPosition < tileEntityList.size()) ? tileTickPosition : 0; // PandaSpigot - Remove redundant code
+            TileEntity tileentity = (TileEntity) this.tileEntityList.get(tileTickPosition);
             // Spigot start
             if (tileentity == null) {
                 getServer().getLogger().severe("Spigot has detected a null entity and has removed it, preventing a crash");
-                tilesThisCycle--;
-                tileIterator.remove();
+                // tilesThisCycle--; // PandaSpigot - Remove unused code
+                this.tileEntityList.remove(tileTickPosition--);
                 continue;
             }
             // Spigot end
@@ -1536,8 +1656,8 @@ public abstract class World implements IBlockAccess {
                         System.err.println(msg);
                         throwable2.printStackTrace();
                         getServer().getPluginManager().callEvent(new ServerExceptionEvent(new ServerInternalException(msg, throwable2)));
-                        tilesThisCycle--;
-                        tileIterator.remove();
+                        // tilesThisCycle--; // PandaSpigot - Remove unused code
+                        this.tileEntityList.remove(tileTickPosition--);
                         continue;
                         // PaperSpigot end
                     }
@@ -1550,8 +1670,8 @@ public abstract class World implements IBlockAccess {
             }
 
             if (tileentity.x()) {
-                tilesThisCycle--;
-                tileIterator.remove();
+                // tilesThisCycle--; // PandaSpigot - Remove unused code
+                this.tileEntityList.remove(tileTickPosition--);
                 //this.h.remove(tileentity); // PaperSpigot - Remove unused list
                 if (this.isLoaded(tileentity.getPosition())) {
                     this.getChunkAtWorldCoords(tileentity.getPosition()).e(tileentity.getPosition());
@@ -1563,10 +1683,10 @@ public abstract class World implements IBlockAccess {
         timings.tileEntityPending.startTiming(); // Spigot
         this.M = false;
         /* CraftBukkit start - Moved up
-        if (!this.setServerIp.isEmpty()) {
-            this.tileEntityList.removeAll(this.setServerIp);
-            this.h.removeAll(this.setServerIp);
-            this.setServerIp.clear();
+        if (!this.c.isEmpty()) {
+            this.tileEntityList.removeAll(this.c);
+            this.h.removeAll(this.c);
+            this.c.clear();
         }
         // CraftBukkit end */
 
@@ -1722,7 +1842,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean a(AxisAlignedBB axisalignedbb, Entity entity) {
-        List list = this.getEntities(null, axisalignedbb);
+        List list = this.getEntities((Entity) null, axisalignedbb);
 
         for (int i = 0; i < list.size(); ++i) {
             Entity entity1 = (Entity) list.get(i);
@@ -1983,12 +2103,15 @@ public abstract class World implements IBlockAccess {
             return null;
         } else {
             // CraftBukkit start
-            if (capturedTileEntities.containsKey(blockposition)) {
-                return capturedTileEntities.get(blockposition);
+            // PandaSpigot start - Optimize Captured TileEntity Lookup
+            TileEntity tileentity = null;
+            if (!capturedTileEntities.isEmpty() && (tileentity = capturedTileEntities.get(blockposition)) != null) {
+                return tileentity;
             }
+            // PandaSpigot end
             // CraftBukkit end
 
-            TileEntity tileentity = null;
+            // TileEntity tileentity = null; // PandaSpigot - move up
             int i;
             TileEntity tileentity1;
 
@@ -2119,7 +2242,7 @@ public abstract class World implements IBlockAccess {
         this.allowAnimals = flag1;
     }
 
-    public void doTick(int ticks) {
+    public void doTick() {
         this.p();
     }
 
@@ -2565,9 +2688,15 @@ public abstract class World implements IBlockAccess {
      * PaperSpigot - Asynchronous lighting updates
      */
     public boolean updateLight(final EnumSkyBlock enumskyblock, final BlockPosition position) {
+        // PandaSpigot start - Optimize Light Recalculations
+        Chunk chunk = this.getChunkIfLoaded(position.getX() >> 4, position.getZ() >> 4);
+        return updateBrightness(enumskyblock, position, chunk);
+    }
+    public boolean updateBrightness(EnumSkyBlock enumskyblock, BlockPosition position, Chunk chunk) {
+        // PandaSpigot end
         int x = position.getX();
         int z = position.getZ();
-        final Chunk chunk = this.getChunkIfLoaded(x >> 4, z >> 4);
+        // final Chunk chunk = this.getChunkIfLoaded(x >> 4, z >> 4); // PandaSpigot - Moved up
         if (chunk == null || !chunk.areNeighborsLoaded(1)) {
             return false;
         }
@@ -2631,8 +2760,11 @@ public abstract class World implements IBlockAccess {
 
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
-                if (this.isChunkLoaded(i1, j1, true)) {
-                    this.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, predicate);
+                // PandaSpigot start - Use getChunkIfLoaded
+                Chunk chunk = this.getChunkIfLoaded(i1, j1);
+                if (chunk != null) {
+                    chunk.a(entity, axisalignedbb, arraylist, predicate);
+                // PandaSpigot end
                 }
             }
         }
@@ -3112,29 +3244,29 @@ public abstract class World implements IBlockAccess {
 
     public void a(int i, BlockPosition blockposition, int j) {
         for (int k = 0; k < this.u.size(); ++k) {
-            this.u.get(k).a(i, blockposition, j);
+            ((IWorldAccess) this.u.get(k)).a(i, blockposition, j);
         }
 
     }
 
     public void triggerEffect(int i, BlockPosition blockposition, int j) {
-        this.a(null, i, blockposition, j);
+        this.a((EntityHuman) null, i, blockposition, j);
     }
 
     public void a(EntityHuman entityhuman, int i, BlockPosition blockposition, int j) {
         try {
             for (int k = 0; k < this.u.size(); ++k) {
-                this.u.get(k).a(entityhuman, i, blockposition, j);
+                ((IWorldAccess) this.u.get(k)).a(entityhuman, i, blockposition, j);
             }
+
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.a(throwable, "Playing level event");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Level event being played");
 
-            crashreportsystemdetails.a("Block coordinates", CrashReportSystemDetails.a(blockposition));
-            crashreportsystemdetails.a("Event source", entityhuman);
-            crashreportsystemdetails.a("Event type", i);
-            crashreportsystemdetails.a("Event data", j);
-
+            crashreportsystemdetails.a("Block coordinates", (Object) CrashReportSystemDetails.a(blockposition));
+            crashreportsystemdetails.a("Event source", (Object) entityhuman);
+            crashreportsystemdetails.a("Event type", (Object) Integer.valueOf(i));
+            crashreportsystemdetails.a("Event data", (Object) Integer.valueOf(j));
             throw new ReportedException(crashreport);
         }
     }
@@ -3192,7 +3324,7 @@ public abstract class World implements IBlockAccess {
 
     public void c(int i, BlockPosition blockposition, int j) {
         for (int k = 0; k < this.u.size(); ++k) {
-            IWorldAccess iworldaccess = this.u.get(k);
+            IWorldAccess iworldaccess = (IWorldAccess) this.u.get(k);
 
             iworldaccess.b(i, blockposition, j);
         }

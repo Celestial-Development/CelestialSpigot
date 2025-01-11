@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public class EntityFallingBlock extends Entity {
 
@@ -75,6 +75,7 @@ public class EntityFallingBlock extends Entity {
                 blockposition = new BlockPosition(this);
                 if (this.world.getType(blockposition).getBlock() == block && !CraftEventFactory.callEntityChangeBlockEvent(this, blockposition.getX(), blockposition.getY(), blockposition.getZ(), Blocks.AIR, 0).isCancelled()) {
                     this.world.setAir(blockposition);
+                    world.spigotConfig.antiXrayInstance.updateNearbyBlocks(world, blockposition); // Spigot
                 } else if (!this.world.isClientSide) {
                     this.die();
                     return;
@@ -92,7 +93,7 @@ public class EntityFallingBlock extends Entity {
 
             // PaperSpigot start - Drop falling blocks above the specified height
             if (this.world.paperSpigotConfig.fallingBlockHeightNerf != 0 && this.locY > this.world.paperSpigotConfig.fallingBlockHeightNerf) {
-                if (this.dropItem) {
+                if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) { // PandaSpigot
                     this.a(new ItemStack(block, 1, block.getDropData(this.block)), 0.0F);
                 }
 
@@ -112,11 +113,12 @@ public class EntityFallingBlock extends Entity {
                     if (this.world.getType(blockposition).getBlock() != Blocks.PISTON_EXTENSION) {
                         this.die();
                         if (!this.e) {
-                            if (this.world.a(block, blockposition, true, EnumDirection.UP, null, null) && !BlockFalling.canFall(this.world, blockposition.down()) /* mimic the false conditions of setTypeIdAndData */ && blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() < 30000000 && blockposition.getY() >= 0 && blockposition.getY() < 256 && this.world.getType(blockposition) != this.block) {
+                            if (this.world.a(block, blockposition, true, EnumDirection.UP, (Entity) null, (ItemStack) null) && !BlockFalling.canFall(this.world, blockposition.down()) /* mimic the false conditions of setTypeIdAndData */ && blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() < 30000000 && blockposition.getY() >= 0 && blockposition.getY() < 256 && this.world.getType(blockposition) != this.block) {
                                 if (CraftEventFactory.callEntityChangeBlockEvent(this, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this.block.getBlock(), this.block.getBlock().toLegacyData(this.block)).isCancelled()) {
                                     return;
                                 }
                                 this.world.setTypeAndData(blockposition, this.block, 3);
+                                world.spigotConfig.antiXrayInstance.updateNearbyBlocks(world, blockposition); // Spigot
                                 // CraftBukkit end
                                 if (block instanceof BlockFalling) {
                                     ((BlockFalling) block).a_(this.world, blockposition);

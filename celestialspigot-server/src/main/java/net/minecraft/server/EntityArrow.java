@@ -1,10 +1,11 @@
 package net.minecraft.server;
 
+import java.util.List;
+
+// CraftBukkit start
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-
-import java.util.List;
 // CraftBukkit end
 
 public class EntityArrow extends Entity implements IProjectile {
@@ -94,7 +95,7 @@ public class EntityArrow extends Entity implements IProjectile {
         this.motX = (double) (-MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
         this.motZ = (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
         this.motY = (double) (-MathHelper.sin(this.pitch / 180.0F * 3.1415927F));
-        this.shoot(this.motX, this.motY, this.motZ, f * 1.5F, 1.0F);
+        this.shoot(this.motX, this.motY, this.motZ, f * 1.5F, 1.0F); // PandaSpigot
     }
 
     protected void h() {
@@ -102,21 +103,23 @@ public class EntityArrow extends Entity implements IProjectile {
     }
 
     public void shoot(double d0, double d1, double d2, float f, float f1) {
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
         d2 /= (double) f2;
+        if (f1 != 0) { // PandaSpigot - Configurable random arrow trajectory
         d0 += this.random.nextGaussian() * (double) (this.random.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) f1;
         d1 += this.random.nextGaussian() * (double) (this.random.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) f1;
         d2 += this.random.nextGaussian() * (double) (this.random.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) f1;
+        } // PandaSpigot - closing bracket
         d0 *= (double) f;
         d1 *= (double) f;
         d2 *= (double) f;
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -126,7 +129,7 @@ public class EntityArrow extends Entity implements IProjectile {
     public void t_() {
         super.t_();
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
-            float f = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            float f = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
             this.lastYaw = this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
             this.lastPitch = this.pitch = (float) (MathHelper.b(this.motY, (double) f) * 180.0D / 3.1415927410125732D);
@@ -227,13 +230,22 @@ public class EntityArrow extends Entity implements IProjectile {
             }
             // PaperSpigot end
 
+            // PandaSpigot start - Call ProjectileCollideEvent
+            if (movingobjectposition != null && movingobjectposition.entity != null) {
+                com.destroystokyo.paper.event.entity.ProjectileCollideEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileCollideEvent(this, movingobjectposition);
+                if (event.isCancelled()) {
+                    movingobjectposition = null;
+                }
+            }
+            // PandaSpigot end
+
             if (movingobjectposition != null) {
-                org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this); // CraftBukkit - Call event
+                org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, movingobjectposition); // CraftBukkit - Call event // PandaSpigot - movingobjectposition
                 if (movingobjectposition.entity != null) {
-                    f2 = (float) MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
+                    f2 = MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
                     int k = MathHelper.f((double) f2 * this.damage);
 
-                    if (this.isCritical()) {
+                    if (this.isCritical()) { // PandaSpigot
                         k += this.random.nextInt(k / 2 + 2);
                     }
 
@@ -265,7 +277,7 @@ public class EntityArrow extends Entity implements IProjectile {
                             }
 
                             if (this.knockbackStrength > 0) {
-                                f3 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                                f3 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
                                 if (f3 > 0.0F) {
                                     movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3);
                                 }
@@ -306,11 +318,11 @@ public class EntityArrow extends Entity implements IProjectile {
                     this.motX = (double) ((float) (movingobjectposition.pos.a - this.locX));
                     this.motY = (double) ((float) (movingobjectposition.pos.b - this.locY));
                     this.motZ = (double) ((float) (movingobjectposition.pos.c - this.locZ));
-                    f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
+                    f1 = MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
                     this.locX -= this.motX / (double) f1 * 0.05000000074505806D;
                     this.locY -= this.motY / (double) f1 * 0.05000000074505806D;
                     this.locZ -= this.motZ / (double) f1 * 0.05000000074505806D;
-                    // this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
+                    this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
                     this.inGround = true;
                     this.shake = 7;
                     this.setCritical(false);
@@ -329,7 +341,7 @@ public class EntityArrow extends Entity implements IProjectile {
             this.locX += this.motX;
             this.locY += this.motY;
             this.locZ += this.motZ;
-            f2 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            f2 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
             this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 
             for (this.pitch = (float) (MathHelper.b(this.motY, (double) f2) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) {
@@ -430,6 +442,16 @@ public class EntityArrow extends Entity implements IProjectile {
                 if (event.isCancelled()) {
                     return;
                 }
+                // PandaSpigot start - EntityPickupItemEvent
+                // Call newer event afterwards
+                org.bukkit.event.entity.EntityPickupItemEvent entityEvent = new org.bukkit.event.entity.EntityPickupItemEvent(entityhuman.getBukkitEntity(), event.getItem(), 0);
+                // event.setCancelled(!entityhuman.canPickUpLoot); TODO
+                this.world.getServer().getPluginManager().callEvent(entityEvent);
+
+                if (entityEvent.isCancelled()) {
+                    return;
+                }
+                // PandaSpigot end
             }
             // CraftBukkit end
             boolean flag = this.fromPlayer == 1 || this.fromPlayer == 2 && entityhuman.abilities.canInstantlyBuild;

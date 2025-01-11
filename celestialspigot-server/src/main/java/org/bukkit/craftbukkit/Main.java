@@ -13,20 +13,16 @@ import com.kaydeesea.spigot.CelestialSpigot;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
-import org.fusesource.jansi.AnsiConsole;
+import net.minecrell.terminalconsole.TerminalConsoleAppender; // PandaSpigot
 
 public class Main {
-
     public static boolean useJline = true;
     public static boolean useConsole = true;
 
     public static void main(String[] args) {
+        if (System.getProperty("paper.explicit-flush") == null) System.setProperty("paper.explicit-flush", "true"); // PandaSpigot
         // Todo: Installation script
-        // KigPaper start - see https://www.evanjones.ca/java-bytebuffer-leak.html
-        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null) {
-            System.setProperty("jdk.nio.maxCachedBufferSize", "262144");
-        }
-        // KigPaper end
+        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null) System.setProperty("jdk.nio.maxCachedBufferSize", "262144"); // PandaSpigot - cap per-thread NIO cache size
         OptionParser parser = new OptionParser() {
             {
                 acceptsAll(asList("?", "help"), "Show the help");
@@ -133,20 +129,19 @@ public class Main {
                 // Spigot End
 
                 // PaperSpigot Start
-                acceptsAll(asList("spigot", "paper-settings"), "File for paperspigot settings")
+                acceptsAll(asList("paper", "paper-settings"), "File for paperspigot settings")
                         .withRequiredArg()
                         .ofType(File.class)
                         .defaultsTo(new File("paper.yml"))
                         .describedAs("Yml file");
                 // PaperSpigot End
 
-                // Paper start
-                acceptsAll(asList("server-name"), "Name of the server")
-                        .withRequiredArg()
-                        .ofType(String.class)
-                        .defaultsTo("Unknown Server")
-                        .describedAs("Name");
-                // Paper end
+
+                acceptsAll(asList("add-plugin", "add-extra-plugin-jar"), "Specify paths to extra plugin jars to be loaded in addition to those in the plugins folder. This argument can be specified multiple times, once for each extra plugin jar path.")
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .describedAs("Jar file");
+                // PandaSpigot end
             }
         };
 
@@ -167,14 +162,15 @@ public class Main {
         } else if (options.has("v")) {
             System.out.println(CraftServer.class.getPackage().getImplementationVersion());
         } else {
+            // Do you love Java using + and ! as string based identifiers? I sure do!
             String path = new File(".").getAbsolutePath();
-
             if (path.contains("!") || path.contains("+")) {
                 System.err.println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
                 return;
             }
 
             try {
+                /* // PandaSpigot - Handled by TerminalConsoleAppender
                 // This trick bypasses Maven Shade's clever rewriting of our getProperty call when using String literals
                 String jline_UnsupportedTerminal = new String(new char[] {'j','l','i','n','e','.','U','n','s','u','p','p','o','r','t','e','d','T','e','r','m','i','n','a','l'});
                 String jline_terminal = new String(new char[] {'j','l','i','n','e','.','t','e','r','m','i','n','a','l'});
@@ -192,29 +188,47 @@ public class Main {
                     // This ensures the terminal literal will always match the jline implementation
                     System.setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
                 }
+                */
+
+                // PandaSpigot start
+                if (options.has("nojline")) {
+                    System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
+                    useJline = false;
+                }
+                // PandaSpigot end
 
                 if (options.has("noconsole")) {
                     useConsole = false;
+                    // PandaSpigot start
+                    useJline = false;
+                    System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
+                    // PandaSpigot end
                 }
 
+                // PandaSpigot start - Not necessary to check permgen size anymore
+                /*
+                // Spigot Start
                 int maxPermGen = 0; // In kb
-
-                for (String s : java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments()) {
-                    if (s.startsWith("-XX:MaxPermSize")) {
+                for ( String s : java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments() )
+                {
+                    if ( s.startsWith( "-XX:MaxPermSize" ) )
+                    {
                         maxPermGen = Integer.parseInt( s.replaceAll( "[^\\d]", "" ) );
-                        maxPermGen <<= 10 * ("kmg".indexOf(Character.toLowerCase(s.charAt(s.length() - 1))));
+                        maxPermGen <<= 10 * ("kmg".indexOf( Character.toLowerCase( s.charAt( s.length() - 1 ) ) ) );
                     }
                 }
-
-                if (Float.parseFloat(System.getProperty( "java.class.version")) < 52 && maxPermGen < (128 << 10)) { // 128mb
+                if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52 && maxPermGen < ( 128 << 10 ) ) // 128mb
+                {
                     System.out.println( "Warning, your max perm gen size is not set or less than 128mb. It is recommended you restart Java with the following argument: -XX:MaxPermSize=128M" );
                     System.out.println( "Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions." );
                 }
-
+                // Spigot End
+                */
+                // PandaSpigot end
+                System.setProperty("library.jansi.version", "CelestialSpigot"); // PandaSpigot - set meaningless jansi version to prevent git builds from crashing on Windows
                 System.out.println("Loading libraries, please wait...");
                 // CelestialSpigot
                 CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
-
                 // PandaSpigot start - Modern tick loop
                 net.minecraft.server.DispenserRegistry.c();
                 OptionSet finalOptions = options;
@@ -239,8 +253,6 @@ public class Main {
                     return dedicatedserver;
                 });
                 // PandaSpigot end - Modern tick loop
-
-                MinecraftServer.main(options);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -250,5 +262,4 @@ public class Main {
     private static List<String> asList(String... params) {
         return Arrays.asList(params);
     }
-
 }

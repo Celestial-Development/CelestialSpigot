@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-
 import java.util.Iterator;
 import java.util.Random;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public class BlockStem extends BlockPlant implements IBlockFragilePlantElement {
 
@@ -52,7 +52,7 @@ public class BlockStem extends BlockPlant implements IBlockFragilePlantElement {
 
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         super.b(world, blockposition, iblockdata, random);
-        if (world.getLightLevel(blockposition.up()) >= 9) {
+        if (world.isLightLevel(blockposition.up(), 9)) { // PandaSpigot - Use isLightLevel
             float f = BlockCrops.a((Block) this, world, blockposition);
 
             if (random.nextInt((int) (world.growthOdds / (this == Blocks.PUMPKIN_STEM? world.spigotConfig.pumpkinModifier : world.spigotConfig.melonModifier) * (25.0F / f)) + 1) == 0) { // Spigot
@@ -152,7 +152,7 @@ public class BlockStem extends BlockPlant implements IBlockFragilePlantElement {
         return ((Integer) iblockdata.get(BlockStem.AGE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockStem.AGE, BlockStem.FACING});
     }
 }

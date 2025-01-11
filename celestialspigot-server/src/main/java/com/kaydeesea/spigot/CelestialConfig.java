@@ -9,10 +9,6 @@ import java.util.*;
 import java.util.logging.Level;
 
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
-import com.kaydeesea.spigot.knockback.*;
-import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
-import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
-import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import com.kaydeesea.spigot.threads.impl.HitDetectionThread;
 import com.kaydeesea.spigot.threads.impl.KnockbackThread;
 import com.kaydeesea.spigot.util.YamlCommenter;
@@ -21,8 +17,6 @@ import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -39,7 +33,7 @@ public class CelestialConfig {
 
 
     private YamlCommenter c;
-
+    // from
     private String pingCommandSelf;
     private String pingCommandOther;
     private String nightCommand;
@@ -71,6 +65,10 @@ public class CelestialConfig {
     private boolean enableShrugCommand;
 
     private boolean improvedHitDetection;
+    private boolean smoothTeleportation;
+    private boolean optimizeTNTMovement;
+    private boolean optimizeLiquidExplosions;
+    private int timeUpdateFrequency;
     private boolean firePlayerMoveEvent;
     private boolean fireLeftClickAir;
     private boolean fireLeftClickBlock;
@@ -106,7 +104,6 @@ public class CelestialConfig {
     private float potionThrowMultiplier;
     private float potionThrowOffset;
     private float potionFallSpeed;
-    private boolean smoothHealPotions;
 
     private float pearlSpeed;
     private float pearlGravity;
@@ -166,9 +163,7 @@ public class CelestialConfig {
         tpsCMD.add(" ");
         tpsCMD.add("&bEntities: &f%entities%");
         tpsCMD.add("&bChunks: &f%loadedChunks%");
-        tpsCMD.add(" ");
         tpsCMD.add("&bMemory: &f%usedMemory%/%allocatedMemory% MB");
-        tpsCMD.add("&bFull tick: &f%averageTickTime%");
         tpsCMD.add(" ");
 
         this.tpsCommand = new ArrayList<String> (this.getList("messages.tps-command", tpsCMD));
@@ -222,6 +217,10 @@ public class CelestialConfig {
         this.enableShrugCommand = this.getBoolean("commands.enable-shrug-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
+        this.smoothTeleportation = this.getBoolean("smooth-teleportation", true);
+        this.optimizeTNTMovement = this.getBoolean("optimize-tnt-movement", true);
+        this.optimizeLiquidExplosions = this.getBoolean("optimize-liquid-explosions", true);
+        this.timeUpdateFrequency = this.getInt("time-update-frequency", 100);
         this.firePlayerMoveEvent = this.getBoolean("fire-player-move-event", true);
         this.fireLeftClickAir = this.getBoolean("fire-left-click-air", true);
         this.fireLeftClickBlock = this.getBoolean("fire-left-click-block", true);
@@ -235,7 +234,7 @@ public class CelestialConfig {
         this.disableJoinMessage = this.getBoolean("disable-join-message", false);
         this.disableLeaveMessage = this.getBoolean("disable-leave-message", false);
         this.fixEatWhileRunning = this.getBoolean("fix-eat-while-running", true);
-        this.tabCompletePlugins = this.getBoolean("tab-complete-plugins", true);
+        this.tabCompletePlugins = this.getBoolean("tab-complete-plugins", false);
         this.tcpNoDelay = this.getBoolean("tcp-no-delay", true);
         this.usePandaWire = this.getBoolean("use-panda-wire", true);
 
@@ -257,7 +256,6 @@ public class CelestialConfig {
         this.potionThrowMultiplier = this.getFloat("potions.potion-throw-multiplier", 0.5f);
         this.potionThrowOffset = this.getFloat("potions.potion-throw-offset", -10.0f);
         this.potionFallSpeed = this.getFloat("potions.potion-fall-speed", 0.05f);
-        this.smoothHealPotions = this.getBoolean("potions.smooth-heal-potions", true);
 
         this.pearlDamage = this.getBoolean("pearls.pearl-damage", true);
         this.pearlGravity = this.getFloat("pearls.pearl-gravity", 0.03F);
@@ -332,6 +330,10 @@ public class CelestialConfig {
         c.addComment("entity-activation", "Enable or disable entity activation rules");
         c.addComment("invalid-arm-animation-kick", "Kick players for invalid arm animations");
         c.addComment("do-chunk-unload", "Enable or disable chunk unloading");
+        c.addComment("smooth-teleportation", "Should smooth-teleportation be enabled?");
+        c.addComment("optimize-tnt-movement", "Should we use panda spigot optimizations for tnt movement?");
+        c.addComment("time-update-frequency", "How many ticks in between sending time updates to players? (PandaSpigot)");
+        c.addComment("optimize-liquid-explosions", "Should we use panda spigot optimizations for liquid explosions?");
         c.addComment("block-operations", "Enable or disable block operations");
         c.addComment("disable-join-message", "Enable or disable join messages");
         c.addComment("disable-leave-message", "Enable or disable leave messages");
@@ -365,7 +367,6 @@ public class CelestialConfig {
         c.addComment("potions.potion-throw-multiplier", "Set the multiplier for potion throwing speed");
         c.addComment("potions.potion-throw-offset", "Set the offset angle for potion throws");
         c.addComment("potions.potion-fall-speed", "Set the falling speed for potions");
-        c.addComment("potions.smooth-heal-potions", "Enable smooth healing effects for potions");
 
         // add Comments for pearls
         c.addComment("pearls", "Edit pearls settings");

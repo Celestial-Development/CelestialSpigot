@@ -23,8 +23,6 @@
  */
 package co.aikar.timings;
 
-import co.aikar.util.LoadingMap;
-import co.aikar.util.MRUMapCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import org.bukkit.Bukkit;
@@ -35,9 +33,15 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import co.aikar.util.LoadingMap;
+import co.aikar.util.MRUMapCache;
 
 import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static co.aikar.timings.TimingsManager.FULL_SERVER_TICK;
 import static co.aikar.timings.TimingsManager.MINUTE_REPORTS;

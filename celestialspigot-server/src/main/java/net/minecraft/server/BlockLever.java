@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
-import org.bukkit.event.block.BlockRedstoneEvent;
-
 import java.util.Iterator;
+
+import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
 public class BlockLever extends Block {
 
@@ -220,7 +220,7 @@ public class BlockLever extends Block {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockLever.FACING, BlockLever.POWERED});
     }
 

@@ -1,16 +1,18 @@
 package net.minecraft.server;
 
+// CraftBukkit start
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+// CraftBukkit end
 
 public class PlayerInteractManager {
 
     public World world;
     public EntityPlayer player;
-    private WorldSettings.EnumGamemode gameMode;
+    private WorldSettings.EnumGamemode gamemode;
     private boolean d;
     private int lastDigTick;
     private BlockPosition f;
@@ -21,42 +23,42 @@ public class PlayerInteractManager {
     private int k;
 
     public PlayerInteractManager(World world) {
-        this.gameMode = WorldSettings.EnumGamemode.NOT_SET;
+        this.gamemode = WorldSettings.EnumGamemode.NOT_SET;
         this.f = BlockPosition.ZERO;
         this.i = BlockPosition.ZERO;
         this.k = -1;
         this.world = world;
     }
 
-    public void setGameMode(WorldSettings.EnumGamemode gameMode) {
-        this.gameMode = gameMode;
-        gameMode.a(this.player.abilities);
+    public void setGameMode(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
+        this.gamemode = worldsettings_enumgamemode;
+        worldsettings_enumgamemode.a(this.player.abilities);
         this.player.updateAbilities();
-        this.player.server.getPlayerList().sendAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, this.player), this.player); // CraftBukkit
+        this.player.server.getPlayerList().sendAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new EntityPlayer[] { this.player}), this.player); // CraftBukkit
     }
 
     public WorldSettings.EnumGamemode getGameMode() {
-        return this.gameMode;
+        return this.gamemode;
     }
 
     public boolean c() {
-        return this.gameMode.e();
+        return this.gamemode.e();
     }
 
     public boolean isCreative() {
-        return this.gameMode.d();
+        return this.gamemode.d();
     }
 
-    public void b(WorldSettings.EnumGamemode gameMode) {
-        if (this.gameMode == WorldSettings.EnumGamemode.NOT_SET) {
-            this.gameMode = gameMode;
+    public void b(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
+        if (this.gamemode == WorldSettings.EnumGamemode.NOT_SET) {
+            this.gamemode = worldsettings_enumgamemode;
         }
 
-        this.setGameMode(this.gameMode);
+        this.setGameMode(this.gamemode);
     }
 
     public void a() {
-        this.currentTick = MinecraftServer.currentTick;
+        this.currentTick = MinecraftServer.currentTick; // CraftBukkit;
         float f;
         int i;
 
@@ -101,31 +103,29 @@ public class PlayerInteractManager {
     }
 
     public void a(BlockPosition blockposition, EnumDirection enumdirection) {
+        // CraftBukkit start
         PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, blockposition, enumdirection, this.player.inventory.getItemInHand());
-
         if (event.isCancelled()) {
-            this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
-
+            // Let the client know the block still exists
+            ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
+            // Update any tile entity data for this block
             TileEntity tileentity = this.world.getTileEntity(blockposition);
-
             if (tileentity != null) {
                 this.player.playerConnection.sendPacket(tileentity.getUpdatePacket());
             }
-
             return;
         }
-
         // CraftBukkit end
         if (this.isCreative()) {
-            if (!this.world.douseFire(null, blockposition, enumdirection)) {
+            if (!this.world.douseFire((EntityHuman) null, blockposition, enumdirection)) {
                 this.breakBlock(blockposition);
             }
 
         } else {
             Block block = this.world.getType(blockposition).getBlock();
 
-            if (this.gameMode.c()) {
-                if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+            if (this.gamemode.c()) {
+                if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
                     return;
                 }
 
@@ -142,47 +142,48 @@ public class PlayerInteractManager {
                 }
             }
 
+            // this.world.douseFire((EntityHuman) null, blockposition, enumdirection); // CraftBukkit - Moved down
             this.lastDigTick = this.currentTick;
             float f = 1.0F;
 
+            // CraftBukkit start - Swings at air do *NOT* exist.
             if (event.useInteractedBlock() == Event.Result.DENY) {
+                // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
                 IBlockData data = this.world.getType(blockposition);
-
                 if (block == Blocks.WOODEN_DOOR) {
+                    // For some reason *BOTH* the bottom/top part have to be marked updated.
                     boolean bottom = data.get(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER;
-
-                    this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
-                    this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, bottom ? blockposition.up() : blockposition.down()));
+                    ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
+                    ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, bottom ? blockposition.up() : blockposition.down()));
                 } else if (block == Blocks.TRAPDOOR) {
-                    this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
+                    ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
                 }
             } else if (block.getMaterial() != Material.AIR) {
                 block.attack(this.world, blockposition, this.player);
-
                 f = block.getDamage(this.player, this.player.world, blockposition);
-
-                this.world.douseFire(null, blockposition, enumdirection);
+                // Allow fire punching to be blocked
+                this.world.douseFire((EntityHuman) null, blockposition, enumdirection);
             }
 
             if (event.useItemInHand() == Event.Result.DENY) {
+                // If we 'insta destroyed' then the client needs to be informed.
                 if (f > 1.0f) {
-                    this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
+                    ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
                 }
-
                 return;
             }
-
             org.bukkit.event.block.BlockDamageEvent blockEvent = CraftEventFactory.callBlockDamageEvent(this.player, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this.player.inventory.getItemInHand(), f >= 1.0f);
 
             if (blockEvent.isCancelled()) {
                 // Let the client know the block still exists
-                this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
+                ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
                 return;
             }
 
             if (blockEvent.getInstaBreak()) {
                 f = 2.0f;
             }
+            // CraftBukkit end
 
             if (block.getMaterial() != Material.AIR && f >= 1.0F) {
                 this.breakBlock(blockposition);
@@ -194,7 +195,9 @@ public class PlayerInteractManager {
                 this.world.c(this.player.getId(), blockposition, i);
                 this.k = i;
             }
+
         }
+        world.spigotConfig.antiXrayInstance.updateNearbyBlocks(world, blockposition); // Spigot
     }
 
     public void a(BlockPosition blockposition) {
@@ -251,7 +254,7 @@ public class PlayerInteractManager {
             org.bukkit.block.Block block = this.world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
 
             // Sword + Creative mode pre-cancel
-            boolean isSwordNoBreak = this.gameMode.d() && this.player.bA() != null && this.player.bA().getItem() instanceof ItemSword;
+            boolean isSwordNoBreak = this.gamemode.d() && this.player.bA() != null && this.player.bA().getItem() instanceof ItemSword;
 
             // Tell client the block is gone immediately then process events
             // Don't tell the client if its a creative sword break because its not broken!
@@ -296,7 +299,7 @@ public class PlayerInteractManager {
                 return false;
             }
         }
-        if (false && this.gameMode.d() && this.player.bA() != null && this.player.bA().getItem() instanceof ItemSword) {
+        if (false && this.gamemode.d() && this.player.bA() != null && this.player.bA().getItem() instanceof ItemSword) {
             return false;
         } else {
             IBlockData iblockdata = this.world.getType(blockposition);
@@ -310,8 +313,8 @@ public class PlayerInteractManager {
             }
             // CraftBukkit end
 
-            if (this.gameMode.c()) {
-                if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+            if (this.gamemode.c()) {
+                if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
                     return false;
                 }
 
@@ -360,7 +363,7 @@ public class PlayerInteractManager {
     }
 
     public boolean useItem(EntityHuman entityhuman, World world, ItemStack itemstack) {
-        if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+        if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
             return false;
         } else {
             int i = itemstack.count;
@@ -398,7 +401,7 @@ public class PlayerInteractManager {
 
     public boolean interact(EntityHuman entityhuman, World world, ItemStack itemstack, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2) {
         /* CraftBukkit start - whole method
-        if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+        if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
             TileEntity tileentity = world.getTileEntity(blockposition);
 
             if (tileentity instanceof ITileInventory) {
@@ -442,13 +445,13 @@ public class PlayerInteractManager {
                 return itemstack.placeItem(entityhuman, world, blockposition, enumdirection, f, f1, f2);
             }
         }
-        // Interact event */
+        // Interract event */
         IBlockData blockdata = world.getType(blockposition);
         boolean result = false;
         if (blockdata.getBlock() != Blocks.AIR) {
             boolean cancelledBlock = false;
 
-            if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+            if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
                 TileEntity tileentity = world.getTileEntity(blockposition);
                 cancelledBlock = !(tileentity instanceof ITileInventory || tileentity instanceof IInventory);
             }
@@ -457,7 +460,7 @@ public class PlayerInteractManager {
                 cancelledBlock = true;
             }
 
-            PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(entityhuman, Action.RIGHT_CLICK_BLOCK, blockposition, itemstack, cancelledBlock, enumdirection);
+            PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(entityhuman, Action.RIGHT_CLICK_BLOCK, blockposition, enumdirection, itemstack, cancelledBlock);
             firedInteract = true;
             interactResult = event.useItemInHand() == Event.Result.DENY;
 
@@ -468,7 +471,7 @@ public class PlayerInteractManager {
                     ((EntityPlayer) entityhuman).playerConnection.sendPacket(new PacketPlayOutBlockChange(world, bottom ? blockposition.up() : blockposition.down()));
                 }
                 result = (event.useItemInHand() != Event.Result.ALLOW);
-            } else if (this.gameMode == WorldSettings.EnumGamemode.SPECTATOR) {
+            } else if (this.gamemode == WorldSettings.EnumGamemode.SPECTATOR) {
                 TileEntity tileentity = world.getTileEntity(blockposition);
 
                 if (tileentity instanceof ITileInventory) {

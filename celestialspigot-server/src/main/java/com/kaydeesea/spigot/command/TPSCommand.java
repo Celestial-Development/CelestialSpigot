@@ -64,7 +64,6 @@ public class TPSCommand extends Command
                             .replaceAll("%loadedChunks%", String.valueOf(loadedChunks.length))
                             .replaceAll("%usedMemory%", String.valueOf(usedMemory))
                             .replaceAll("%allocatedMemory%", String.valueOf(allocatedMemory))
-                            .replaceAll("%averageTickTime%", String.valueOf(MinecraftServer.AVERAGE_TICK_TIME))
             );
         }
 

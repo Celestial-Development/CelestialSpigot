@@ -279,7 +279,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         return super.prepare(difficultydamagescaler, groupdataentity);
     }
 
-    public static class PathfinderGoalSlimeIdle extends PathfinderGoal {
+    static class PathfinderGoalSlimeIdle extends PathfinderGoal {
 
         private EntitySlime a;
 
@@ -297,7 +297,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         }
     }
 
-    public static class PathfinderGoalSlimeRandomJump extends PathfinderGoal {
+    static class PathfinderGoalSlimeRandomJump extends PathfinderGoal {
 
         private EntitySlime a;
 
@@ -320,7 +320,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         }
     }
 
-    public static class PathfinderGoalSlimeRandomDirection extends PathfinderGoal {
+    static class PathfinderGoalSlimeRandomDirection extends PathfinderGoal {
 
         private EntitySlime a;
         private float b;
@@ -345,7 +345,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         }
     }
 
-    public static class PathfinderGoalSlimeNearestPlayer extends PathfinderGoal {
+    static class PathfinderGoalSlimeNearestPlayer extends PathfinderGoal {
 
         private EntitySlime a;
         private int b;
@@ -378,7 +378,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         }
     }
 
-    public static class ControllerMoveSlime extends ControllerMove {
+    static class ControllerMoveSlime extends ControllerMove {
 
         private float g;
         private int h;

@@ -50,22 +50,18 @@ public class ShapedRecipe implements Recipe {
             Validate.notNull(row, "Shape cannot have null rows");
             Validate.isTrue(row.length() > 0 && row.length() < 4, "Crafting rows should be 1, 2, or 3 characters, not ", row.length());
         }
-
         this.rows = new String[shape.length];
-
         for (int i = 0; i < shape.length; i++) {
             this.rows[i] = shape[i];
         }
 
         // Remove character mappings for characters that no longer exist in the shape
         HashMap<Character, ItemStack> newIngredients = new HashMap<Character, ItemStack>();
-
         for (String row : shape) {
             for (Character c : row.toCharArray()) {
                 newIngredients.put(c, ingredients.get(c));
             }
         }
-
         this.ingredients = newIngredients;
 
         return this;

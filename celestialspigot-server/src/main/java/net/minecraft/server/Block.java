@@ -694,7 +694,7 @@ public class Block {
         return 0;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[0]);
     }
 

@@ -4,27 +4,27 @@ import java.io.IOException;
 
 public class PacketPlayOutMultiBlockChange implements Packet<PacketListenerPlayOut> {
 
-    public ChunkCoordIntPair a;
-    public MultiBlockChangeInfo[] b;
+    private ChunkCoordIntPair a;
+    private PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[] b;
 
     public PacketPlayOutMultiBlockChange() {}
 
     public PacketPlayOutMultiBlockChange(int i, short[] ashort, Chunk chunk) {
         this.a = new ChunkCoordIntPair(chunk.locX, chunk.locZ);
-        this.b = new MultiBlockChangeInfo[i];
+        this.b = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[i];
 
         for (int j = 0; j < this.b.length; ++j) {
-            this.b[j] = new MultiBlockChangeInfo(ashort[j], chunk);
+            this.b[j] = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo(ashort[j], chunk);
         }
 
     }
 
     public void a(PacketDataSerializer packetdataserializer) throws IOException {
         this.a = new ChunkCoordIntPair(packetdataserializer.readInt(), packetdataserializer.readInt());
-        this.b = new MultiBlockChangeInfo[packetdataserializer.e()];
+        this.b = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[packetdataserializer.e()];
 
         for (int i = 0; i < this.b.length; ++i) {
-            this.b[i] = new MultiBlockChangeInfo(packetdataserializer.readShort(), (IBlockData) Block.d.a(packetdataserializer.e()));
+            this.b[i] = new PacketPlayOutMultiBlockChange.MultiBlockChangeInfo(packetdataserializer.readShort(), (IBlockData) Block.d.a(packetdataserializer.e()));
         }
 
     }
@@ -33,11 +33,11 @@ public class PacketPlayOutMultiBlockChange implements Packet<PacketListenerPlayO
         packetdataserializer.writeInt(this.a.x);
         packetdataserializer.writeInt(this.a.z);
         packetdataserializer.b(this.b.length);
-        MultiBlockChangeInfo[] apacketplayoutmultiblockchange_multiblockchangeinfo = this.b;
+        PacketPlayOutMultiBlockChange.MultiBlockChangeInfo[] apacketplayoutmultiblockchange_multiblockchangeinfo = this.b;
         int i = apacketplayoutmultiblockchange_multiblockchangeinfo.length;
 
         for (int j = 0; j < i; ++j) {
-            MultiBlockChangeInfo packetplayoutmultiblockchange_multiblockchangeinfo = apacketplayoutmultiblockchange_multiblockchangeinfo[j];
+            PacketPlayOutMultiBlockChange.MultiBlockChangeInfo packetplayoutmultiblockchange_multiblockchangeinfo = apacketplayoutmultiblockchange_multiblockchangeinfo[j];
 
             packetdataserializer.writeShort(packetplayoutmultiblockchange_multiblockchangeinfo.b());
             packetdataserializer.b(Block.d.b(packetplayoutmultiblockchange_multiblockchangeinfo.c()));
@@ -47,14 +47,6 @@ public class PacketPlayOutMultiBlockChange implements Packet<PacketListenerPlayO
 
     public void a(PacketListenerPlayOut packetlistenerplayout) {
         packetlistenerplayout.a(this);
-    }
-
-    public MultiBlockChangeInfo newBlockChangeInfo(short short0, IBlockData iblockdata) {
-        return new MultiBlockChangeInfo(short0,iblockdata);
-    }
-
-    public MultiBlockChangeInfo newBlockChangeInfo(short short0, Chunk chunk) {
-        return new MultiBlockChangeInfo(short0,chunk);
     }
 
     public class MultiBlockChangeInfo {

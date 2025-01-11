@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.Level;
 
+import net.minecraft.server.Item;
 import net.minecraft.server.Items;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
@@ -31,9 +32,11 @@ public class PaperSpigotConfig
             + "join us at the IRC.\n"
             + "\n"
             + "IRC: #paperspigot @ irc.spi.gt ( http://irc.spi.gt/iris/?channels=PaperSpigot )\n";
+    /*========================================================================*/
     public static YamlConfiguration config;
     static int version;
     static Map<String, Command> commands;
+    /*========================================================================*/
 
     public static void init(File configFile)
     {
@@ -46,13 +49,13 @@ public class PaperSpigotConfig
         {
         } catch ( InvalidConfigurationException ex )
         {
-            Bukkit.getLogger().log( Level.SEVERE, "Could not load spigot.yml, please correct your syntax errors", ex );
+            Bukkit.getLogger().log( Level.SEVERE, "Could not load paper.yml, please correct your syntax errors", ex );
             throw Throwables.propagate( ex );
         }
         config.options().header( HEADER );
         config.options().copyDefaults( true );
 
-        commands = new HashMap<>();
+        commands = new HashMap<String, Command>();
 
         version = getInt( "config-version", 9 );
         set( "config-version", 9 );
@@ -63,7 +66,7 @@ public class PaperSpigotConfig
     {
         for ( Map.Entry<String, Command> entry : commands.entrySet() )
         {
-            MinecraftServer.getServer().server.getCommandMap().register( entry.getKey(), "Paper", entry.getValue() );
+            MinecraftServer.getServer().server.getCommandMap().register( entry.getKey(), "PaperSpigot", entry.getValue() );
         }
     }
 
@@ -150,6 +153,10 @@ public class PaperSpigotConfig
     private static void interactLimitEnabled()
     {
         interactLimitEnabled = getBoolean( "settings.limit-player-interactions", true );
+        if ( !interactLimitEnabled )
+        {
+            Bukkit.getLogger().log( Level.INFO, "Disabling player interaction limiter, your server may be more vulnerable to malicious users" );
+        }
     }
 
     public static double strengthEffectModifier;
@@ -164,6 +171,7 @@ public class PaperSpigotConfig
     private static void dataValueAllowedItems()
     {
         dataValueAllowedItems = new HashSet<Integer>( getList( "data-value-allowed-items", Collections.emptyList() ) );
+        Bukkit.getLogger().info( "Data value allowed items: " + StringUtils.join(dataValueAllowedItems, ", ") );
     }
 
     public static boolean stackableLavaBuckets;
@@ -175,25 +183,23 @@ public class PaperSpigotConfig
         stackableWaterBuckets = getBoolean( "stackable-buckets.water", false );
         stackableMilkBuckets = getBoolean( "stackable-buckets.milk", false );
 
-        try {
-            if (stackableLavaBuckets) {
-                // KigPaper - don't update Bukkit enum, broken in Java 17
-                //maxStack.set(Material.LAVA_BUCKET, Material.BUCKET.getMaxStackSize());
-                Items.LAVA_BUCKET.c(Material.BUCKET.getMaxStackSize());
-            }
-
-            if (stackableWaterBuckets) {
-                //maxStack.set(Material.WATER_BUCKET, Material.BUCKET.getMaxStackSize());
-                Items.WATER_BUCKET.c(Material.BUCKET.getMaxStackSize());
-            }
-
-            if (stackableMilkBuckets) {
-                //maxStack.set(Material.MILK_BUCKET, Material.BUCKET.getMaxStackSize());
-                Items.MILK_BUCKET.c(Material.BUCKET.getMaxStackSize());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // PandaSpigot start - Remove hacky stackable buckets code that used reflection
+        int size = Material.BUCKET.getMaxStackSize();
+        if (stackableLavaBuckets) {
+            Material.LAVA_BUCKET.setMaxStackSize(size);
+            Items.LAVA_BUCKET.c(size);
         }
+
+        if (stackableWaterBuckets) {
+            Material.WATER_BUCKET.setMaxStackSize(size);
+            Items.WATER_BUCKET.c(size);
+        }
+
+        if (stackableMilkBuckets) {
+            Material.MILK_BUCKET.setMaxStackSize(size);
+            Items.MILK_BUCKET.c(size);
+        }
+        // PandaSpigot end
     }
 
     public static boolean warnForExcessiveVelocity;

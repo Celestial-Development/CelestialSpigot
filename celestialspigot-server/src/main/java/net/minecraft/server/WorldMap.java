@@ -3,14 +3,16 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.map.CraftMapView;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+// CraftBukkit start
 import java.util.UUID;
+
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.map.CraftMapView;
 // CraftBukkit end
 
 public class WorldMap extends PersistentBase {
@@ -311,18 +313,4 @@ public class WorldMap extends PersistentBase {
 
         }
     }
-
-    // MinetickMod start
-    public void untrackPlayer(EntityHuman entityhuman) {
-        if(this.i.containsKey(entityhuman)) {
-            this.i.remove(entityhuman);
-            java.util.Iterator<WorldMapHumanTracker> iter = (java.util.Iterator<WorldMapHumanTracker>) this.g.iterator();
-            while(iter.hasNext()) {
-                if(iter.next().trackee == entityhuman) {
-                    iter.remove();
-                }
-            }
-        }
-    }
-    // MinetickMod end
 }

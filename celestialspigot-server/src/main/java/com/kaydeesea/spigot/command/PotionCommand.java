@@ -22,7 +22,6 @@ public class PotionCommand extends Command {
                     " * §b/potion §fspeed §7<value>",
                     " * §b/potion §fmultiplier §7<value>",
                     " * §b/potion §foffset §7<value>",
-                    " * §b/potion §fsmooth §7<true|false>",
                     ""
             )
             .toArray(String[]::new);
@@ -65,12 +64,6 @@ public class PotionCommand extends Command {
                         CelestialSpigot.INSTANCE.getConfig().set("potions.potion-fall-speed", Float.valueOf(args[1]));
                         CelestialSpigot.INSTANCE.getConfig().setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion fall speed to: " + ChatColor.AQUA + Float.valueOf(args[1]));
-                        break;
-                    }
-                    case "smooth": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potions.smooth-heal-potions", Boolean.valueOf(args[1]));
-                        CelestialSpigot.INSTANCE.getConfig().setSmoothHealPotions(Boolean.parseBoolean(args[1]));
-                        s.sendMessage(ChatColor.WHITE + "You've set smooth heal potions to: " + ChatColor.AQUA + Boolean.valueOf(args[1]));
                         break;
                     }
                     default: {

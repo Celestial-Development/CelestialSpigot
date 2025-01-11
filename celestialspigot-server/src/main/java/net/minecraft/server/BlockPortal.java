@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import com.google.common.cache.LoadingCache;
-import org.bukkit.event.entity.EntityPortalEnterEvent;
-import org.bukkit.event.world.PortalCreateEvent;
-
 import java.util.Random;
+
+import org.bukkit.event.entity.EntityPortalEnterEvent; // CraftBukkit
+import org.bukkit.event.world.PortalCreateEvent; // CraftBukkit
 
 public class BlockPortal extends BlockHalfTransparent {
 
@@ -128,7 +128,7 @@ public class BlockPortal extends BlockHalfTransparent {
         return a((EnumDirection.EnumAxis) iblockdata.get(BlockPortal.AXIS));
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPortal.AXIS});
     }
 

@@ -1,7 +1,8 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
+
+import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
 public class BlockPoweredRail extends BlockMinecartTrackAbstract {
 
@@ -152,7 +153,7 @@ public class BlockPoweredRail extends BlockMinecartTrackAbstract {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockPoweredRail.SHAPE, BlockPoweredRail.POWERED});
     }
 

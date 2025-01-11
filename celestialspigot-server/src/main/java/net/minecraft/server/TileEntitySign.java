@@ -9,6 +9,7 @@ public class TileEntitySign extends TileEntity {
     public boolean isEditable = true;
     private EntityHuman h;
     private final CommandObjectiveExecutor i = new CommandObjectiveExecutor();
+    public static final int MAX_SIGN_LINE_LENGTH = Integer.getInteger("Panda.maxSignLength", 80); // PandaSpigot
 
     public TileEntitySign() {}
 

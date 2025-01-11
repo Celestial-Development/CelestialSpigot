@@ -1,8 +1,7 @@
 package org.bukkit.plugin.messaging;
 
-import org.bukkit.plugin.Plugin;
-
 import java.util.Set;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Represents a possible recipient for a Plugin Message.

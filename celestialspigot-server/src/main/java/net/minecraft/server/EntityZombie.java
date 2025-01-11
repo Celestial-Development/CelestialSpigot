@@ -1,13 +1,15 @@
 package net.minecraft.server;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+
+//CraftBukkit start
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
 //CraftBukkit end
 
 public class EntityZombie extends EntityMonster {
@@ -180,7 +182,7 @@ public class EntityZombie extends EntityMonster {
                     int j1 = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
                     int k1 = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 
-                    if (World.a((IBlockAccess) this.world, new BlockPosition(i1, j1 - 1, k1)) && this.world.getLightLevel(new BlockPosition(i1, j1, k1)) < 10) {
+                    if (World.a((IBlockAccess) this.world, new BlockPosition(i1, j1 - 1, k1)) && !this.world.isLightLevel(new BlockPosition(i1, j1, k1), 10)) { // PandaSpigot - Use isLightLevel
                         entityzombie.setPosition((double) i1, (double) j1, (double) k1);
                         if (!this.world.isPlayerNearby((double) i1, (double) j1, (double) k1, 7.0D) && this.world.a(entityzombie.getBoundingBox(), (Entity) entityzombie) && this.world.getCubes(entityzombie, entityzombie.getBoundingBox()).isEmpty() && !this.world.containsLiquid(entityzombie.getBoundingBox())) {
                             this.world.addEntity(entityzombie, CreatureSpawnEvent.SpawnReason.REINFORCEMENTS); // CraftBukkit

@@ -1,10 +1,11 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.event.entity.EntityInteractEvent;
-
 import java.util.Iterator;
 import java.util.Random;
+
+// CraftBukkit start
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 // CraftBukkit end
 
 public class BlockSoil extends Block {
@@ -64,7 +65,6 @@ public class BlockSoil extends Block {
                 org.bukkit.event.Cancellable cancellable;
                 if (entity instanceof EntityHuman) {
                     cancellable = CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-//                    cancellable = CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null);
                 } else {
                     cancellable = new EntityInteractEvent(entity.getBukkitEntity(), world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
                     world.getServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
@@ -128,7 +128,7 @@ public class BlockSoil extends Block {
         return ((Integer) iblockdata.get(BlockSoil.MOISTURE)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockSoil.MOISTURE});
     }
 }

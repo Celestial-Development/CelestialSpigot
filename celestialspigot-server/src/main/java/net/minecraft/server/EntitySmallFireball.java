@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent; // CraftBukkit
 
 public class EntitySmallFireball extends EntityFireball {
 

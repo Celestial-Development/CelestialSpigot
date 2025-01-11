@@ -1,6 +1,7 @@
 package org.bukkit.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -95,15 +96,17 @@ public abstract class Command {
 
         String lastWord = args[args.length - 1];
 
-        ArrayList<String> matchedPlayers = new ArrayList<>();
+        Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+
+        ArrayList<String> matchedPlayers = new ArrayList<String>();
         for (Player player : sender.getServer().getOnlinePlayers()) {
             String name = player.getName();
-            if (StringUtil.startsWithIgnoreCase(name, lastWord)) {
+            if ((senderPlayer == null || senderPlayer.canSee(player)) && StringUtil.startsWithIgnoreCase(name, lastWord)) {
                 matchedPlayers.add(name);
             }
         }
 
-        matchedPlayers.sort(String.CASE_INSENSITIVE_ORDER);
+        Collections.sort(matchedPlayers, String.CASE_INSENSITIVE_ORDER);
         return matchedPlayers;
     }
 

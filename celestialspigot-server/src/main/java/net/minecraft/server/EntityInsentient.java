@@ -1,17 +1,17 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.EntityUnleashEvent;
-import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
-import com.kaydeesea.spigot.CelestialSpigot;
-
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+// CraftBukkit start
+import com.kaydeesea.spigot.CelestialSpigot;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityUnleashEvent;
+import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 // CraftBukkit end
 
 public abstract class EntityInsentient extends EntityLiving {
@@ -25,7 +25,7 @@ public abstract class EntityInsentient extends EntityLiving {
     protected NavigationAbstract navigation;
     public PathfinderGoalSelector goalSelector;
     public PathfinderGoalSelector targetSelector;
-    private WeakReference<EntityLiving> goalTarget = new WeakReference<EntityLiving>(null); // MinetickMod
+    private EntityLiving goalTarget;
     private EntitySenses bk;
     private ItemStack[] equipment = new ItemStack[5];
     public float[] dropChances = new float[5];
@@ -86,7 +86,7 @@ public abstract class EntityInsentient extends EntityLiving {
     }
 
     public EntityLiving getGoalTarget() {
-        return this.goalTarget.get(); // MinetickMod
+        return this.goalTarget;
     }
 
     public void setGoalTarget(EntityLiving entityliving) {
@@ -119,7 +119,7 @@ public abstract class EntityInsentient extends EntityLiving {
                 entityliving = null;
             }
         }
-        this.goalTarget = new WeakReference<EntityLiving>(entityliving); // MinetickMod
+        this.goalTarget = entityliving;
         // CraftBukkit end
     }
 
@@ -286,7 +286,7 @@ public abstract class EntityInsentient extends EntityLiving {
 
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
-
+        
         // CraftBukkit start - If looting or persistence is false only use it if it was set after we started using it
         if (nbttagcompound.hasKeyOfType("CanPickUpLoot", 1)) {
             boolean data = nbttagcompound.getBoolean("CanPickUpLoot");
@@ -397,7 +397,14 @@ public abstract class EntityInsentient extends EntityLiving {
                 }
             }
 
-            if (flag && this.a(itemstack)) {
+            // PandaSpigot start - EntityPickupItemEvent
+            boolean canPickup = flag && this.a(itemstack);
+            org.bukkit.event.entity.EntityPickupItemEvent entityEvent = new org.bukkit.event.entity.EntityPickupItemEvent((org.bukkit.entity.LivingEntity) this.getBukkitEntity(), (org.bukkit.entity.Item) entityitem.getBukkitEntity(), 0);
+            entityEvent.setCancelled(!canPickup);
+            this.world.getServer().getPluginManager().callEvent(entityEvent);
+
+            if (!entityEvent.isCancelled()) {
+            // PandaSpigot end
                 if (itemstack1 != null && this.random.nextFloat() - 0.1F < this.dropChances[i]) {
                     this.a(itemstack1, 0.0F);
                 }
@@ -460,7 +467,7 @@ public abstract class EntityInsentient extends EntityLiving {
         this.D();
         this.world.methodProfiler.b();
         // Spigot Start
-        if ( this.fromMobSpawner )
+        if ( !CelestialSpigot.INSTANCE.getConfig().isMobAIEnabled() || this.fromMobSpawner ) // PandaSpigot - configurable entity AI
         {
             // PaperSpigot start - Allow nerfed mobs to jump
             if (goalFloat != null) {
@@ -471,34 +478,30 @@ public abstract class EntityInsentient extends EntityLiving {
             return;
         }
         // Spigot End
-        if(CelestialSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
-            this.world.methodProfiler.a("sensing");
-            this.bk.a();
-            this.world.methodProfiler.b();
-            this.world.methodProfiler.a("targetSelector");
-            this.targetSelector.a();
-            this.world.methodProfiler.b();
-            this.world.methodProfiler.a("goalSelector");
-            this.goalSelector.a();
-            this.world.methodProfiler.b();
-            this.world.methodProfiler.a("navigation");
-            this.navigation.k();
-            this.world.methodProfiler.b();
-        }
+        this.world.methodProfiler.a("sensing");
+        this.bk.a();
+        this.world.methodProfiler.b();
+        this.world.methodProfiler.a("targetSelector");
+        this.targetSelector.a();
+        this.world.methodProfiler.b();
+        this.world.methodProfiler.a("goalSelector");
+        this.goalSelector.a();
+        this.world.methodProfiler.b();
+        this.world.methodProfiler.a("navigation");
+        this.navigation.k();
+        this.world.methodProfiler.b();
         this.world.methodProfiler.a("mob tick");
         this.E();
         this.world.methodProfiler.b();
-        if(CelestialSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
-            this.world.methodProfiler.a("controls");
-            this.world.methodProfiler.a("move");
-            this.moveController.c();
-            this.world.methodProfiler.c("look");
-            this.lookController.a();
-            this.world.methodProfiler.c("jump");
-            this.g.b();
-            this.world.methodProfiler.b();
-            this.world.methodProfiler.b();
-        }
+        this.world.methodProfiler.a("controls");
+        this.world.methodProfiler.a("move");
+        this.moveController.c();
+        this.world.methodProfiler.c("look");
+        this.lookController.a();
+        this.world.methodProfiler.c("jump");
+        this.g.b();
+        this.world.methodProfiler.b();
+        this.world.methodProfiler.b();
     }
 
     protected void E() {}

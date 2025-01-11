@@ -33,10 +33,12 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
     static final ItemMetaKey BOOK_PAGES = new ItemMetaKey("pages");
     static final ItemMetaKey RESOLVED = new ItemMetaKey("resolved");
     static final ItemMetaKey GENERATION = new ItemMetaKey("generation");
-    static final int MAX_PAGE_LENGTH = 340; // SportPaper - Limit max page length to 340
-    static final int MAX_TITLE_LENGTH = 32; // SportPaper - Limit max title length to 32
-    static final int MAX_PAGES = 50; // SportPaper - Limit pages to 50
-    static final int MAX_AUTHOR_LENGTH = 16; // SportPaper - Limit author name length to 16
+    // PandaSpigot start - Add security limits to books
+    static final int MAX_PAGES = 50;
+    static final int MAX_PAGE_LENGTH = 256;
+    static final int MAX_TITLE_LENGTH = 16;
+    static final int MAX_AUTHOR_LENGHT = 16;
+    // PandaSpigot end
 
     protected String title;
     protected String author;
@@ -63,13 +65,11 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         super(tag);
 
         if (tag.hasKey(BOOK_TITLE.NBT)) {
-            // SportPaper - Apply title limit
-            this.title = limit( tag.getString(BOOK_TITLE.NBT), MAX_TITLE_LENGTH ); // Spigot
+            this.title = limit( tag.getString(BOOK_TITLE.NBT), MAX_TITLE_LENGTH ); // Spigot // PandaSpigot
         }
 
         if (tag.hasKey(BOOK_AUTHOR.NBT)) {
-            // SportPaper - Apply author limit
-            this.author = limit( tag.getString(BOOK_AUTHOR.NBT), MAX_AUTHOR_LENGTH ); // Spigot
+            this.author = limit( tag.getString(BOOK_AUTHOR.NBT), MAX_AUTHOR_LENGHT ); // Spigot // PandaSpigot
         }
 
         boolean resolved = false;
@@ -84,8 +84,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         if (tag.hasKey(BOOK_PAGES.NBT) && handlePages) {
             NBTTagList pages = tag.getList(BOOK_PAGES.NBT, 8);
 
-            // SportPaper - Apply page limit
-            for (int i = 0; i < Math.min(pages.size(), MAX_PAGES); i++) {
+            for (int i = 0; i < Math.min(pages.size(), MAX_PAGES); i++) { // PandaSpigot
                 String page = pages.getString(i);
                 if (resolved) {
                     try {
@@ -95,8 +94,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
                         // Ignore and treat as an old book
                     }
                 }
-                // SportPaper - Apply page limit
-                addPage( limit( page, MAX_PAGE_LENGTH ) ); // Spigot
+                addPage( limit( page, MAX_PAGE_LENGTH ) ); // Spigot // PandaSpigot
             }
         }
     }
@@ -110,18 +108,11 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
 
         Iterable<?> pages = SerializableMeta.getObject(Iterable.class, map, BOOK_PAGES.BUKKIT, true);
         if(pages != null) {
-            int pageCount = 0;
-
+            int pageCount = 0; // PandaSpigot
             for (Object page : pages) {
-                // SportPaper - Limit page iterations
-                if (pageCount < MAX_PAGES) {
-                    if (page instanceof String) {
-                        addPage((String) page);
-                    }
-
-                    pageCount++;
-                } else {
-                    break;
+                if (pageCount++ > MAX_PAGES) break; // PandaSpigot
+                if (page instanceof String) {
+                    addPage((String) page);
                 }
             }
         }
@@ -201,12 +192,15 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
     public boolean setTitle(final String title) {
         if (title == null) {
             this.title = null;
-        } else {
-            // SportPaper - Simplify & improve title handling
-            this.title = title.substring(0, Math.min(title.length(), MAX_PAGE_LENGTH));
+            return true;
+        } else if (title.length() > MAX_TITLE_LENGTH) {
+            // PandaSpigot start
+            this.title = title.substring(0, MAX_TITLE_LENGTH);
+            return true;
+            // PandaSpigot end
         }
 
-        // SportPaper - Always return true
+        this.title = title;
         return true;
     }
 
@@ -228,8 +222,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
             throw new IllegalArgumentException("Invalid page number " + page + "/" + pages.size());
         }
 
-        // SportPaper - Simplify page handling
-        String newText = text == null ? "" : text.substring(0, Math.min(text.length(), MAX_PAGE_LENGTH));
+        String newText = text == null ? "" : text.length() > MAX_PAGE_LENGTH ? text.substring(0, MAX_PAGE_LENGTH) : text;
         pages.set(page - 1, CraftChatMessage.fromString(newText, true)[0]);
     }
 
@@ -240,22 +233,14 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
     }
 
     public void addPage(final String... pages) {
-        // SportPaper - Limit page iterations
-        for (int i = 0; i < Math.min(pages.length, MAX_PAGES); i++) {
-            // SportPaper - Apply page limit
-            if (getPageCount() < MAX_PAGES) {
-                String page = pages[i];
-
-                if (page == null) {
-                    page = "";
-                } else if (page.length() > MAX_PAGE_LENGTH) {
-                    page = page.substring(0, MAX_PAGE_LENGTH);
-                }
-
-                this.pages.add(CraftChatMessage.fromString(page, true)[0]);
-            } else {
-                break;
+        for (String page : pages) {
+            if (page == null) {
+                page = "";
+            } else if (page.length() > MAX_PAGE_LENGTH) {
+                page = page.substring(0, MAX_PAGE_LENGTH);
             }
+
+            this.pages.add(CraftChatMessage.fromString(page, true)[0]);
         }
     }
 
@@ -281,8 +266,9 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
 
     public void setPages(List<String> pages) {
         this.pages.clear();
-        // SportPaper - Convert list to array to reuse methods
-        addPage(pages.toArray(new String[0]));
+        for (String page : pages) {
+            addPage(page);
+        }
     }
 
     private boolean isValidPage(int page) {

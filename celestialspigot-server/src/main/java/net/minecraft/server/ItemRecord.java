@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Maps;
-
 import java.util.Map;
 
 public class ItemRecord extends Item {

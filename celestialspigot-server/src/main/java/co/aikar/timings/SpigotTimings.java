@@ -1,11 +1,10 @@
 package co.aikar.timings;
 
-import net.minecraft.server.Block;
-import net.minecraft.server.Entity;
-import net.minecraft.server.TileEntity;
-import org.bukkit.craftbukkit.scheduler.CraftTask;
+import net.minecraft.server.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
+
+import org.bukkit.craftbukkit.scheduler.CraftTask;
 
 public final class SpigotTimings {
 
@@ -18,12 +17,19 @@ public final class SpigotTimings {
     public static final Timing timeUpdateTimer = Timings.ofSafe("Time Update");
     public static final Timing serverCommandTimer = Timings.ofSafe("Server Command");
     public static final Timing worldSaveTimer = Timings.ofSafe("World Save");
+
     public static final Timing tickEntityTimer = Timings.ofSafe("## tickEntity");
     public static final Timing tickTileEntityTimer = Timings.ofSafe("## tickTileEntity");
+
     public static final Timing processQueueTimer = Timings.ofSafe("processQueue");
+
     public static final Timing playerCommandTimer = Timings.ofSafe("playerCommand");
+
     public static final Timing entityActivationCheckTimer = Timings.ofSafe("entityActivationCheck");
     public static final Timing checkIfActiveTimer = Timings.ofSafe("checkIfActive");
+
+    public static final Timing antiXrayUpdateTimer = Timings.ofSafe("anti-xray - update");
+    public static final Timing antiXrayObfuscateTimer = Timings.ofSafe("anti-xray - obfuscate");
 
     private SpigotTimings() {}
 

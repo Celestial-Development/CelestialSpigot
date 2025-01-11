@@ -34,7 +34,7 @@ public class BlockDaylightDetector extends BlockContainer {
             float f1 = f < 3.1415927F ? 0.0F : 6.2831855F;
 
             f += (f1 - f) * 0.2F;
-            i = (int) Math.round((float) i * MathHelper.cos(f));
+            i = Math.round((float) i * MathHelper.cos(f));
             i = MathHelper.clamp(i, 0, 15);
             if (this.b) {
                 i = 15 - i;
@@ -100,7 +100,7 @@ public class BlockDaylightDetector extends BlockContainer {
         return ((Integer) iblockdata.get(BlockDaylightDetector.POWER)).intValue();
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockDaylightDetector.POWER});
     }
 }

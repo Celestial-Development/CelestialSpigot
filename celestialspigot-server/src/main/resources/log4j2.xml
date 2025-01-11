@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" packages="com.mojang.util">
     <Appenders>
-        <Console name="WINDOWS_COMPAT" target="SYSTEM_OUT"></Console>
-        <Queue name="TerminalConsole">
-            <PatternLayout pattern="[%d{HH:mm:ss} %level]: %msg%n" />
-        </Queue>
+        <!-- Console Appender with Pattern Layout for colors -->
+        <Console name="WINDOWS_COMPAT" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{HH:mm:ss} %highlight{%level}]: %msg%n" />
+        </Console>
+
+        <!-- Rolling File Appender for logging to files -->
         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n" />
             <Policies>
@@ -13,15 +15,15 @@
             </Policies>
         </RollingRandomAccessFile>
     </Appenders>
+
     <Loggers>
+        <!-- Root Logger -->
         <Root level="info">
             <filters>
                 <MarkerFilter marker="NETWORK_PACKETS" onMatch="DENY" onMismatch="NEUTRAL" />
             </filters>
-            <AppenderRef ref="WINDOWS_COMPAT" level="info"/>
-            <AppenderRef ref="File"/>
-            <AppenderRef ref="TerminalConsole" level="info"/>
+            <AppenderRef ref="WINDOWS_COMPAT" />
+            <AppenderRef ref="File" />
         </Root>
     </Loggers>
 </Configuration>
-

@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-
 import java.util.List;
 
 public class BlockHopper extends BlockContainer {
@@ -156,7 +155,7 @@ public class BlockHopper extends BlockContainer {
         return i;
     }
 
-    public BlockStateList getStateList() {
+    protected BlockStateList getStateList() {
         return new BlockStateList(this, new IBlockState[] { BlockHopper.FACING, BlockHopper.ENABLED});
     }
 }
