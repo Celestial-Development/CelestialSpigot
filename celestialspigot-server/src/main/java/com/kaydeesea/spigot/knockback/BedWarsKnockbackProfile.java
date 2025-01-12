@@ -79,27 +79,28 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
         // pratSpigot end
     };
 
-    default void handleEntityHuman(EntityHuman victim, EntityPlayer source, int i, Vector vector) {
+    default void handleEntityHuman(EntityHuman attacker, EntityPlayer player, int i, Vector vector) {
         boolean wtap = isWTap();
         boolean slowdownBoolean = isSlowdownBoolean();
         if (slowdownBoolean) {
-            victim.motX *= 0.6;
-            victim.motY *= 0.6;
+            attacker.motX *= 0.6;
+            attacker.motY *= 0.6;
         }
         if (wtap) {
-            victim.setSprinting(false);
+            attacker.setSprinting(false);
         }
-        if (source != null && source.velocityChanged) {
-            PlayerVelocityEvent event = new PlayerVelocityEvent(source.getBukkitEntity(), source.getBukkitEntity().getVelocity());
-            victim.world.getServer().getPluginManager().callEvent(event);
+
+        if (player != null && player.velocityChanged) {
+            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), player.getBukkitEntity().getVelocity());
+            attacker.world.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                source.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                source.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(source));
+                player.getBukkitEntity().setVelocityDirect(event.getVelocity());
+                player.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(player));
             }
-            source.velocityChanged = false;
-            source.motX = vector.getX();
-            source.motY = vector.getY();
-            source.motZ = vector.getZ();
+            player.velocityChanged = false;
+            player.motX = vector.getX();
+            player.motY = vector.getY();
+            player.motZ = vector.getZ();
         }
 
 

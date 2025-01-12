@@ -1,6 +1,7 @@
 package com.kaydeesea.spigot.knockback;
 
 import net.minecraft.server.*;
+import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
@@ -96,9 +97,9 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
         // cSpigot end
     };
 
-    default void handleEntityHuman(EntityHuman victim, EntityPlayer source, int i, Vector vector) {
+    default void handleEntityHuman(EntityHuman attacker, EntityPlayer player) {
 
-        if (source != null && source.velocityChanged) {
+        if (player != null && player.velocityChanged) {
             double velX;
             double velY;
             double velZ;
@@ -106,68 +107,70 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
             double entityVelY;
 
             if (isInheritH()) {
-                entityVelY = victim.motX * getInheritHValue();
-                double entityVelZ = victim.motZ * getInheritHValue();
+                entityVelY = player.motX * getInheritHValue();
+                double entityVelZ = player.motZ * getInheritHValue();
 
-                velX = entityVelY + Math.sin(Math.toRadians(source.yaw)) * -1.0D;
-                velZ = entityVelZ + Math.cos(Math.toRadians(source.yaw));
+                velX = entityVelY + Math.sin(Math.toRadians(player.yaw)) * -1.0D;
+                velZ = entityVelZ + Math.cos(Math.toRadians(player.yaw));
             } else {
-                velX = Math.sin(Math.toRadians(source.getHeadRotation())) * -1.0D;
-                velZ = Math.cos(Math.toRadians(source.getHeadRotation()));
+                velX = Math.sin(Math.toRadians(player.getHeadRotation())) * -1.0D;
+                velZ = Math.cos(Math.toRadians(player.getHeadRotation()));
             }
 
             velX *= getHorizontal();
             velZ *= getHorizontal();
 
             if (isInheritY()) {
-                entityVelY = victim.motY * getInheritYValue();
+                entityVelY = player.motY * getInheritYValue();
                 velY = entityVelY + getVertical();
             } else {
                 velY = getVertical();
             }
 
-            if (victim.onGround) {
+            if (player.onGround) {
                 velX *= getGroundH();
                 velY *= getGroundV();
                 velZ *= getGroundH();
             }
 
             //Knockback enchantment knockback
-            int enchLvl = EnchantmentManager.getEnchantmentLevel(Enchantment.KNOCKBACK.id, source.inventory.getItemInHand()) + 1;
+            int enchLvl = EnchantmentManager.getEnchantmentLevel(Enchantment.KNOCKBACK.id, attacker.inventory.getItemInHand()) + 1;
             if (enchLvl > 0) {
                 velX *= enchLvl;
                 velZ *= enchLvl;
             }
 
-            if (source.isSprinting() && !victim.isSprinting()) {
+            if (attacker.isSprinting() && !player.isSprinting()) {
                 velX *= getSprintH();
                 velY *= getSprintV();
                 velZ *= getSprintH();
             }
 
-            if (source.isSprinting()) {
-                victim.motX *= getSlowdown();
-                victim.motZ *= getSlowdown();
-                if(isStopSprint()) victim.setSprinting(false);
+            if (attacker.isSprinting()) {
+                attacker.motX *= getSlowdown();
+                attacker.motZ *= getSlowdown();
+                if(isStopSprint()) attacker.setSprinting(false);
             }
 
 
-            yOff = victim.locY - source.locY;
+            yOff = player.locY - attacker.locY;
 
             if (isEnableVerticalLimit() && yOff > getVerticalLimit()) {
                 velY = 0.0D;
             }
-            PlayerVelocityEvent event = new PlayerVelocityEvent(source.getBukkitEntity(), source.getBukkitEntity().getVelocity());
-            victim.world.getServer().getPluginManager().callEvent(event);
+            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), new Vector(velX, velY, velZ));
+            Bukkit.getPluginManager().callEvent(event);
+
             if (!event.isCancelled()) {
-                source.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                source.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(source));
+                player.getBukkitEntity().setVelocityDirect(event.getVelocity());
+                player.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(player.getId(), velX, velY, velZ));
             }
+
             //Update our velocity
-            source.velocityChanged = false;
-            source.motX = velX;
-            source.motY = velY;
-            source.motZ = velZ;
+            player.velocityChanged = false;
+            player.motX = velX;
+            player.motY = velY;
+            player.motZ = velZ;
         }
 
     }

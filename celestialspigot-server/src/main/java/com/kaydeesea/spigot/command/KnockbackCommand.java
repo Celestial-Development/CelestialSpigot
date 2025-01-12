@@ -3,6 +3,7 @@ package com.kaydeesea.spigot.command;
 import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.FoxTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
@@ -31,6 +32,7 @@ public class KnockbackCommand extends Command {
                     "§3Knockback Commands:",
                     " * §b/knockback §flist",
                     " * §b/knockback §freload",
+                    " * §b/knockback §fimplementations",
                     " * §b/knockback §finfo §7<profile>",
                     " * §b/knockback §fcreate §7<profile> <type>",
                     " * §b/knockback §fdelete §7<profile>",
@@ -44,6 +46,7 @@ public class KnockbackCommand extends Command {
     private final List<String> SUB_COMMANDS = Arrays.asList(
             "list",
             "reload",
+            "implementations",
             "create",
             "delete",
             "load",
@@ -128,6 +131,13 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
         }
+        else if (command.equalsIgnoreCase("implementations")) {
+            StringBuilder types = new StringBuilder();
+            for (ProfileType value : ProfileType.values()) {
+                types.append(value.name()).append(" ");
+            }
+            sender.sendMessage("§bTypes: §3" + types);
+        }
         else if (command.equalsIgnoreCase("set")) {
             if (args.length < 3) {
                 sender.sendMessage("§cUsage: /knockback set <profile_name> <player>");
@@ -164,19 +174,29 @@ public class KnockbackCommand extends Command {
                     profile.save();
                     sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
                     sendKnockbackInfo(sender, profile);
-                } else if(args[2].equalsIgnoreCase("bedwars")) {
+                }
+                else if(args[2].equalsIgnoreCase("bedwars")) {
                     BedWarsTypeKnockbackProfile profile = new BedWarsTypeKnockbackProfile(args[1]);
                     CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
                     profile.save();
                     sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
                     sendKnockbackInfo(sender, profile);
-                } else if(args[2].equalsIgnoreCase("detailed")) {
+                }
+                else if(args[2].equalsIgnoreCase("detailed")) {
                     DetailedTypeKnockbackProfile profile = new DetailedTypeKnockbackProfile(args[1]);
                     CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
                     profile.save();
                     sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
                     sendKnockbackInfo(sender, profile);
-                } else {
+                }
+                else if(args[2].equalsIgnoreCase("fox")) {
+                    FoxTypeKnockbackProfile profile = new FoxTypeKnockbackProfile(args[1]);
+                    CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
+                    profile.save();
+                    sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
+                    sendKnockbackInfo(sender, profile);
+                }
+                else {
                     StringBuilder types = new StringBuilder();
                     for (ProfileType value : ProfileType.values()) {
                         types.append(value.name()).append(" ");
@@ -267,6 +287,26 @@ public class KnockbackCommand extends Command {
                     }
                     double value = Double.parseDouble(args[3]);
                     modifyDetailedTypeProfile((DetailedTypeKnockbackProfile) profile, s, value);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+
+                }
+                if (profile.getType() == ProfileType.FOX) {
+                    if(((FoxTypeKnockbackProfile) profile).isValueBoolean(s)) {
+                        if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
+                            sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
+                            return true;
+                        }
+                        boolean value = Boolean.parseBoolean(args[3]);
+                        modifyFoxTypeProfile((FoxTypeKnockbackProfile) profile, s, value);
+                        sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+                        return true;
+                    }
+                    if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
+                        sender.sendMessage("§4" + args[3] + " §c is not a number.");
+                        return true;
+                    }
+                    double value = Double.parseDouble(args[3]);
+                    modifyFoxTypeProfile((FoxTypeKnockbackProfile) profile, s, value);
                     sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
 
                 }
@@ -362,6 +402,54 @@ public class KnockbackCommand extends Command {
         profile.save();
     }
 
+    private static void modifyFoxTypeProfile(FoxTypeKnockbackProfile profile, String s, double value) {
+
+        if (s.equalsIgnoreCase("horizontal")) {
+            profile.setHorizontal(value);
+        } else if (s.equalsIgnoreCase("vertical")) {
+            profile.setVertical(value);
+        } else if (s.equalsIgnoreCase("vertical-limit")) {
+            profile.setVerticalLimit(value);
+        } else if (s.equalsIgnoreCase("ground-horizontal")) {
+            profile.setGroundH(value);
+        } else if (s.equalsIgnoreCase("ground-vertical")) {
+            profile.setGroundV(value);
+        } else if (s.equalsIgnoreCase("sprint-horizontal")) {
+            profile.setSprintH(value);
+        } else if (s.equalsIgnoreCase("sprint-vertical")) {
+            profile.setSprintV(value);
+        } else if (s.equalsIgnoreCase("slowdown")) {
+            profile.setSlowdown(value);
+        } else if (s.equalsIgnoreCase("inherit-horizontal-value")) {
+            profile.setInheritHValue(value);
+        } else if (s.equalsIgnoreCase("inherit-vertical-value")) {
+            profile.setInheritYValue(value);
+        } else if (s.equalsIgnoreCase("hit-delay")) {
+            profile.setHitDelay((int) value);
+            for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if(onlinePlayer.getKnockbackProfile() == profile) {
+                    ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                }
+            }
+        }
+        profile.save();
+    }
+
+    private static void modifyFoxTypeProfile(FoxTypeKnockbackProfile profile, String s, boolean value) {
+        if(s.equalsIgnoreCase("1-point-1-kb"))
+            profile.setOnePoint1kb(value);
+        else if (s.equalsIgnoreCase("enable-vertical-limit")) {
+            profile.setEnableVerticalLimit(value);
+        } else if (s.equalsIgnoreCase("stop-sprint")) {
+            profile.setStopSprint(value);
+        } else if (s.equalsIgnoreCase("inherit-horizontal")) {
+            profile.setInheritH(value);
+        } else if (s.equalsIgnoreCase("inherit-vertical")) {
+            profile.setInheritY(value);
+        }
+        profile.save();
+    }
+
 
     private static void modifyBedWarsTypeProfile(BedWarsTypeKnockbackProfile profile, String s, double value) {
         if (s.equalsIgnoreCase("friction")) {
@@ -444,6 +532,21 @@ public class KnockbackCommand extends Command {
                 }
             }
         }
+        if(profile instanceof FoxTypeKnockbackProfile) {
+            FoxTypeKnockbackProfile prf = (FoxTypeKnockbackProfile) profile;
+            for (String value : prf.getValues()) {
+                String msg = getFoxKnockbackInfo(value, prf);
+                TextComponent message = new TextComponent(msg);
+                BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
+                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component));
+                message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/knockback edit "+profile.getName()+" "+value+" "));
+                if(sender instanceof  Player) {
+                    ((Player)sender).spigot().sendMessage(message);
+                } else {
+                    sender.sendMessage(msg);
+                }
+            }
+        }
         if(profile instanceof NormalTypeKnockbackProfile) {
             NormalTypeKnockbackProfile prf = (NormalTypeKnockbackProfile) profile;
             for (String value : prf.getValues()) {
@@ -503,6 +606,43 @@ public class KnockbackCommand extends Command {
         } else if (value.equalsIgnoreCase("friction-vertical")) {
             msg += prf.getFrictionY();
         } else if (value.equalsIgnoreCase("horizontal")) {
+            msg += prf.getHorizontal();
+        } else if (value.equalsIgnoreCase("vertical")) {
+            msg += prf.getVertical();
+        } else if (value.equalsIgnoreCase("vertical-limit")) {
+            msg += prf.getVerticalLimit();
+        } else if (value.equalsIgnoreCase("ground-horizontal")) {
+            msg += prf.getGroundH();
+        } else if (value.equalsIgnoreCase("ground-vertical")) {
+            msg += prf.getGroundV();
+        } else if (value.equalsIgnoreCase("sprint-horizontal")) {
+            msg += prf.getSprintH();
+        } else if (value.equalsIgnoreCase("sprint-vertical")) {
+            msg += prf.getSprintV();
+        } else if (value.equalsIgnoreCase("slowdown")) {
+            msg += prf.getSlowdown();
+        } else if (value.equalsIgnoreCase("inherit-horizontal")) {
+            msg += prf.isInheritH();
+        } else if (value.equalsIgnoreCase("inherit-vertical")) {
+            msg += prf.isInheritY();
+        } else if (value.equalsIgnoreCase("inherit-horizontal-value")) {
+            msg += prf.getInheritHValue();
+        } else if (value.equalsIgnoreCase("inherit-vertical-value")) {
+            msg += prf.getInheritYValue();
+        } else if (value.equalsIgnoreCase("enable-vertical-limit")) {
+            msg += prf.isEnableVerticalLimit();
+        } else if (value.equalsIgnoreCase("stop-sprint")) {
+            msg += prf.isStopSprint();
+        } else if(value.equalsIgnoreCase("hit-delay")) {
+            msg += prf.getHitDelay();
+        }
+        return msg;
+    }
+    private static String getFoxKnockbackInfo(String value, FoxTypeKnockbackProfile prf) {
+        String msg = "§b" + value + ": §3";
+        if(value.equalsIgnoreCase("1-point-1-kb"))
+            msg += prf.isOnePoint1kb();
+        else if (value.equalsIgnoreCase("horizontal")) {
             msg += prf.getHorizontal();
         } else if (value.equalsIgnoreCase("vertical")) {
             msg += prf.getVertical();

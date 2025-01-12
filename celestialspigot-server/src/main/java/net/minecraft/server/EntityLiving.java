@@ -15,10 +15,7 @@ import java.util.ArrayList;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.CelestialSpigot;
-import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
-import com.kaydeesea.spigot.knockback.DetailedKnockbackProfile;
-import com.kaydeesea.spigot.knockback.KnockBackProfile;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
+import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import lombok.Getter;
 import lombok.Setter;
@@ -918,6 +915,8 @@ public abstract class EntityLiving extends Entity {
                     ((BedWarsKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
                 } else if (profile instanceof DetailedKnockbackProfile) {
                     ((DetailedTypeKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
+                } else if(profile instanceof FoxKnockbackProfile) {
+                    ((FoxKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
                 }
                 return;
             }

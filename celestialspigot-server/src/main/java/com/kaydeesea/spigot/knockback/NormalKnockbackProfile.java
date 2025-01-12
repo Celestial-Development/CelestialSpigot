@@ -1,6 +1,7 @@
 package com.kaydeesea.spigot.knockback;
 
 import net.minecraft.server.*;
+import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
@@ -43,28 +44,32 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
         // cSpigot end
     };
 
-    default void handleEntityHuman(EntityHuman victim, EntityPlayer source, int i, Vector vector) {
+    default void handleEntityHuman(EntityHuman attacker, EntityPlayer player, int i, Vector vector) {
         if (i > 0) {
-            source.g(
-                    -MathHelper.sin(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal(),
+            player.g(
+                    (double) (-MathHelper.sin(attacker.yaw * 3.1415926F / 180.0F) * (float) i) * getExtraHorizontal(),
                     getExtraVertical(),
-                    MathHelper.cos(victim.yaw * 3.1415927F / 180.0F) * (float) i * getExtraHorizontal());
-
-            victim.motX *= 0.6;
-            victim.motZ *= 0.6;
-            victim.setSprinting(false);
+                    (double) (MathHelper.cos(attacker.yaw * 3.1415926F / 180.0F) * (float) i) * getExtraHorizontal());
         }
-        if (source != null && source.velocityChanged) {
-            PlayerVelocityEvent event = new PlayerVelocityEvent(source.getBukkitEntity(), source.getBukkitEntity().getVelocity());
-            victim.world.getServer().getPluginManager().callEvent(event);
+        attacker.motX *= 0.6;
+        attacker.motZ *= 0.6;
+        attacker.setSprinting(false);
+
+        if (player != null && player.velocityChanged) {
+            //Send and check PlayerVelocityEvent
+            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), player.getBukkitEntity().getVelocity());
+            Bukkit.getPluginManager().callEvent(event);
+
             if (!event.isCancelled()) {
-                source.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                source.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(source));
+                player.getBukkitEntity().setVelocityDirect(event.getVelocity());
+                player.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(player));
             }
-            source.velocityChanged = false;
-            source.motX = vector.getX();
-            source.motY = vector.getY();
-            source.motZ = vector.getZ();
+
+            //Update Player connection and new velocity
+            player.velocityChanged = false;
+            player.motX = vector.getX();
+            player.motY = vector.getY();
+            player.motZ = vector.getZ();
         }
 
     }

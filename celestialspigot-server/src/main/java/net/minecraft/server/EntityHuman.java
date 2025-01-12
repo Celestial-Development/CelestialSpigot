@@ -3,10 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.CelestialSpigot;
-import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
-import com.kaydeesea.spigot.knockback.DetailedKnockbackProfile;
-import com.kaydeesea.spigot.knockback.KnockBackProfile;
-import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
+import com.kaydeesea.spigot.knockback.*;
 import com.mojang.authlib.GameProfile;
 import java.util.Collection;
 import java.util.Iterator;
@@ -1031,7 +1028,9 @@ public abstract class EntityHuman extends EntityLiving {
                             } else if(profile instanceof BedWarsKnockbackProfile) {
                                 ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                             } else if(profile instanceof DetailedKnockbackProfile) {
-                                ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                                ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
+                            } else if(profile instanceof FoxKnockbackProfile) {
+                                ((FoxKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
                             }
                         }
 

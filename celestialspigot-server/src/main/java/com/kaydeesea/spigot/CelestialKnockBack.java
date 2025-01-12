@@ -6,6 +6,7 @@ import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.kaydeesea.spigot.knockback.ProfileType;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.FoxTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
@@ -112,18 +113,21 @@ public class CelestialKnockBack {
                     String a = path + "." + value;
                     if (value.equalsIgnoreCase("friction"))
                         profile.setFriction(this.getDouble(a, profile.getFriction()));
-                    if (value.equalsIgnoreCase("horizontal"))
+                    else if (value.equalsIgnoreCase("horizontal"))
                         profile.setHorizontal(this.getDouble(a, profile.getHorizontal()));
-                    if (value.equalsIgnoreCase("vertical"))
+                    else if (value.equalsIgnoreCase("vertical"))
                         profile.setVertical(this.getDouble(a, profile.getVertical()));
-                    if (value.equalsIgnoreCase("vertical-limit"))
+                    else if (value.equalsIgnoreCase("vertical-limit"))
                         profile.setVerticalLimit(this.getDouble(a, profile.getVerticalLimit()));
-                    if (value.equalsIgnoreCase("extra-horizontal"))
+                    else if (value.equalsIgnoreCase("extra-horizontal"))
                         profile.setExtraHorizontal(this.getDouble(a, profile.getExtraHorizontal()));
-                    if (value.equalsIgnoreCase("extra-vertical"))
+                    else if (value.equalsIgnoreCase("extra-vertical"))
                         profile.setExtraVertical(this.getDouble(a, profile.getExtraVertical()));
+                    else if (value.equalsIgnoreCase("hit-delay"))
+                        profile.setHitDelay(this.getInt(a, profile.getHitDelay()));
                 }
-            } else if(type.equals(ProfileType.BEDWARS)) {
+            }
+            else if(type.equals(ProfileType.BEDWARS)) {
                 BedWarsTypeKnockbackProfile profile = (BedWarsTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
@@ -134,26 +138,29 @@ public class CelestialKnockBack {
                     String a = path + "." + value;
                     if(value.equalsIgnoreCase("friction"))
                         profile.setFrictionValue(this.getDouble(a, profile.getFrictionValue()));
-                    if(value.equalsIgnoreCase("horizontal"))
+                    else if(value.equalsIgnoreCase("horizontal"))
                         profile.setHorizontal(this.getDouble(a, profile.getHorizontal()));
-                    if(value.equalsIgnoreCase("vertical"))
+                    else if(value.equalsIgnoreCase("vertical"))
                         profile.setVertical(this.getDouble(a, profile.getVertical()));
-                    if (value.equalsIgnoreCase("vertical-limit"))
+                    else if (value.equalsIgnoreCase("vertical-limit"))
                         profile.setVerticalLimit(this.getDouble(a, profile.getVerticalLimit()));
-                    if(value.equalsIgnoreCase("max-range-reduction"))
+                    else if(value.equalsIgnoreCase("max-range-reduction"))
                         profile.setMaxRangeReduction(this.getDouble(a, profile.getMaxRangeReduction()));
-                    if(value.equalsIgnoreCase("range-factor"))
+                    else if(value.equalsIgnoreCase("range-factor"))
                         profile.setRangeFactor(this.getDouble(a, profile.getRangeFactor()));
-                    if(value.equalsIgnoreCase("start-range-reduction"))
+                    else if(value.equalsIgnoreCase("start-range-reduction"))
                         profile.setStartRangeReduction(this.getDouble(a, profile.getStartRangeReduction()));
-                    if(value.equalsIgnoreCase("w-tap"))
+                    else if(value.equalsIgnoreCase("w-tap"))
                         profile.setWTap(this.getBoolean(a, profile.isWTap()));
-                    if(value.equalsIgnoreCase("slowdown-boolean"))
+                    else if(value.equalsIgnoreCase("slowdown-boolean"))
                         profile.setSlowdownBoolean(this.getBoolean(a, profile.isSlowdownBoolean()));
-                    if(value.equalsIgnoreCase("friction-boolean"))
+                    else if(value.equalsIgnoreCase("friction-boolean"))
                         profile.setFriction(this.getBoolean(a, profile.isFriction()));
+                    else if (value.equalsIgnoreCase("hit-delay"))
+                        profile.setHitDelay(this.getInt(a, profile.getHitDelay()));
                 }
-            } else if (type.equals(ProfileType.DETAILED)) {
+            }
+            else if (type.equals(ProfileType.DETAILED)) {
                 DetailedTypeKnockbackProfile profile = (DetailedTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
@@ -196,9 +203,55 @@ public class CelestialKnockBack {
                         profile.setInheritHValue(this.getDouble(configPath, profile.getInheritHValue()));
                     else if (value.equalsIgnoreCase("inherit-vertical-value"))
                         profile.setInheritYValue(this.getDouble(configPath, profile.getInheritYValue()));
+                    else if (value.equalsIgnoreCase("hit-delay"))
+                        profile.setHitDelay(this.getInt(configPath, profile.getHitDelay()));
                 }
             }
+            else if (type.equals(ProfileType.FOX)) {
+                FoxTypeKnockbackProfile profile = (FoxTypeKnockbackProfile) getKbProfileByName(key);
 
+                if (profile == null) {
+                    profile = new FoxTypeKnockbackProfile(key);
+                    this.kbProfiles.add(profile);
+                }
+
+                for (String value : profile.getValues()) {
+                    String configPath = path + "." + value;
+
+                    if(value.equalsIgnoreCase("1-point-1-kb"))
+                        profile.setOnePoint1kb(this.getBoolean(configPath, profile.isOnePoint1kb()));
+                    else if (value.equalsIgnoreCase("horizontal"))
+                        profile.setHorizontal(this.getDouble(configPath, profile.getHorizontal()));
+                    else if (value.equalsIgnoreCase("vertical"))
+                        profile.setVertical(this.getDouble(configPath, profile.getVertical()));
+                    else if (value.equalsIgnoreCase("vertical-limit"))
+                        profile.setVerticalLimit(this.getDouble(configPath, profile.getVerticalLimit()));
+                    else if (value.equalsIgnoreCase("ground-horizontal"))
+                        profile.setGroundH(this.getDouble(configPath, profile.getGroundH()));
+                    else if (value.equalsIgnoreCase("ground-vertical"))
+                        profile.setGroundV(this.getDouble(configPath, profile.getGroundV()));
+                    else if (value.equalsIgnoreCase("sprint-horizontal"))
+                        profile.setSprintH(this.getDouble(configPath, profile.getSprintH()));
+                    else if (value.equalsIgnoreCase("sprint-vertical"))
+                        profile.setSprintV(this.getDouble(configPath, profile.getSprintV()));
+                    else if (value.equalsIgnoreCase("slowdown"))
+                        profile.setSlowdown(this.getDouble(configPath, profile.getSlowdown()));
+                    else if (value.equalsIgnoreCase("enable-vertical-limit"))
+                        profile.setEnableVerticalLimit(this.getBoolean(configPath, profile.isEnableVerticalLimit()));
+                    else if (value.equalsIgnoreCase("stop-sprint"))
+                        profile.setStopSprint(this.getBoolean(configPath, profile.isStopSprint()));
+                    else if (value.equalsIgnoreCase("inherit-horizontal"))
+                        profile.setInheritH(this.getBoolean(configPath, profile.isInheritH()));
+                    else if (value.equalsIgnoreCase("inherit-vertical"))
+                        profile.setInheritY(this.getBoolean(configPath, profile.isInheritY()));
+                    else if (value.equalsIgnoreCase("inherit-horizontal-value"))
+                        profile.setInheritHValue(this.getDouble(configPath, profile.getInheritHValue()));
+                    else if (value.equalsIgnoreCase("inherit-vertical-value"))
+                        profile.setInheritYValue(this.getDouble(configPath, profile.getInheritYValue()));
+                    else if (value.equalsIgnoreCase("hit-delay"))
+                        profile.setHitDelay(this.getInt(configPath, profile.getHitDelay()));
+                }
+            }
 
         }
 
@@ -206,6 +259,7 @@ public class CelestialKnockBack {
 
         if (this.currentKb == null) {
             this.currentKb = defaultProfile;
+            set("knockback.current", "default");
         }
 
         save();
