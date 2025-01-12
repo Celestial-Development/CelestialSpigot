@@ -4,8 +4,8 @@ import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.*;
 import net.minecraft.server.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -30,6 +30,7 @@ public class KnockbackCommand extends Command {
             "",
                     "§3Knockback Commands:",
                     " * §b/knockback §flist",
+                    " * §b/knockback §freload",
                     " * §b/knockback §finfo §7<profile>",
                     " * §b/knockback §fcreate §7<profile> <type>",
                     " * §b/knockback §fdelete §7<profile>",
@@ -42,6 +43,7 @@ public class KnockbackCommand extends Command {
             .toArray(String[]::new);
     private final List<String> SUB_COMMANDS = Arrays.asList(
             "list",
+            "reload",
             "create",
             "delete",
             "load",
@@ -114,7 +116,7 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
         }
-        else if (command.equals("info") || command.equalsIgnoreCase("information")) {
+        else if (command.equalsIgnoreCase("info") || command.equalsIgnoreCase("information")) {
             if (args.length < 2) {
                 sender.sendMessage("§cUsage: /knockback info <profile_name>");
                 return true;
@@ -126,7 +128,7 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
         }
-        else if (command.equals("set")) {
+        else if (command.equalsIgnoreCase("set")) {
             if (args.length < 3) {
                 sender.sendMessage("§cUsage: /knockback set <profile_name> <player>");
                 return true;
@@ -142,6 +144,13 @@ public class KnockbackCommand extends Command {
                 return true;
             }
             target.setKnockbackProfile(profile);
+        }
+        else if (command.equalsIgnoreCase("reload")) {
+            if(CelestialSpigot.INSTANCE.getKnockBack().reload()) {
+                sender.sendMessage("§aSuccessfully reloaded the knockback.yml file.");
+            } else {
+                sender.sendMessage("§cThere was an error while reloading the knockback.yml file, please correct syntax errors.");
+            }
         }
         else if (command.equalsIgnoreCase("create") || command.equalsIgnoreCase("add")) {
             if (args.length < 3) {
@@ -241,14 +250,6 @@ public class KnockbackCommand extends Command {
                 if (a.equalsIgnoreCase(f)) s = a;
             }
             if (!s.isEmpty()) {
-                if(s.equalsIgnoreCase("hit-delay")) {
-                    sender.sendMessage("§aUpdating hitdelay for everyone...");
-                    for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-                        if(onlinePlayer.getKnockbackProfile() == profile) {
-                            ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
-                        }
-                    }
-                }
                 if (profile.getType() == ProfileType.DETAILED) {
                     if(((DetailedTypeKnockbackProfile) profile).isValueBoolean(s)) {
                         if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
@@ -339,6 +340,11 @@ public class KnockbackCommand extends Command {
             profile.setInheritYValue(value);
         } else if (s.equalsIgnoreCase("hit-delay")) {
             profile.setHitDelay((int) value);
+            for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if(onlinePlayer.getKnockbackProfile() == profile) {
+                    ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                }
+            }
         }
         profile.save();
     }
@@ -374,6 +380,11 @@ public class KnockbackCommand extends Command {
             profile.setStartRangeReduction(value);
         } else if(s.equalsIgnoreCase("hit-delay")) {
             profile.setHitDelay((int) value);
+            for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if(onlinePlayer.getKnockbackProfile() == profile) {
+                    ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                }
+            }
         }
         profile.save();
     }
@@ -403,6 +414,11 @@ public class KnockbackCommand extends Command {
             profile.setExtraVertical(value);
         } else if(s.equalsIgnoreCase("hit-delay")) {
             profile.setHitDelay((int) value);
+            for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if(onlinePlayer.getKnockbackProfile() == profile) {
+                    ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                }
+            }
         }
         profile.save();
     }
@@ -418,6 +434,8 @@ public class KnockbackCommand extends Command {
             for (String value : prf.getValues()) {
                 String msg = getDetailedKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
+                BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
+                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component));
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/knockback edit "+profile.getName()+" "+value+" "));
                 if(sender instanceof  Player) {
                     ((Player)sender).spigot().sendMessage(message);
@@ -431,6 +449,8 @@ public class KnockbackCommand extends Command {
             for (String value : prf.getValues()) {
                 String msg = getNormalKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
+                BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
+                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component));
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/knockback edit "+profile.getName()+" "+value+" "));
                 if(sender instanceof  Player) {
                     ((Player)sender).spigot().sendMessage(message);
@@ -444,6 +464,8 @@ public class KnockbackCommand extends Command {
             for (String value : prf.getValues()) {
                 String msg = getBedWarsKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
+                BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
+                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component));
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/knockback edit "+profile.getName()+" "+value+" "));
                 if(sender instanceof  Player) {
                     ((Player)sender).spigot().sendMessage(message);

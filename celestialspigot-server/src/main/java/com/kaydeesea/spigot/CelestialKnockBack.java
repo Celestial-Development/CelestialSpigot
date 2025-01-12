@@ -61,6 +61,19 @@ public class CelestialKnockBack {
 
     }
 
+    public boolean reload() {
+        try {
+            config.load(this.knockbackFile);
+        } catch (IOException ignored) {
+
+        } catch (InvalidConfigurationException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Could not load knockback.yml, please correct your syntax errors", ex);
+            return false;
+        }
+        this.loadConfig();
+        return true;
+    }
+
     public KnockBackProfile getKbProfileByName(String name) {
         for (KnockBackProfile profile : this.kbProfiles) {
             if (profile.getName().equalsIgnoreCase(name)) {
@@ -213,12 +226,6 @@ public class CelestialKnockBack {
 
     public void set(String path, Object val) {
         this.config.set(path, val);
-
-        try {
-            this.config.save(this.knockbackFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public Set<String> getKeys(String path) {

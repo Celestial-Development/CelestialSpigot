@@ -52,11 +52,7 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender { // PandaS
             if (!conversationTracker.isConversingModaly()) {
                 String result = message;
                 for (ChatColor color : colors) {
-                    if (replacements.containsKey(color)) {
-                        result = result.replaceAll("(?i)" + color.toString(), replacements.get(color));
-                    } else {
-                        result = result.replaceAll("(?i)" + color.toString(), "");
-                    }
+                    result = result.replaceAll("(?i)" + color.toString(), replacements.getOrDefault(color, ""));
                 }
                 System.out.println(result + Ansi.ansi().reset().toString());
             }
