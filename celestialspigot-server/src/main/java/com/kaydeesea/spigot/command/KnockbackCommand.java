@@ -85,9 +85,9 @@ public class KnockbackCommand extends Command {
             if (profile != null) {
                 CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().remove(profile);
                 for (String value : profile.getValues()) {
-                    CelestialSpigot.INSTANCE.getKnockBack().set("knockback.profiles." + args[1]+"."+value, null);
+                    CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.profiles." + args[1]+"."+value, null);
                 }
-                CelestialSpigot.INSTANCE.getKnockBack().set("knockback.profiles." + args[1], null);
+                CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.profiles." + args[1], null);
                 CelestialSpigot.INSTANCE.getKnockBack().save();
                 sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been removed.");
                 return true;
@@ -111,7 +111,7 @@ public class KnockbackCommand extends Command {
                     onlinePlayer.setKnockbackProfile(profile);
                     ((CraftPlayer)onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
-                CelestialSpigot.INSTANCE.getKnockBack().set("knockback.current", profile.getName());
+                CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.current", profile.getName());
                 CelestialSpigot.INSTANCE.getKnockBack().save();
                 sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been loaded.");
                 return true;
@@ -153,6 +153,7 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cThat player is not online.");
                 return true;
             }
+            sender.sendMessage("§aSuccessfully changed player knockback profile.");
             target.setKnockbackProfile(profile);
         }
         else if (command.equalsIgnoreCase("reload")) {

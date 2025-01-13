@@ -47,18 +47,18 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
     @Override
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction", this.frictionValue);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".max-range-reduction", this.maxRangeReduction);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".range-factor", this.rangeFactor);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".start-range-reduction", this.startRangeReduction);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".hit-delay", this.hitDelay);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".w-tap", this.wTap);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".slowdown-boolean", this.slowdownBoolean);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction-boolean", this.friction);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".type", this.getType().name());
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction", this.frictionValue);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".horizontal", this.horizontal);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical", this.vertical);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical-limit", this.verticalLimit);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".max-range-reduction", this.maxRangeReduction);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".range-factor", this.rangeFactor);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".start-range-reduction", this.startRangeReduction);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".hit-delay", this.hitDelay);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".w-tap", this.wTap);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown-boolean", this.slowdownBoolean);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction-boolean", this.friction);
         CelestialSpigot.INSTANCE.getKnockBack().save();
     }
 

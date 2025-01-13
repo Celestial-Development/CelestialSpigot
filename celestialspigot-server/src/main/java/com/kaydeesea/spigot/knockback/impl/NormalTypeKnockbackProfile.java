@@ -36,14 +36,14 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
 
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".friction", this.friction);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".hit-delay", this.hitDelay);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".extra-horizontal", this.extraHorizontal);
-        CelestialSpigot.INSTANCE.getKnockBack().set(path + ".extra-vertical", this.extraVertical);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".type", this.getType().name());
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction", this.friction);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".horizontal", this.horizontal);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical", this.vertical);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".hit-delay", this.hitDelay);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical-limit", this.verticalLimit);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".extra-horizontal", this.extraHorizontal);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".extra-vertical", this.extraVertical);
         CelestialSpigot.INSTANCE.getKnockBack().save();
     }
 
