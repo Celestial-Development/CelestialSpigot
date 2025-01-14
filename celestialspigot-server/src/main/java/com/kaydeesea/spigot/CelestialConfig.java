@@ -174,7 +174,7 @@ public class CelestialConfig {
         versionCMD.add(" ");
         versionCMD.add("&bVersion: &7%version%");
         versionCMD.add("&bAuthor: &7KayDeeSea");
-        versionCMD.add("&bDiscord: &3discord.gg/celestialrbw");
+        versionCMD.add("&bDiscord: &3https://discord.gg/9cWCcExTWh");
         versionCMD.add(" ");
 
         this.versionCommand = new ArrayList<String>(this.getList("messages.version-command", versionCMD));

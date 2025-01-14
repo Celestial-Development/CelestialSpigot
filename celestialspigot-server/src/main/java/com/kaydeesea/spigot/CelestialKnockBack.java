@@ -40,7 +40,6 @@ public class CelestialKnockBack {
 
     private final File knockbackFile;
 
-    private final YamlCommenter c;
 
     @Getter
     private final YamlConfiguration config;
@@ -48,7 +47,6 @@ public class CelestialKnockBack {
     public CelestialKnockBack() {
         knockbackFile = new File("knockback.yml");
         config = new YamlConfiguration();
-        c = new YamlCommenter();
         try {
             config.load(this.knockbackFile);
         } catch (IOException ex) {
@@ -269,12 +267,8 @@ public class CelestialKnockBack {
         save();
     }
     public void save() {
-        c.setHeader(HEADER);
-        c.addComment("knockback.profiles", "KnockBack profiles, you can create profiles in-game by /knockback create <name> <type>");
-        c.addComment("knockback.current", "Currently selected knockback profile");
         try {
             this.config.save(this.knockbackFile);
-            this.c.saveComments(this.knockbackFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
