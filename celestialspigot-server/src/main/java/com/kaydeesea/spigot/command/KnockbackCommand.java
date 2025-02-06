@@ -7,10 +7,8 @@ import com.kaydeesea.spigot.knockback.impl.FoxTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
-import net.minecraft.server.EntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import com.kaydeesea.spigot.CelestialSpigot;
 
@@ -271,7 +269,7 @@ public class KnockbackCommand extends Command {
                 if (a.equalsIgnoreCase(f)) s = a;
             }
             if (!s.isEmpty()) {
-                if (profile.getType() == ProfileType.DETAILED) {
+                if (profile instanceof DetailedTypeKnockbackProfile) {
                     if(((DetailedTypeKnockbackProfile) profile).isValueBoolean(s)) {
                         if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
                             sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
@@ -291,7 +289,7 @@ public class KnockbackCommand extends Command {
                     sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
 
                 }
-                if (profile.getType() == ProfileType.FOX) {
+                if (profile instanceof FoxTypeKnockbackProfile) {
                     if(((FoxTypeKnockbackProfile) profile).isValueBoolean(s)) {
                         if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
                             sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
@@ -311,7 +309,7 @@ public class KnockbackCommand extends Command {
                     sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
 
                 }
-                if (profile.getType() == ProfileType.NORMAL) {
+                if (profile instanceof NormalTypeKnockbackProfile) {
                     if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
                         sender.sendMessage("§4" + args[3] + " §c is not a number.");
                         return true;
@@ -320,7 +318,7 @@ public class KnockbackCommand extends Command {
                     modifyNormalTypeProfile((NormalTypeKnockbackProfile) profile, s, value);
                     sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
                 }
-                if (profile.getType() == ProfileType.BEDWARS) {
+                if (profile instanceof BedWarsTypeKnockbackProfile) {
                     if(((BedWarsTypeKnockbackProfile) profile).isValueBoolean(s)) {
                         if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
                             sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
