@@ -1087,6 +1087,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     @Override
     public void setKnockbackProfile(KnockBackProfile knockbackProfile) {
         super.getHandle().setKnockbackProfile(knockbackProfile);
+        setMaximumNoDamageTicks(knockbackProfile.getHitDelay());
     }
 
     @Override

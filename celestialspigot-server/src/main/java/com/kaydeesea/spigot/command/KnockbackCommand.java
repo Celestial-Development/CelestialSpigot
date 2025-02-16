@@ -107,7 +107,6 @@ public class KnockbackCommand extends Command {
                 CelestialSpigot.INSTANCE.getKnockBack().setCurrentKb(profile);
                 for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
                     onlinePlayer.setKnockbackProfile(profile);
-                    ((CraftPlayer)onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
                 CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.current", profile.getName());
                 CelestialSpigot.INSTANCE.getKnockBack().save();
