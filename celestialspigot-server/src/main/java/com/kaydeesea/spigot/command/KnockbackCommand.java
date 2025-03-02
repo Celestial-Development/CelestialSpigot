@@ -116,7 +116,7 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cThis profile doesn't exist.");
             }
         }
-        else if (command.equalsIgnoreCase("info") || command.equalsIgnoreCase("information")) {
+        else if (command.equalsIgnoreCase("info") || command.equalsIgnoreCase("information") || command.equalsIgnoreCase("view")) {
             if (args.length < 2) {
                 sender.sendMessage("§cUsage: /knockback info <profile_name>");
                 return true;

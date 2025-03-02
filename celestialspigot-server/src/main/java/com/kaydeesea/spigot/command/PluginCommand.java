@@ -221,15 +221,39 @@ public class PluginCommand extends Command {
             enabledPlugins.add("all");
             disabledPlugins.add("all");
             if (args[0].equalsIgnoreCase("unload")) {
+                if(args.length > 1) {
+                    return enabledPlugins
+                            .stream()
+                            .filter(s -> s.contains(args[1]))
+                            .collect(Collectors.toList());
+                }
                 return enabledPlugins;
             }
             if (args[0].equalsIgnoreCase("reload")) {
+                if(args.length > 1) {
+                    return enabledPlugins
+                            .stream()
+                            .filter(s -> s.contains(args[1]))
+                            .collect(Collectors.toList());
+                }
                 return enabledPlugins;
             }
             if(args[0].equalsIgnoreCase("enable")) {
+                if(args.length > 1) {
+                    return disabledPlugins
+                            .stream()
+                            .filter(s -> s.contains(args[1]))
+                            .collect(Collectors.toList());
+                }
                 return disabledPlugins;
             }
             if (args[0].equalsIgnoreCase("disable")) {
+                if(args.length > 1) {
+                    return enabledPlugins
+                            .stream()
+                            .filter(s -> s.contains(args[1]))
+                            .collect(Collectors.toList());
+                }
                 return enabledPlugins;
             }
             if(args[0].equalsIgnoreCase("load")) {
