@@ -20,6 +20,7 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
     private double rangeFactor = 0.2D;
     private double startRangeReduction = 3.0D;
     private int hitDelay = 20;
+    private double slowdownValue = 0.6;
     private boolean wTap = false;
     private boolean slowdownBoolean = false;
     private boolean friction = false;
@@ -33,7 +34,7 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
         String[] keys = new String[]{
                 "friction", "horizontal", "vertical", "vertical-limit",
                 "max-range-reduction", "range-factor", "start-range-reduction",
-                "hit-delay",
+                "hit-delay", "slowdown-value",
                 "w-tap", "slowdown-boolean", "friction-boolean"
         };
         return new ArrayList<>(Arrays.asList(keys));
@@ -56,6 +57,7 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".range-factor", this.rangeFactor);
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".start-range-reduction", this.startRangeReduction);
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".hit-delay", this.hitDelay);
+        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown-value", this.slowdownValue);
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".w-tap", this.wTap);
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown-boolean", this.slowdownBoolean);
         CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction-boolean", this.friction);

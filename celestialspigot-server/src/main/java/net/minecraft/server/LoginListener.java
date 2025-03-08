@@ -133,7 +133,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     }
 
                     public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error
-                        this.a((ChannelFuture) future);
+                        this.a(future);
                     }
                 }, new GenericFutureListener[0]);
             }

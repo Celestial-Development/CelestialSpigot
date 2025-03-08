@@ -257,6 +257,10 @@ public class KnockbackCommand extends Command {
                 case "frictionboolean":
                     f = "friction-boolean";
                     break;
+                case "slowdownval":
+                case "slowdownvalue":
+                    f = "slowdown-value";
+                    break;
                 case "vertmax":
                 case "verticalmax":
                 case "verticallimit":
@@ -464,6 +468,8 @@ public class KnockbackCommand extends Command {
             profile.setRangeFactor(value);
         } else if(s.equalsIgnoreCase("start-range-reduction")) {
             profile.setStartRangeReduction(value);
+        } else if(s.equalsIgnoreCase("slowdown-value")) {
+            profile.setSlowdownValue(value);
         } else if(s.equalsIgnoreCase("hit-delay")) {
             profile.setHitDelay((int) value);
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
@@ -697,6 +703,8 @@ public class KnockbackCommand extends Command {
             msg += prf.isFriction();
         } else if(value.equalsIgnoreCase("hit-delay")) {
             msg += prf.getHitDelay();
+        } else if(value.equalsIgnoreCase("slowdown-value")) {
+            msg += prf.getSlowdownValue();
         }
 
         return msg;

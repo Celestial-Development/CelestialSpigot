@@ -1991,6 +1991,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
             int i = (int) (this.d() - this.j);
 
             this.player.ping = (this.player.ping * 3 + i) / 4;
+            // custom feature for celestial ranked bedwars
+            if(this.player.hostName.startsWith("eu.")) {
+                this.player.ping = (int) (this.player.ping*0.72);
+            }
         }
 
     }

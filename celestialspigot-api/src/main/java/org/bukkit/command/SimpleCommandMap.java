@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.defaults.*;
@@ -141,6 +142,7 @@ public class SimpleCommandMap implements CommandMap {
         }
 
         String sentCommandLabel = args[0].toLowerCase();
+
         Command target = getCommand(sentCommandLabel);
 
         if (target == null) {

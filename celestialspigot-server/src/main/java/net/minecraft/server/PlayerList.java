@@ -441,17 +441,15 @@ public abstract class PlayerList {
 
         EntityPlayer entityplayer;
 
-        for (int i = 0; i < this.players.size(); ++i) {
-            entityplayer = (EntityPlayer) this.players.get(i);
+        for (EntityPlayer entityPlayer : this.players) {
+            entityplayer = (EntityPlayer) entityPlayer;
             if (entityplayer.getUniqueID().equals(uuid)) {
                 arraylist.add(entityplayer);
             }
         }
 
-        Iterator iterator = arraylist.iterator();
-
-        while (iterator.hasNext()) {
-            entityplayer = (EntityPlayer) iterator.next();
+        for (Object object : arraylist) {
+            entityplayer = (EntityPlayer) object;
             savePlayerFile(entityplayer); // CraftBukkit - Force the player's inventory to be saved
             entityplayer.playerConnection.disconnect("You logged in from another location");
         }
@@ -463,11 +461,12 @@ public abstract class PlayerList {
 
         EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));
         Player player = entity.getBukkitEntity();
+        entity.hostName = hostname;
         PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress(), ((java.net.InetSocketAddress) loginlistener.networkManager.getRawAddress()).getAddress());
         String s;
 
         if (getProfileBans().isBanned(gameprofile) && !getProfileBans().get(gameprofile).hasExpired()) {
-            GameProfileBanEntry gameprofilebanentry = (GameProfileBanEntry) this.k.get(gameprofile);
+            GameProfileBanEntry gameprofilebanentry = this.k.get(gameprofile);
 
             s = "You are banned from this server!\nReason: " + gameprofilebanentry.getReason();
             if (gameprofilebanentry.getExpires() != null) {

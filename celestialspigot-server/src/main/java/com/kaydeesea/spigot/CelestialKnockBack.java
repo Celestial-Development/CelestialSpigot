@@ -160,6 +160,9 @@ public class CelestialKnockBack {
                         profile.setFriction(this.config.getBoolean(a, profile.isFriction()));
                     else if (value.equalsIgnoreCase("hit-delay"))
                         profile.setHitDelay(this.config.getInt(a, profile.getHitDelay()));
+                    else if (value.equalsIgnoreCase("slowdown-value")) {
+                        profile.setSlowdownValue(this.config.getDouble(a, profile.getSlowdownValue()));
+                    }
                 }
             }
             else if (type.equals(ProfileType.DETAILED)) {

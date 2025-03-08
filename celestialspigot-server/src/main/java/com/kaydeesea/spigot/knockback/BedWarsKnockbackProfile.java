@@ -35,6 +35,8 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
     boolean isSlowdownBoolean();
     void setSlowdownBoolean(boolean value);
 
+    double getSlowdownValue();
+    void setSlowdownValue(double value);
 
 
     default double distance(Entity entity1, Entity entity2) {
@@ -55,36 +57,37 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
     }
 
     default void handleEntityLiving(EntityLiving victim, double d0, double d1, DamageSource source) {
-        // pratSpigot start
+        // PulseSpigot start
         victim.ai = true;
         double magnitude = Math.sqrt(d0 * d0 + d1 * d1);
         double horizontal = getHorizontal();
         double vertical = getVertical();
         double verticalLimit = getVerticalLimit();
-        double frictionValue = getFrictionValue() - (1.0 - horizontal);
+        double frictionValue = getFrictionValue();
         boolean friction = isFriction();
         if (friction) {
             victim.motX /= frictionValue;
+            victim.motY /= frictionValue;
             victim.motZ /= frictionValue;
         }
         double distance = this.distance(victim, source.getEntity());
         double rangeReduction = this.rangeReduction(distance);
-        double horizontalReduction = horizontal - rangeReduction;
-        victim.motX -= d0 / magnitude * horizontalReduction;
-        victim.motZ -= d1 / magnitude * horizontalReduction;
+        horizontal *= 1.0D - rangeReduction;
+        victim.motX -= d0 / magnitude * horizontal;
+        victim.motZ -= d1 / magnitude * horizontal;
         victim.motY += vertical;
         if (victim.motY > verticalLimit) {
             victim.motY = verticalLimit;
         }
-        // pratSpigot end
+        // PulseSpigot end
     };
 
     default void handleEntityHuman(EntityHuman attacker, EntityPlayer player, int i, Vector vector) {
         boolean wtap = isWTap();
         boolean slowdownBoolean = isSlowdownBoolean();
         if (slowdownBoolean) {
-            attacker.motX *= 0.6;
-            attacker.motY *= 0.6;
+            attacker.motX *= getSlowdownValue();
+            attacker.motY *= getSlowdownValue();
         }
         if (wtap) {
             attacker.setSprinting(false);
