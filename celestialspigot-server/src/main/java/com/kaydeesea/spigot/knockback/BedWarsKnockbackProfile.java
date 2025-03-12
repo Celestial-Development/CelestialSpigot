@@ -67,14 +67,13 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
         boolean friction = isFriction();
         if (friction) {
             victim.motX /= frictionValue;
-            victim.motY /= frictionValue;
             victim.motZ /= frictionValue;
         }
         double distance = this.distance(victim, source.getEntity());
         double rangeReduction = this.rangeReduction(distance);
-        horizontal *= 1.0D - rangeReduction;
-        victim.motX -= d0 / magnitude * horizontal;
-        victim.motZ -= d1 / magnitude * horizontal;
+        double horizontalReduction = horizontal - rangeReduction;
+        victim.motX -= d0 / magnitude * horizontalReduction;
+        victim.motZ -= d1 / magnitude * horizontalReduction;
         victim.motY += vertical;
         if (victim.motY > verticalLimit) {
             victim.motY = verticalLimit;
@@ -87,7 +86,7 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
         boolean slowdownBoolean = isSlowdownBoolean();
         if (slowdownBoolean) {
             attacker.motX *= getSlowdownValue();
-            attacker.motY *= getSlowdownValue();
+            attacker.motZ *= getSlowdownValue();
         }
         if (wtap) {
             attacker.setSprinting(false);
