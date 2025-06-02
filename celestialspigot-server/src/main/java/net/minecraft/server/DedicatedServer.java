@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import com.kaydeesea.spigot.CelestialKbOverrides;
 import com.kaydeesea.spigot.CelestialKnockBack;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.console.PandaConsole;
@@ -211,6 +212,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             bindAddress = new java.net.InetSocketAddress(inetaddress, this.R());
             }
             CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
+            CelestialSpigot.INSTANCE.setKbOverrides(new CelestialKbOverrides());
             // PandaSpigot end
             // PaperSpigot start
             org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("paper-settings"));

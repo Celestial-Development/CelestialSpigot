@@ -17,9 +17,9 @@ import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.Command;
 
 @Getter
-public enum CelestialSpigot {
+public class CelestialSpigot {
 
-	INSTANCE;
+	public static CelestialSpigot INSTANCE = new CelestialSpigot();
 
     @Setter
     private CelestialConfig config;
@@ -27,7 +27,9 @@ public enum CelestialSpigot {
 	@Setter
 	private CelestialKnockBack knockBack;
 
-	@Getter
+	@Setter
+	private CelestialKbOverrides kbOverrides;
+
     @Setter
 	private LagCompensator lagCompensator;
 

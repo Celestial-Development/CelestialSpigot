@@ -12,9 +12,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -256,56 +255,40 @@ public class PluginCommand extends Command {
                 }
                 return enabledPlugins;
             }
-            if(args[0].equalsIgnoreCase("load")) {
-                List<String> files = new ArrayList<>();
+            if (args[0].equalsIgnoreCase("load")) {
+                File pluginsDir = new File("plugins");
+                if (!pluginsDir.isDirectory()) return Collections.emptyList();
 
-                for (File pluginFile : new File("plugins").listFiles()) {
-                    try {
-                        if (pluginFile.isDirectory())
-                            continue;
+                List<String> unloadedPlugins = new ArrayList<>();
+                Set<String> loadedPluginNames = Arrays.stream(Bukkit.getPluginManager().getPlugins())
+                        .map(Plugin::getName)
+                        .map(String::toLowerCase)
+                        .collect(Collectors.toSet());
 
-                        if (!pluginFile.getName().toLowerCase().endsWith(".jar"))
-                            if (!new File("plugins", pluginFile.getName() + ".jar").exists())
-                                continue;
+                File[] jarFiles = pluginsDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));
+                if (jarFiles == null) return Collections.emptyList();
 
-                        JarFile jarFile = null;
-                        try {
-                            jarFile = new JarFile(pluginFile);
-                        } catch (IOException e) {
-                            continue;
+                for (File jarFile : jarFiles) {
+                    try (JarFile jar = new JarFile(jarFile)) {
+                        JarEntry pluginYml = jar.getJarEntry("plugin.yml");
+                        if (pluginYml == null) continue;
+
+                        try (InputStream stream = jar.getInputStream(pluginYml)) {
+                            PluginDescriptionFile desc = new PluginDescriptionFile(stream);
+                            String pluginName = desc.getName();
+                            if (!loadedPluginNames.contains(pluginName.toLowerCase())) {
+                                unloadedPlugins.add(pluginName);
+                            }
+                        } catch (IOException | InvalidDescriptionException ignored) {
                         }
 
-                        if (jarFile.getEntry("plugin.yml") == null)
-                            continue;
-
-                        InputStream stream;
-                        try {
-                            stream = jarFile.getInputStream(jarFile.getEntry("plugin.yml"));
-                        } catch (IOException e) {
-                            continue;
-                        }
-
-                        if (stream == null)
-                            continue;
-
-                        PluginDescriptionFile descriptionFile;
-                        try {
-                            descriptionFile = new PluginDescriptionFile(stream);
-                        } catch (InvalidDescriptionException e) {
-                            continue;
-                        }
-
-                        files.add(pluginFile.getName().substring(0, pluginFile.getName().length() - ".jar".length()));
-
-                        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
-                            if (plugin.getName().equalsIgnoreCase(descriptionFile.getName()))
-                                files.remove(pluginFile.getName().substring(0, pluginFile.getName().length() - ".jar".length()));
-
-                    } catch (Exception ignored) {
+                    } catch (IOException ignored) {
                     }
                 }
-                return files;
+
+                return unloadedPlugins;
             }
+
         } else return SUB_COMMANDS;
 
         return ImmutableList.of();

@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.console.PandaConsoleCommandSender;
+import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -667,7 +669,30 @@ public abstract class PlayerList {
         // CraftBukkit start
         // Don't fire on respawn
         if (fromWorld != location.getWorld()) {
+            // CelestialSpigot start
             CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), entityplayer.getBukkitEntity().getLocation());
+            // 2/06/2025
+            // Celestial KB Overrides
+
+            String profile = CelestialSpigot.INSTANCE.getKbOverrides().getProfileForWorld(location.getWorld().getName());
+
+            if(profile == null) {
+                // if player was in a world that had kb overrides: Set it to current global KBs
+                if (CelestialSpigot.INSTANCE.getKbOverrides().getBinds().containsKey(fromWorld.getName())) {
+                    entityplayer.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
+                }
+            } else {
+                // else just sync it!
+                KnockBackProfile kbProfile = CelestialSpigot.INSTANCE.getKnockBack().getKbProfileByName(profile);
+                if(kbProfile == null) {
+                    Bukkit.getLogger().log(Level.INFO, "Couldn't find a knockback with the profile name "+profile+" (set in knockback overrides (kb-per-world.yml))");
+                } else {
+                    entityplayer.setKnockbackProfile(kbProfile);
+                }
+            }
+
+
+            // CelestialSpigot end
             PlayerChangedWorldEvent event = new PlayerChangedWorldEvent(entityplayer.getBukkitEntity(), fromWorld);
             server.server.getPluginManager().callEvent(event);
         }

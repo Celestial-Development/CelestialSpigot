@@ -915,8 +915,6 @@ public abstract class EntityLiving extends Entity {
                     ((BedWarsKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
                 } else if (profile instanceof DetailedKnockbackProfile) {
                     ((DetailedTypeKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
-                } else if(profile instanceof FoxKnockbackProfile) {
-                    ((FoxKnockbackProfile) profile).handleEntityLiving(this, d0, d1, source);
                 }
                 return;
             }

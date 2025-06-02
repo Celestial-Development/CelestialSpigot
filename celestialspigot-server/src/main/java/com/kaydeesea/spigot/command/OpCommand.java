@@ -39,6 +39,10 @@ public class OpCommand extends Command {
                 }
             } else {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                if(player.isOp()) {
+                    sender.sendMessage("§4This player is already OP.");
+                    return true;
+                }
                 player.setOp(true);
                 sender.sendMessage(
                         ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getOpGiveCommand())

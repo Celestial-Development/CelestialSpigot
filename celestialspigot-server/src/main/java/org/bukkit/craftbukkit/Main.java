@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialKbOverrides;
 import com.kaydeesea.spigot.CelestialSpigot;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;

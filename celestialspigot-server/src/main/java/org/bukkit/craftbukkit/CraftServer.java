@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import com.kaydeesea.spigot.CelestialConfig;
+import com.kaydeesea.spigot.CelestialKbOverrides;
 import com.kaydeesea.spigot.CelestialKnockBack;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.malware.AntiMalware;
@@ -294,29 +295,25 @@ public final class CraftServer implements Server {
         // PandaSpigot start - extra jars
         File pluginFolder = this.getPluginsFolder();
 
-        if (true || pluginFolder.exists()) {
-            if (!pluginFolder.exists()) {
-                pluginFolder.mkdirs();
-            }
-            Plugin[] plugins = this.pluginManager.loadPlugins(pluginFolder, this.extraPluginJars());
+        if (!pluginFolder.exists()) {
+            pluginFolder.mkdirs();
+        }
+        Plugin[] plugins = this.pluginManager.loadPlugins(pluginFolder, this.extraPluginJars());
         // PandaSpigot end
-            for (Plugin plugin : plugins) {
-                try {
-                    // Nacho start - [Nacho-0047] Little anti-malware
-                    if (CelestialSpigot.INSTANCE.getConfig().isCheckForMalware()) {
-                        AntiMalware.find(plugin);
-                    }
-                    // Nacho end
-
-                    String message = String.format("Loading %s", plugin.getDescription().getFullName());
-                    plugin.getLogger().info(message);
-                    plugin.onLoad();
-                } catch (Throwable ex) {
-                    Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+        for (Plugin plugin : plugins) {
+            try {
+                // Nacho start - [Nacho-0047] Little anti-malware
+                if (CelestialSpigot.INSTANCE.getConfig().isCheckForMalware()) {
+                    AntiMalware.find(plugin);
                 }
+                // Nacho end
+
+                String message = String.format("Loading %s", plugin.getDescription().getFullName());
+                plugin.getLogger().info(message);
+                plugin.onLoad();
+            } catch (Throwable ex) {
+                Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
             }
-        } else {
-            pluginFolder.mkdir();
         }
     }
 
@@ -776,6 +773,7 @@ public final class CraftServer implements Server {
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("paper-settings")); // PaperSpigot
         CelestialSpigot.INSTANCE.setConfig(new CelestialConfig());
         CelestialSpigot.INSTANCE.setKnockBack(new CelestialKnockBack());
+        CelestialSpigot.INSTANCE.setKbOverrides(new CelestialKbOverrides());
         CelestialSpigot.INSTANCE.registerCommands();
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);
@@ -862,7 +860,7 @@ public final class CraftServer implements Server {
         Map<String, Map<String, Object>> perms;
 
         try {
-            perms = (Map<String, Map<String, Object>>) yaml.load(stream);
+            perms = yaml.load(stream);
         } catch (MarkedYAMLException ex) {
             getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML: " + ex.toString());
             return;

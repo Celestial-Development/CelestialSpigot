@@ -1029,8 +1029,6 @@ public abstract class EntityHuman extends EntityLiving {
                                 ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                             } else if(profile instanceof DetailedKnockbackProfile) {
                                 ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
-                            } else if(profile instanceof FoxKnockbackProfile) {
-                                ((FoxKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
                             }
                         }
 
