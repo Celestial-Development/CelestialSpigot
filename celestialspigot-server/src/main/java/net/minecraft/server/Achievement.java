@@ -18,7 +18,7 @@ public class Achievement extends Statistic {
     }
 
     public Achievement(String s, String s1, int i, int j, ItemStack itemstack, Achievement achievement) {
-        super(s, new ChatMessage("achievement." + s1, new Object[0]));
+        super(s, new ChatMessage("achievement." + s1));
         this.d = itemstack;
         this.k = "achievement." + s1 + ".desc";
         this.a = i;

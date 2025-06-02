@@ -10,7 +10,7 @@ import java.util.Set;
 public class AttributeMapServer extends AttributeMapBase {
 
     private final Set<AttributeInstance> e = Sets.newHashSet();
-    protected final Map<String, AttributeInstance> d = new InsensitiveStringMap();
+    protected final Map<String, AttributeInstance> d = new InsensitiveStringMap<>();
 
     public AttributeMapServer() {}
 
@@ -22,7 +22,7 @@ public class AttributeMapServer extends AttributeMapBase {
         AttributeInstance attributeinstance = super.a(s);
 
         if (attributeinstance == null) {
-            attributeinstance = (AttributeInstance) this.d.get(s);
+            attributeinstance = this.d.get(s);
         }
 
         return (AttributeModifiable) attributeinstance;
@@ -47,10 +47,7 @@ public class AttributeMapServer extends AttributeMapBase {
             this.e.add(attributeinstance);
         }
 
-        Iterator iterator = this.c.get(attributeinstance.getAttribute()).iterator();
-
-        while (iterator.hasNext()) {
-            IAttribute iattribute = (IAttribute) iterator.next();
+        for (IAttribute iattribute : this.c.get(attributeinstance.getAttribute())) {
             AttributeModifiable attributemodifiable = this.e(iattribute);
 
             if (attributemodifiable != null) {
@@ -66,11 +63,8 @@ public class AttributeMapServer extends AttributeMapBase {
 
     public Collection<AttributeInstance> c() {
         HashSet hashset = Sets.newHashSet();
-        Iterator iterator = this.a().iterator();
 
-        while (iterator.hasNext()) {
-            AttributeInstance attributeinstance = (AttributeInstance) iterator.next();
-
+        for (AttributeInstance attributeinstance : this.a()) {
             if (attributeinstance.getAttribute().c()) {
                 hashset.add(attributeinstance);
             }

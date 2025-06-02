@@ -59,14 +59,8 @@ public class AttributeModifier {
             AttributeModifier attributemodifier = (AttributeModifier) object;
 
             if (this.d != null) {
-                if (!this.d.equals(attributemodifier.d)) {
-                    return false;
-                }
-            } else if (attributemodifier.d != null) {
-                return false;
-            }
-
-            return true;
+                return this.d.equals(attributemodifier.d);
+            } else return attributemodifier.d == null;
         } else {
             return false;
         }
@@ -77,6 +71,6 @@ public class AttributeModifier {
     }
 
     public String toString() {
-        return "AttributeModifier{amount=" + this.a + ", operation=" + this.b + ", name=\'" + this.c + '\'' + ", id=" + this.d + ", serialize=" + this.e + '}';
+        return "AttributeModifier{amount=" + this.a + ", operation=" + this.b + ", name='" + this.c + '\'' + ", id=" + this.d + ", serialize=" + this.e + '}';
     }
 }

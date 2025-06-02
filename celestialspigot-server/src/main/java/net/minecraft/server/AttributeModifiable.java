@@ -47,7 +47,7 @@ public class AttributeModifiable implements AttributeInstance {
     }
 
     public Collection<AttributeModifier> a(int i) {
-        return (Collection) this.c.get(Integer.valueOf(i));
+        return this.c.get(Integer.valueOf(i));
     }
 
     public Collection<AttributeModifier> c() {
@@ -61,7 +61,7 @@ public class AttributeModifiable implements AttributeInstance {
     }
 
     public AttributeModifier a(UUID uuid) {
-        return (AttributeModifier) this.e.get(uuid);
+        return this.e.get(uuid);
     }
 
     public boolean a(AttributeModifier attributemodifier) {
@@ -83,17 +83,17 @@ public class AttributeModifiable implements AttributeInstance {
 
     protected void f() {
         this.g = true;
-        this.a.a((AttributeInstance) this);
+        this.a.a(this);
     }
 
     public void c(AttributeModifier attributemodifier) {
         for (int i = 0; i < 3; ++i) {
-            Set set = (Set) this.c.get(Integer.valueOf(i));
+            Set<AttributeModifier> set = this.c.get(Integer.valueOf(i));
 
             set.remove(attributemodifier);
         }
 
-        Set set1 = (Set) this.d.get(attributemodifier.b());
+        Set<AttributeModifier> set1 = this.d.get(attributemodifier.b());
 
         if (set1 != null) {
             set1.remove(attributemodifier);
@@ -120,8 +120,8 @@ public class AttributeModifiable implements AttributeInstance {
 
         AttributeModifier attributemodifier;
 
-        for (Iterator iterator = this.b(0).iterator(); iterator.hasNext(); d0 += attributemodifier.d()) {
-            attributemodifier = (AttributeModifier) iterator.next();
+        for (Iterator<AttributeModifier> iterator = this.b(0).iterator(); iterator.hasNext(); d0 += attributemodifier.d()) {
+            attributemodifier = iterator.next();
         }
 
         double d1 = d0;
