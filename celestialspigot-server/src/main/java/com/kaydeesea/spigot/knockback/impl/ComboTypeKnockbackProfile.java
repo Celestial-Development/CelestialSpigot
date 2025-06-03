@@ -18,13 +18,13 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
     private String name;
 
 
-    private double baseHorizontal ;
-    private double horizontalScalePerHit;
-    private double baseVertical;
-    private double verticalScalePerHit;
-    private double maxHorizontal;
-    private double maxVertical;
-    private long comboResetMS;
+    private double baseHorizontal = 0.32;
+    private double horizontalScalePerHit = 0.008;
+    private double baseVertical = 0.28;
+    private double verticalScalePerHit = 0.003;
+    private double maxHorizontal = 0.43;
+    private double maxVertical = 0.36;
+    private long comboResetMS = 2000;
 
     private int hitDelay;
 
