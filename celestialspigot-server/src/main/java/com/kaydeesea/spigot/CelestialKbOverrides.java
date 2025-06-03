@@ -40,12 +40,12 @@ public class CelestialKbOverrides {
     public void load() {
         try {
             if (!file.exists() && file.createNewFile()) {
-                Bukkit.getLogger().log(Level.INFO, "Successfully created " + file.getName());
-                Bukkit.getLogger().log(Level.INFO, "This file allows you to change knockback settings based on world.");
+                System.out.println("Successfully created " + file.getName());
+                System.out.println("This file allows you to change knockback settings based on world.");
             }
             config = YamlConfiguration.loadConfiguration(file);
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Couldn't create or load " + file.getName());
+            System.out.println("Couldn't create or load " + file.getName());
             e.printStackTrace();
             Bukkit.getServer().shutdown();
             return;
@@ -81,7 +81,7 @@ public class CelestialKbOverrides {
                 commenter.setHeader(HEADER);
                 commenter.saveComments(file);
             } catch (IOException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "Failed to save " + file.getName());
+                System.out.println("Failed to save " + file.getName());
                 e.printStackTrace();
             }
         }).start();

@@ -140,9 +140,10 @@ public class CelestialConfig {
         try {
             config.load(this.configFile);
         } catch (IOException ex) {
-            Bukkit.getLogger().log(Level.INFO, "Generating a new settings.yml file.");
+            System.out.println("Generating a new settings.yml file.");
         } catch (InvalidConfigurationException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not load settings.yml, please correct your syntax errors", ex);
+            System.out.println("Could not load settings.yml, please correct your syntax errors");
+            ex.printStackTrace();
             throw Throwables.propagate(ex);
         }
 
@@ -275,11 +276,11 @@ public class CelestialConfig {
 
         if (asyncKnockback) {
             this.knockbackThread = new KnockbackThread();
-            Bukkit.getLogger().log(Level.INFO, "Loaded Knockback Thread.");
+            System.out.println("Loaded Knockback Thread.");
         }
         if (asyncHits) {
             this.hitDetectionThread = new HitDetectionThread();
-            Bukkit.getLogger().log(Level.INFO, "Loaded HitDetection Thread.");
+            System.out.println("Loaded HitDetection Thread.");
         }
     }
     public void loadComments() {

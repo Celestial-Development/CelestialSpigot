@@ -77,7 +77,8 @@ public class CelestialKnockBack {
         } catch (IOException ex) {
             System.out.println("Generating a new knockback.yml file.");
         } catch (InvalidConfigurationException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not load knockback.yml, please correct your syntax errors", ex);
+            System.out.println("Could not load knockback.yml, please correct your syntax errors");
+            ex.printStackTrace();
             throw Throwables.propagate(ex);
         }
         this.config.options().copyDefaults(true);
@@ -92,7 +93,8 @@ public class CelestialKnockBack {
         } catch (IOException ignored) {
             return false;
         } catch (InvalidConfigurationException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not load knockback.yml, please correct your syntax errors", ex);
+            System.out.println("Could not load knockback.yml, please correct your syntax errors");
+            ex.printStackTrace();
             return false;
         }
         this.loadConfig();
@@ -129,7 +131,7 @@ public class CelestialKnockBack {
             try {
                 type = ProfileType.valueOf(this.config.getString(path+".type", "NORMAL"));
             } catch (Exception ex) {
-                Bukkit.getLogger().log(Level.INFO, "No profile type set for profile "+key);
+                System.out.println("No profile type set for profile "+key);
             }
             if(type == ProfileType.NORMAL) {
                 NormalTypeKnockbackProfile profile = (NormalTypeKnockbackProfile) getKbProfileByName(key);
