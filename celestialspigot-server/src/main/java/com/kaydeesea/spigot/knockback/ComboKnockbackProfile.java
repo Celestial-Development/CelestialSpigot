@@ -55,8 +55,6 @@ public interface ComboKnockbackProfile extends KnockBackProfile {
         UUID victimId = victim.getBukkitEntity().getUniqueId();
         UUID attackerId = attacker.getBukkitEntity().getUniqueId();
 
-        double magnitude = Math.sqrt(d0 * d0 + d1 * d1);
-        if (magnitude < 1e-4) return;
 
         int combo = getComboCount(victimId, attackerId);
 

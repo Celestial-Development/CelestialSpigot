@@ -38,9 +38,6 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
     default void handleEntityLiving(EntityLiving victim, double d0, double d1, DamageSource source) {
         victim.ai = true;
 
-        double magnitude = Math.sqrt(d0 * d0 + d1 * d1);
-        if (magnitude < 1e-4) return; // prevent division by 0
-
         double distance = this.distance(victim, source.getEntity());
         double rangeReduction = this.rangeReduction(distance);
 
