@@ -7,53 +7,22 @@ import org.bukkit.util.Vector;
 
 public interface DetailedKnockbackProfile extends KnockBackProfile {
 
-    void setFrictionH(double frictionH);
     double getFrictionH();
-
-    void setFrictionY(double frictionY);
     double getFrictionY();
-
-    void setInheritH(boolean inheritH);
     boolean isInheritH();
-
-    void setInheritY(boolean inheritY);
     boolean isInheritY();
-
     double getInheritHValue();
-    void setInheritHValue(double inheritHValue);
-
     double getInheritYValue();
-    void setInheritYValue(double inheritYValue);
-
     double getHorizontal();
-    void setHorizontal(double horizontal);
-
     double getVertical();
-    void setVertical(double vertical);
-
     double getVerticalLimit();
-    void setVerticalLimit(double verticalLimit);
-
     double getGroundH();
-    void setGroundH(double groundH);
-
     double getGroundV();
-    void setGroundV(double groundV);
-
     double getSprintH();
-    void setSprintH(double sprintH);
-
     double getSprintV();
-    void setSprintV(double sprintV);
-
     boolean isEnableVerticalLimit();
-    void setEnableVerticalLimit(boolean enableVerticalLimit);
-
     boolean isStopSprint();
-    void setStopSprint(boolean stopSprint);
-
     double getSlowdown();
-    void setSlowdown(double slowdown);
 
 
     default void handleEntityLiving(EntityLiving entityLiving, double d0, double d1, DamageSource source) {
