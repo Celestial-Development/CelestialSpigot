@@ -57,55 +57,61 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
     }
 
     default void handleEntityLiving(EntityLiving victim, double d0, double d1, DamageSource source) {
-        // PulseSpigot start
         victim.ai = true;
+
         double magnitude = Math.sqrt(d0 * d0 + d1 * d1);
-        double horizontal = getHorizontal();
+        if (magnitude < 1e-4) return; // prevent division by 0
+
+        double distance = this.distance(victim, source.getEntity());
+        double rangeReduction = this.rangeReduction(distance);
+
+        double horizontal = Math.max(getHorizontal() - rangeReduction, 0.0);
         double vertical = getVertical();
         double verticalLimit = getVerticalLimit();
-        double frictionValue = getFrictionValue();
-        boolean friction = isFriction();
-        if (friction) {
+
+        if (isFriction()) {
+            double frictionValue = Math.max(1.0, getFrictionValue());
             victim.motX /= frictionValue;
             victim.motZ /= frictionValue;
         }
-        double distance = this.distance(victim, source.getEntity());
-        double rangeReduction = this.rangeReduction(distance);
-        double horizontalReduction = horizontal - rangeReduction;
-        victim.motX -= d0 / magnitude * horizontalReduction;
-        victim.motZ -= d1 / magnitude * horizontalReduction;
+
+        Vector direction = new Vector(d0, 0, d1).normalize().multiply(horizontal);
+        victim.motX -= direction.getX();
+        victim.motZ -= direction.getZ();
+
         victim.motY += vertical;
         if (victim.motY > verticalLimit) {
             victim.motY = verticalLimit;
         }
-        // PulseSpigot end
-    };
+
+        victim.velocityChanged = true;
+    }
+
 
     default void handleEntityHuman(EntityHuman attacker, EntityPlayer player, int i, Vector vector) {
-        boolean wtap = isWTap();
-        boolean slowdownBoolean = isSlowdownBoolean();
-        if (slowdownBoolean) {
-            attacker.motX *= getSlowdownValue();
-            attacker.motZ *= getSlowdownValue();
+        if (isSlowdownBoolean()) {
+            double slow = getSlowdownValue();
+            attacker.motX *= slow;
+            attacker.motZ *= slow;
         }
-        if (wtap) {
+
+        if (isWTap()) {
             attacker.setSprinting(false);
         }
 
-        if (player != null && player.velocityChanged) {
-            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), player.getBukkitEntity().getVelocity());
-            attacker.world.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                player.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                player.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(player));
-            }
-            player.velocityChanged = false;
+        if (player != null) {
             player.motX = vector.getX();
             player.motY = vector.getY();
             player.motZ = vector.getZ();
+            player.velocityChanged = true;
+
+            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), vector);
+            attacker.world.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                player.getBukkitEntity().setVelocityDirect(event.getVelocity());
+            }
         }
-
-
     }
+
 
 }
