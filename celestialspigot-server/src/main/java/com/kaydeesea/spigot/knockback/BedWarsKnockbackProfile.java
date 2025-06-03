@@ -38,29 +38,28 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
     default void handleEntityLiving(EntityLiving victim, double d0, double d1, DamageSource source) {
         victim.ai = true;
 
-        double distance = this.distance(victim, source.getEntity());
-        double rangeReduction = this.rangeReduction(distance);
-
-        double horizontal = Math.max(getHorizontal() - rangeReduction, 0.0);
-        double vertical = getVertical();
-        double verticalLimit = getVerticalLimit();
-
-        if (isFriction()) {
-            double frictionValue = Math.max(1.0, getFrictionValue());
+        double frictionValue = getFrictionValue();
+        boolean friction = isFriction();
+        if (friction) {
             victim.motX /= frictionValue;
             victim.motZ /= frictionValue;
         }
+        double vertical = getVertical();
+        double verticalLimit = getVerticalLimit();
+        double distance = this.distance(victim, source.getEntity());
+        double rangeReduction = this.rangeReduction(distance);
+        double magnitude = Math.sqrt(d0 * d0 + d1 * d1);
+        double horizontal = getHorizontal();
+        double horizontalReduction = horizontal - rangeReduction;
 
-        Vector direction = new Vector(d0, 0, d1).normalize().multiply(horizontal);
-        victim.motX -= direction.getX();
-        victim.motZ -= direction.getZ();
+        victim.motX -= d0 / magnitude * horizontalReduction;
+        victim.motZ -= d1 / magnitude * horizontalReduction;
 
         victim.motY += vertical;
         if (victim.motY > verticalLimit) {
             victim.motY = verticalLimit;
         }
 
-        victim.velocityChanged = true;
     }
 
 
@@ -75,17 +74,17 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
             attacker.setSprinting(false);
         }
 
-        if (player != null) {
-            player.motX = vector.getX();
-            player.motY = vector.getY();
-            player.motZ = vector.getZ();
-            player.velocityChanged = true;
-
-            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), vector);
+        if (player != null && player.velocityChanged) {
+            PlayerVelocityEvent event = new PlayerVelocityEvent(player.getBukkitEntity(), player.getBukkitEntity().getVelocity());
             attacker.world.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 player.getBukkitEntity().setVelocityDirect(event.getVelocity());
+                player.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(player));
             }
+            player.velocityChanged = false;
+            player.motX = vector.getX();
+            player.motY = vector.getY();
+            player.motZ = vector.getZ();
         }
     }
 
