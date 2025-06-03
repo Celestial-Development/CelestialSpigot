@@ -71,18 +71,20 @@ public class CelestialKbOverrides {
     }
 
     public void save() {
-        try {
-            for (Map.Entry<String, String> entry : binds.entrySet()) {
-                config.set("binds." + entry.getKey(), entry.getValue());
-            }
-            config.save(file);
+        new Thread(() -> {
+            try {
+                for (Map.Entry<String, String> entry : binds.entrySet()) {
+                    config.set("binds." + entry.getKey(), entry.getValue());
+                }
+                config.save(file);
 
-            commenter.setHeader(HEADER);
-            commenter.saveComments(file);
-        } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to save " + file.getName());
-            e.printStackTrace();
-        }
+                commenter.setHeader(HEADER);
+                commenter.saveComments(file);
+            } catch (IOException e) {
+                Bukkit.getLogger().log(Level.SEVERE, "Failed to save " + file.getName());
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public String getProfileForWorld(String worldName) {

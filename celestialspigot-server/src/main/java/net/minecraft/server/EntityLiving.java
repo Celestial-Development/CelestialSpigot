@@ -906,6 +906,8 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
 
 
+            // TODO KNOCKBACK
+
             if (this instanceof EntityPlayer && entity instanceof EntityPlayer) {
                 if(getKnockbackProfile() == null) setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
                 KnockBackProfile profile = getKnockbackProfile();

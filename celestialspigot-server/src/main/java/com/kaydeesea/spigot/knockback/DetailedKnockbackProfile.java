@@ -175,7 +175,4 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
 
     }
 
-    default ProfileType getType() {
-        return ProfileType.DETAILED;
-    }
 }

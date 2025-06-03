@@ -1,13 +1,11 @@
 package com.kaydeesea.spigot.knockback;
 
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface KnockBackProfile {
     String getName();
-    ProfileType getType();
-    ArrayList<String> getValues();
+    List<String> getValues();
     void save();
     int getHitDelay();
-    void setHitDelay(int value);
 }

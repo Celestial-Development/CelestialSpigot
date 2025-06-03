@@ -108,7 +108,4 @@ public interface BedWarsKnockbackProfile extends KnockBackProfile {
 
     }
 
-    default ProfileType getType() {
-        return ProfileType.BEDWARS;
-    }
 }

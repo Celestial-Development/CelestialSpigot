@@ -93,18 +93,13 @@ public class KnockbackCommand extends Command {
                 return true;
             }
             if (CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb().getName().equalsIgnoreCase(args[1])) {
-                sender.sendMessage("§cYou cannot delete the profile that is being used.");
+                sender.sendMessage("§cYou cannot delete the profile that is being used. Please select any other profile");
                 return true;
             }
             KnockBackProfile profile = CelestialSpigot.INSTANCE.getKnockBack().getKbProfileByName(args[1]);
             if (profile != null) {
-                CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().remove(profile);
-                for (String value : profile.getValues()) {
-                    CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.profiles." + args[1]+"."+value, null);
-                }
-                CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.profiles." + args[1], null);
-                CelestialSpigot.INSTANCE.getKnockBack().save();
-                sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been removed.");
+                CelestialSpigot.INSTANCE.getKnockBack().deleteKB(profile);
+                sender.sendMessage("§aThe profile §e" + profile.getName() + " §ahas been removed.");
                 return true;
             } else {
                 sender.sendMessage("§cThis profile doesn't exist.");
@@ -122,11 +117,6 @@ public class KnockbackCommand extends Command {
                     return true;
                 }
                 CelestialSpigot.INSTANCE.getKnockBack().setCurrentKb(profile);
-                for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-                    onlinePlayer.setKnockbackProfile(profile);
-                }
-                CelestialSpigot.INSTANCE.getKnockBack().getConfig().set("knockback.current", profile.getName());
-                CelestialSpigot.INSTANCE.getKnockBack().save();
                 sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been loaded.");
                 return true;
             } else {
@@ -182,39 +172,25 @@ public class KnockbackCommand extends Command {
                 sender.sendMessage("§cUsage: /knockback create <profile_name> <type>");
                 return true;
             }
-            if (!isProfileName(args[1])) {
-                if (args[2].equalsIgnoreCase("normal")) {
-                    NormalTypeKnockbackProfile profile = new NormalTypeKnockbackProfile(args[1]);
-                    CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
-                    profile.save();
-                    sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
-                    sendKnockbackInfo(sender, profile);
+            String name = args[1];
+            String typeRaw = args[2];
+
+            ProfileType type = ProfileType.fromRaw(typeRaw);
+            if (type == null) {
+                StringBuilder types = new StringBuilder();
+                for (ProfileType value : ProfileType.values()) {
+                    types.append(value.raw).append(" ");
                 }
-                else if(args[2].equalsIgnoreCase("bedwars")) {
-                    BedWarsTypeKnockbackProfile profile = new BedWarsTypeKnockbackProfile(args[1]);
-                    CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
-                    profile.save();
-                    sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
-                    sendKnockbackInfo(sender, profile);
-                }
-                else if(args[2].equalsIgnoreCase("detailed")) {
-                    DetailedTypeKnockbackProfile profile = new DetailedTypeKnockbackProfile(args[1]);
-                    CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles().add(profile);
-                    profile.save();
-                    sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created.");
-                    sendKnockbackInfo(sender, profile);
-                }
-                else {
-                    StringBuilder types = new StringBuilder();
-                    for (ProfileType value : ProfileType.values()) {
-                        types.append(value.name()).append(" ");
-                    }
-                    sender.sendMessage("§cSpecify a type of knockback. Types: " + types);
-                }
+                sender.sendMessage("§cSpecify a valid knockback type. Types: " + types);
                 return true;
-            } else {
-                sender.sendMessage("§cA knockback profile with that name already exists.");
             }
+
+            KnockBackProfile profile = type.newInstance(name);
+            CelestialSpigot.INSTANCE.getKnockBack().createKB(profile);
+            sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created. §bRemember to set it as active.");
+            sendKnockbackInfo(sender, profile);
+
+            return true;
         }
         else if (command.equalsIgnoreCase("edit") || command.equalsIgnoreCase("modify")) {
             if (args.length < 4) {
@@ -236,55 +212,95 @@ public class KnockbackCommand extends Command {
                     .orElse(""); // or null, or handle not found case
             if (!s.isEmpty()) {
                 if (profile instanceof DetailedTypeKnockbackProfile) {
-                    if(((DetailedTypeKnockbackProfile) profile).isValueBoolean(s)) {
-                        if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
-                            sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
+                    DetailedTypeKnockbackProfile dkb = (DetailedTypeKnockbackProfile) profile;
+
+                    DetailedTypeKnockbackProfile.DetailedValues v = DetailedTypeKnockbackProfile.DetailedValues.getValueByKey(s);
+                    if(v == null) {
+                        sender.sendMessage("§4A wierd error occurred.");
+                        sender.sendMessage("§4Please contact the developer KayDeeSea.");
+                        return true;
+                    }
+                    Object parsedValue;
+
+                    try {
+                        if (v.isBoolean()) {
+                            parsedValue = Boolean.parseBoolean(args[3]);
+                        } else if (v.isDouble()) {
+                            parsedValue = Double.parseDouble(args[3]);
+                        } else if (v.isInteger()) {
+                            parsedValue = Integer.parseInt(args[3]);
+                        } else {
+                            sender.sendMessage("§cUnsupported value type for " + v.getKey());
                             return true;
                         }
-                        boolean value = Boolean.parseBoolean(args[3]);
-                        modifyDetailedTypeProfile((DetailedTypeKnockbackProfile) profile, s, value);
-                        sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+                    } catch (Exception ex) {
+                        sender.sendMessage("§4" + args[3] + " §c is not a valid " + v.getType().getSimpleName() + ".");
                         return true;
                     }
-                    if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
-                        sender.sendMessage("§4" + args[3] + " §c is not a number.");
-                        return true;
-                    }
-                    double value = Double.parseDouble(args[3]);
-                    modifyDetailedTypeProfile((DetailedTypeKnockbackProfile) profile, s, value);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
 
+                    modifyDetailedTypeProfile(dkb, v, parsedValue);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
                 }
                 if (profile instanceof NormalTypeKnockbackProfile) {
-                    if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
-                        sender.sendMessage("§4" + args[3] + " §c is not a number.");
+                    NormalTypeKnockbackProfile nkb = (NormalTypeKnockbackProfile) profile;
+
+                    NormalTypeKnockbackProfile.NormalValues v = NormalTypeKnockbackProfile.NormalValues.getValueByKey(s);
+                    if(v == null) {
+                        sender.sendMessage("§4A wierd error occurred.");
+                        sender.sendMessage("§4Please contact the developer KayDeeSea.");
                         return true;
                     }
-                    double value = Double.parseDouble(args[3]);
-                    modifyNormalTypeProfile((NormalTypeKnockbackProfile) profile, s, value);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
-                }
-                if (profile instanceof BedWarsTypeKnockbackProfile) {
-                    if(((BedWarsTypeKnockbackProfile) profile).isValueBoolean(s)) {
-                        if (!args[3].equalsIgnoreCase("false") && !args[3].equalsIgnoreCase("true")) {
-                            sender.sendMessage("§4" + args[3] + " §c is not a boolean (true/false).");
+                    Object parsedValue;
+
+                    try {
+                        if (v.isDouble()) {
+                            parsedValue = Double.parseDouble(args[3]);
+                        } else if (v.isInteger()) {
+                            parsedValue = Integer.parseInt(args[3]);
+                        } else {
+                            sender.sendMessage("§cUnsupported value type for " + v.getKey());
                             return true;
                         }
-                        boolean value = Boolean.parseBoolean(args[3]);
-                        modifyBedWarsTypeProfile((BedWarsTypeKnockbackProfile) profile, s, value);
-                        sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+                    } catch (Exception ex) {
+                        sender.sendMessage("§4" + args[3] + " §c is not a valid " + v.getType().getSimpleName() + ".");
                         return true;
                     }
-                    if (!org.apache.commons.lang3.math.NumberUtils.isNumber(args[3])) {
-                        sender.sendMessage("§4" + args[3] + " §c is not a number.");
+
+                    modifyNormalTypeProfile(nkb, v, parsedValue);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
+                }
+                if (profile instanceof BedWarsTypeKnockbackProfile) {
+                    BedWarsTypeKnockbackProfile bkb = (BedWarsTypeKnockbackProfile) profile;
+
+                    BedWarsTypeKnockbackProfile.BedWarsValues v = BedWarsTypeKnockbackProfile.BedWarsValues.getValueByKey(s);
+                    if(v == null) {
+                        sender.sendMessage("§4A wierd error occurred.");
+                        sender.sendMessage("§4Please contact the developer KayDeeSea.");
                         return true;
                     }
-                    double value = Double.parseDouble(args[3]);
-                    modifyBedWarsTypeProfile((BedWarsTypeKnockbackProfile) profile, s, value);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + value + "§a.");
+                    Object parsedValue;
+
+                    try {
+                        if (v.isBoolean()) {
+                            parsedValue = Boolean.parseBoolean(args[3]);
+                        } else if (v.isDouble()) {
+                            parsedValue = Double.parseDouble(args[3]);
+                        } else if (v.isInteger()) {
+                            parsedValue = Integer.parseInt(args[3]);
+                        } else {
+                            sender.sendMessage("§cUnsupported value type for " + v.getKey());
+                            return true;
+                        }
+                    } catch (Exception ex) {
+                        sender.sendMessage("§4" + args[3] + " §c is not a valid " + v.getType().getSimpleName() + ".");
+                        return true;
+                    }
+
+                    modifyBedWarsTypeProfile(bkb, v, parsedValue);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
                 }
             } else {
-                sender.sendMessage("§cCouldn't find a §4" + args[2] + " §cproperty in knockback profile " + profile.getName() + ".");
+                sender.sendMessage("§cCouldn't find a §4" + args[2] + "§c property in knockback profile " + profile.getName() + ".");
             }
         }
         else if (command.equalsIgnoreCase("list")) {
@@ -298,126 +314,52 @@ public class KnockbackCommand extends Command {
 
     }
 
-    private static void modifyDetailedTypeProfile(DetailedTypeKnockbackProfile profile, String s, double value) {
-        if (s.equalsIgnoreCase("friction-horizontal")) {
-            profile.setFrictionH(value);
-        } else if (s.equalsIgnoreCase("friction-vertical")) {
-            profile.setFrictionY(value);
-        } else if (s.equalsIgnoreCase("horizontal")) {
-            profile.setHorizontal(value);
-        } else if (s.equalsIgnoreCase("vertical")) {
-            profile.setVertical(value);
-        } else if (s.equalsIgnoreCase("vertical-limit")) {
-            profile.setVerticalLimit(value);
-        } else if (s.equalsIgnoreCase("ground-horizontal")) {
-            profile.setGroundH(value);
-        } else if (s.equalsIgnoreCase("ground-vertical")) {
-            profile.setGroundV(value);
-        } else if (s.equalsIgnoreCase("sprint-horizontal")) {
-            profile.setSprintH(value);
-        } else if (s.equalsIgnoreCase("sprint-vertical")) {
-            profile.setSprintV(value);
-        } else if (s.equalsIgnoreCase("slowdown")) {
-            profile.setSlowdown(value);
-        } else if (s.equalsIgnoreCase("inherit-horizontal-value")) {
-            profile.setInheritHValue(value);
-        } else if (s.equalsIgnoreCase("inherit-vertical-value")) {
-            profile.setInheritYValue(value);
-        } else if (s.equalsIgnoreCase("hit-delay")) {
-            profile.setHitDelay((int) value);
+    private static void modifyDetailedTypeProfile(DetailedTypeKnockbackProfile profile, DetailedTypeKnockbackProfile.DetailedValues v, Object value) {
+        profile.setValueByKey(v, value);
+        profile.save();
+        if (v.getKey().equalsIgnoreCase("hit-delay")) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-                if(onlinePlayer.getKnockbackProfile() == profile) {
+                if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
             }
         }
-        profile.save();
     }
-
-    private static void modifyDetailedTypeProfile(DetailedTypeKnockbackProfile profile, String s, boolean value) {
-        if (s.equalsIgnoreCase("enable-vertical-limit")) {
-            profile.setEnableVerticalLimit(value);
-        } else if (s.equalsIgnoreCase("stop-sprint")) {
-            profile.setStopSprint(value);
-        } else if (s.equalsIgnoreCase("inherit-horizontal")) {
-            profile.setInheritH(value);
-        } else if (s.equalsIgnoreCase("inherit-vertical")) {
-            profile.setInheritY(value);
-        }
+    private static void modifyBedWarsTypeProfile(BedWarsTypeKnockbackProfile profile, BedWarsTypeKnockbackProfile.BedWarsValues v, Object value) {
+        profile.setValueByKey(v, value);
         profile.save();
-    }
-
-    private static void modifyBedWarsTypeProfile(BedWarsTypeKnockbackProfile profile, String s, double value) {
-        if (s.equalsIgnoreCase("friction")) {
-            profile.setFrictionValue(value);
-        } else if (s.equalsIgnoreCase("horizontal")) {
-            profile.setHorizontal(value);
-        } else if (s.equalsIgnoreCase("vertical")) {
-            profile.setVertical(value);
-        } else if (s.equalsIgnoreCase("vertical-limit")) {
-            profile.setVerticalLimit(value);
-        } else if(s.equalsIgnoreCase("max-range-reduction")) {
-            profile.setMaxRangeReduction(value);
-        } else if(s.equalsIgnoreCase("range-factor")) {
-            profile.setRangeFactor(value);
-        } else if(s.equalsIgnoreCase("start-range-reduction")) {
-            profile.setStartRangeReduction(value);
-        } else if(s.equalsIgnoreCase("slowdown-value")) {
-            profile.setSlowdownValue(value);
-        } else if(s.equalsIgnoreCase("hit-delay")) {
-            profile.setHitDelay((int) value);
+        if (v.getKey().equalsIgnoreCase("hit-delay")) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-                if(onlinePlayer.getKnockbackProfile() == profile) {
+                if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
             }
         }
-        profile.save();
     }
-    private static void modifyBedWarsTypeProfile(BedWarsTypeKnockbackProfile profile, String s, boolean value) {
-        if (s.equalsIgnoreCase("w-tap")) {
-            profile.setWTap(value);
-        } else if (s.equalsIgnoreCase("slowdown-boolean")) {
-            profile.setSlowdownBoolean(value);
-        } else if (s.equalsIgnoreCase("friction-boolean")) {
-            profile.setFriction(value);
-        }
+    private static void modifyNormalTypeProfile(NormalTypeKnockbackProfile profile, NormalTypeKnockbackProfile.NormalValues v, Object value) {
+        profile.setValueByKey(v, value);
         profile.save();
-    }
-
-    private static void modifyNormalTypeProfile(NormalTypeKnockbackProfile profile, String s, double value) {
-        if (s.equalsIgnoreCase("friction")) {
-            profile.setFriction(value);
-        } else if (s.equalsIgnoreCase("horizontal")) {
-            profile.setHorizontal(value);
-        } else if (s.equalsIgnoreCase("vertical")) {
-            profile.setVertical(value);
-        } else if (s.equalsIgnoreCase("vertical-limit")) {
-            profile.setVerticalLimit(value);
-        } else if (s.equalsIgnoreCase("extra-horizontal")) {
-            profile.setExtraHorizontal(value);
-        } else if (s.equalsIgnoreCase("extra-vertical")) {
-            profile.setExtraVertical(value);
-        } else if(s.equalsIgnoreCase("hit-delay")) {
-            profile.setHitDelay((int) value);
+        if (v.getKey().equalsIgnoreCase("hit-delay")) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
-                if(onlinePlayer.getKnockbackProfile() == profile) {
+                if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
                 }
             }
         }
-        profile.save();
     }
 
     private void sendKnockbackInfo(CommandSender sender, KnockBackProfile profile) {
         sender.sendMessage(separator);
         String name = "§bName: §3"+profile.getName();
         sender.sendMessage(name);
-        String type = "§bType: §3"+profile.getType().name();
-        sender.sendMessage(type);
+        ProfileType typeEnum = ProfileType.getByClass(profile.getClass());
+        if(typeEnum != null) {
+            String type = "§bType: §3" + typeEnum.name();
+            sender.sendMessage(type);
+        }
         if(profile instanceof DetailedTypeKnockbackProfile) {
             DetailedTypeKnockbackProfile prf = (DetailedTypeKnockbackProfile) profile;
-            for (String value : prf.getValues()) {
+            for (DetailedTypeKnockbackProfile.DetailedValues value : DetailedTypeKnockbackProfile.DetailedValues.values()) {
                 String msg = getDetailedKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
                 BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
@@ -430,9 +372,9 @@ public class KnockbackCommand extends Command {
                 }
             }
         }
-        if(profile instanceof NormalTypeKnockbackProfile) {
+        else if(profile instanceof NormalTypeKnockbackProfile) {
             NormalTypeKnockbackProfile prf = (NormalTypeKnockbackProfile) profile;
-            for (String value : prf.getValues()) {
+            for (NormalTypeKnockbackProfile.NormalValues value : NormalTypeKnockbackProfile.NormalValues.values()) {
                 String msg = getNormalKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
                 BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
@@ -445,9 +387,9 @@ public class KnockbackCommand extends Command {
                 }
             }
         }
-        if(profile instanceof BedWarsTypeKnockbackProfile) {
+        else if(profile instanceof BedWarsTypeKnockbackProfile) {
             BedWarsTypeKnockbackProfile prf = (BedWarsTypeKnockbackProfile) profile;
-            for (String value : prf.getValues()) {
+            for (BedWarsTypeKnockbackProfile.BedWarsValues value : BedWarsTypeKnockbackProfile.BedWarsValues.values()) {
                 String msg = getBedWarsKnockbackInfo(value, prf);
                 TextComponent message = new TextComponent(msg);
                 BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
@@ -463,93 +405,14 @@ public class KnockbackCommand extends Command {
         sender.sendMessage(separator);
     }
 
-    private static String getNormalKnockbackInfo(String value, NormalTypeKnockbackProfile prf) {
-        String msg = "§b"+ value +": §3";
-        if(value.equalsIgnoreCase("friction")) {
-            msg += prf.getFriction();
-        } else if(value.equalsIgnoreCase("horizontal")) {
-            msg += prf.getHorizontal();
-        } else if(value.equalsIgnoreCase("vertical")) {
-            msg += prf.getVertical();
-        } else if(value.equalsIgnoreCase("vertical-limit")) {
-            msg += prf.getVerticalLimit();
-        } else if(value.equalsIgnoreCase("extra-horizontal")) {
-            msg += prf.getExtraHorizontal();
-        } else if(value.equalsIgnoreCase("extra-vertical")) {
-            msg += prf.getExtraVertical();
-        } else if(value.equalsIgnoreCase("hit-delay")) {
-            msg += prf.getHitDelay();
-        }
-        return msg;
+    private static String getNormalKnockbackInfo(NormalTypeKnockbackProfile.NormalValues value, NormalTypeKnockbackProfile prf) {
+        return "§b"+ value +": §3"+prf.getValueByKey(value);
     }
-    private static String getDetailedKnockbackInfo(String value, DetailedTypeKnockbackProfile prf) {
-        String msg = "§b" + value + ": §3";
-        if (value.equalsIgnoreCase("friction-horizontal")) {
-            msg += prf.getFrictionH();
-        } else if (value.equalsIgnoreCase("friction-vertical")) {
-            msg += prf.getFrictionY();
-        } else if (value.equalsIgnoreCase("horizontal")) {
-            msg += prf.getHorizontal();
-        } else if (value.equalsIgnoreCase("vertical")) {
-            msg += prf.getVertical();
-        } else if (value.equalsIgnoreCase("vertical-limit")) {
-            msg += prf.getVerticalLimit();
-        } else if (value.equalsIgnoreCase("ground-horizontal")) {
-            msg += prf.getGroundH();
-        } else if (value.equalsIgnoreCase("ground-vertical")) {
-            msg += prf.getGroundV();
-        } else if (value.equalsIgnoreCase("sprint-horizontal")) {
-            msg += prf.getSprintH();
-        } else if (value.equalsIgnoreCase("sprint-vertical")) {
-            msg += prf.getSprintV();
-        } else if (value.equalsIgnoreCase("slowdown")) {
-            msg += prf.getSlowdown();
-        } else if (value.equalsIgnoreCase("inherit-horizontal")) {
-            msg += prf.isInheritH();
-        } else if (value.equalsIgnoreCase("inherit-vertical")) {
-            msg += prf.isInheritY();
-        } else if (value.equalsIgnoreCase("inherit-horizontal-value")) {
-            msg += prf.getInheritHValue();
-        } else if (value.equalsIgnoreCase("inherit-vertical-value")) {
-            msg += prf.getInheritYValue();
-        } else if (value.equalsIgnoreCase("enable-vertical-limit")) {
-            msg += prf.isEnableVerticalLimit();
-        } else if (value.equalsIgnoreCase("stop-sprint")) {
-            msg += prf.isStopSprint();
-        } else if(value.equalsIgnoreCase("hit-delay")) {
-            msg += prf.getHitDelay();
-        }
-        return msg;
+    private static String getDetailedKnockbackInfo(DetailedTypeKnockbackProfile.DetailedValues value, DetailedTypeKnockbackProfile prf) {
+        return "§b"+ value +": §3"+prf.getValueByKey(value);
     }
-    private static String getBedWarsKnockbackInfo(String value, BedWarsTypeKnockbackProfile prf) {
-        String msg = "§b"+ value +": §3";
-        if(value.equalsIgnoreCase("friction")) {
-            msg += prf.getFrictionValue();
-        } else if(value.equalsIgnoreCase("horizontal")) {
-            msg += prf.getHorizontal();
-        } else if(value.equalsIgnoreCase("vertical")) {
-            msg += prf.getVertical();
-        } else if(value.equalsIgnoreCase("vertical-limit")) {
-            msg += prf.getVerticalLimit();
-        } else if(value.equalsIgnoreCase("max-range-reduction")) {
-            msg += prf.getMaxRangeReduction();
-        } else if(value.equalsIgnoreCase("range-factor")) {
-            msg += prf.getRangeFactor();
-        } else if(value.equalsIgnoreCase("start-range-reduction")) {
-            msg += prf.getStartRangeReduction();
-        } else if(value.equalsIgnoreCase("w-tap")) {
-            msg += prf.isWTap();
-        } else if(value.equalsIgnoreCase("slowdown-boolean")) {
-            msg += prf.isSlowdownBoolean();
-        } else if(value.equalsIgnoreCase("friction-boolean")) {
-            msg += prf.isFriction();
-        } else if(value.equalsIgnoreCase("hit-delay")) {
-            msg += prf.getHitDelay();
-        } else if(value.equalsIgnoreCase("slowdown-value")) {
-            msg += prf.getSlowdownValue();
-        }
-
-        return msg;
+    private static String getBedWarsKnockbackInfo(BedWarsTypeKnockbackProfile.BedWarsValues value, BedWarsTypeKnockbackProfile prf) {
+        return "§b"+ value +": §3"+prf.getValueByKey(value);
     }
 
     private void knockbackCommandMain(CommandSender sender) {
@@ -558,7 +421,11 @@ public class KnockbackCommand extends Command {
         sender.sendMessage("§3KnockBack Profiles:"); // most people make this smaller/simpler but for a lot of people its easier to just see them all
 
         for (KnockBackProfile profile : CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles()) {
-            String s = "§3Name: §b"+profile.getName()+" §3Type: §b"+profile.getType().name();
+            String s = "§3Name: §b"+profile.getName();
+            ProfileType typeEnum = ProfileType.getByClass(profile.getClass());
+            if(typeEnum != null) {
+                s += " §3Type: §b"+typeEnum.name();
+            }
             if(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() == profile) s += " §aCurrent";
 
             TextComponent message = new TextComponent(s);
@@ -573,30 +440,125 @@ public class KnockbackCommand extends Command {
 
     }
 
-    private boolean isProfileName(String name) {
-        for (KnockBackProfile profile : CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles()) {
-            if (profile.getName().equalsIgnoreCase(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        if (args.length > 0 && SUB_COMMANDS.contains(args[0].toLowerCase())) {
-            if (args.length == 2) {
-                return CelestialSpigot.INSTANCE.getKnockBack().getKbProfiles()
-                        .stream()
-                        .sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName()))
-                        .map(KnockBackProfile::getName)
-                        .collect(Collectors.toList());
-            }
-        } else {
-            return SUB_COMMANDS;
+        // Make sure the sender has permission (optional, but consistent with execute())
+        if (!testPermissionSilent(sender)) {
+            return Collections.emptyList();
         }
 
-        return super.tabComplete(sender, alias, args);
+        // If typing the first argument, always suggest sub-commands:
+        if (args.length == 1) {
+            String partial = args[0].toLowerCase();
+            return SUB_COMMANDS.stream()
+                    .filter(s -> s.startsWith(partial))
+                    .collect(Collectors.toList());
+        }
+
+        // If typing the second argument, we look at which sub-command was chosen:
+        String base = args[0].toLowerCase();
+        // Gather all existing profile names:
+        List<String> allProfiles = CelestialSpigot.INSTANCE.getKnockBack()
+                .getKbProfiles()
+                .stream()
+                .map(KnockBackProfile::getName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+
+        // Gather all ProfileType raw names (for "create"):
+        List<String> allTypes = Arrays.stream(ProfileType.values())
+                .map(pt -> pt.raw)
+                .collect(Collectors.toList());
+
+        // 2nd argument suggestions:
+        if (args.length == 2) {
+            String partial = args[1].toLowerCase();
+
+            switch (base) {
+                case "delete":
+                case "load":
+                case "remove":
+                case "info":
+                case "view":
+                    // Suggest profile names:
+                    return allProfiles.stream()
+                            .filter(p -> p.toLowerCase().startsWith(partial))
+                            .collect(Collectors.toList());
+
+                case "set":
+                    // For "/knockback set <profile> <player>", suggest profile names here:
+                    return allProfiles.stream()
+                            .filter(p -> p.toLowerCase().startsWith(partial))
+                            .collect(Collectors.toList());
+
+                case "create":
+                case "add":
+                    // For "/knockback create <profile> <type>", the 2nd arg is the TYPE:
+                    return allTypes.stream()
+                            .filter(t -> t.startsWith(partial))
+                            .collect(Collectors.toList());
+
+                case "edit":
+                case "modify":
+                    // For "/knockback edit <profile> <variable> <value>", the 2nd arg is the PROFILE:
+                    return allProfiles.stream()
+                            .filter(p -> p.toLowerCase().startsWith(partial))
+                            .collect(Collectors.toList());
+
+                default:
+                    return Collections.emptyList();
+            }
+        }
+
+        // If typing the third argument:
+        if (args.length == 3) {
+            String profileName = args[1];
+            KnockBackProfile profile = CelestialSpigot.INSTANCE.getKnockBack().getKbProfileByName(profileName);
+            if (profile == null) {
+                return Collections.emptyList();
+            }
+
+            switch (base) {
+                case "edit":
+                case "modify":
+                    // Suggest the list of valid keys/variables on that profile:
+                    // We call profile.getValues() to get all available keys (case-insensitive).
+                    return profile.getValues().stream()
+                            .map(String::toLowerCase)
+                            .filter(key -> key.startsWith(args[2].toLowerCase()))
+                            .collect(Collectors.toList());
+
+                case "set":
+                    // After "/knockback set <profile>", suggest online player names:
+                    String partialPlayer = args[2].toLowerCase();
+                    return Bukkit.getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .filter(n -> n.toLowerCase().startsWith(partialPlayer))
+                            .collect(Collectors.toList());
+
+                default:
+                    return Collections.emptyList();
+            }
+        }
+
+        // ok not lying ChatGPT cooked here
+
+        // If typing the fourth argument for "edit" (i.e. providing a value),
+        // we could optionally suggest allowed values (e.g. "true" / "false" for booleans),
+        // but that requires inspecting the chosen key’s type. For simplicity, return empty:
+//        if (args.length == 4) {
+//            if (base.equalsIgnoreCase("edit") || base.equalsIgnoreCase("modify")) {
+//                // You could do something like:
+//                //   String key = args[2].toLowerCase();
+//                //   DetailedTypeKnockbackProfile prf = (DetailedTypeKnockbackProfile) profile;
+//                //   var enumConstant = DetailedValues.getValueByKey(key);
+//                //   if (enumConstant.isBoolean()) return Arrays.asList("true", "false");
+//                //   …or suggest numeric ranges—but we'll leave it empty by default.
+//                return Collections.emptyList();
+//            }
+//        }
+
+        return Collections.emptyList();
     }
 
     private void sendHelp(CommandSender sender) {

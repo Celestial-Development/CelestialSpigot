@@ -2,11 +2,16 @@ package com.kaydeesea.spigot.knockback.impl;
 
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.knockback.DetailedKnockbackProfile;
+import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -35,48 +40,178 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
     }
 
     @Override
-    public ArrayList<String> getValues() {
-        String[] keys = new String[]{
-                "friction-horizontal", "friction-vertical",
-                "horizontal", "vertical", "vertical-limit",
-                "ground-horizontal", "ground-vertical",
-                "sprint-horizontal", "sprint-vertical",
-                "slowdown", "hit-delay",
-                "enable-vertical-limit", "stop-sprint",
-                "inherit-horizontal", "inherit-vertical",
-                "inherit-horizontal-value", "inherit-vertical-value"
-        };
-        return new ArrayList<>(Arrays.asList(keys));
+    public @NotNull List<String> getValues() {
+        return Arrays
+                .stream(DetailedValues.values())
+                .map(DetailedValues::getKey)
+                .collect(Collectors.toList());
     }
 
-    public boolean isValueBoolean(String s) {
-        return s.equalsIgnoreCase("enable-vertical-limit") ||
-                s.equalsIgnoreCase("stop-sprint") ||
-                s.equalsIgnoreCase("inherit-horizontal") ||
-                s.equalsIgnoreCase("inherit-vertical");
+    public boolean isValueBoolean(String key) {
+        return Arrays.stream(DetailedValues.values())
+                .filter(DetailedValues::isBoolean)
+                .anyMatch(v -> v.getKey().equalsIgnoreCase(key));
     }
 
-    @Override
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction-horizontal", this.frictionH);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction-vertical", this.frictionY);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".ground-horizontal", this.groundH);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".ground-vertical", this.groundV);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".sprint-horizontal", this.sprintH);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".sprint-vertical", this.sprintV);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown", this.slowdown);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".hit-delay", this.hitDelay);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".enable-vertical-limit", this.enableVerticalLimit);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".stop-sprint", this.stopSprint);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".inherit-horizontal", this.inheritH);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".inherit-vertical", this.inheritY);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".inherit-horizontal-value", this.inheritHValue);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".inherit-vertical-value", this.inheritYValue);
+        var config = CelestialSpigot.INSTANCE.getKnockBack().getConfig();
+
+        config.set(path + ".type", ProfileType.DETAILED.name());
+
+        for (DetailedValues val : DetailedValues.values()) {
+            String key = path + "." + val.getKey();
+            Object value = getValueByKey(val);
+            config.set(key, value);
+        }
+
         CelestialSpigot.INSTANCE.getKnockBack().save();
     }
+    @Getter
+    @RequiredArgsConstructor
+    public enum DetailedValues {
+        FRICTION_HORIZONTAL("friction-horizontal", Double.class),
+        FRICTION_VERTICAL("friction-vertical", Double.class),
+        HORIZONTAL("horizontal", Double.class),
+        VERTICAL("vertical", Double.class),
+        VERTICAL_LIMIT("vertical-limit", Double.class),
+        GROUND_HORIZONTAL("ground-horizontal", Double.class),
+        GROUND_VERTICAL("ground-vertical", Double.class),
+        SPRINT_HORIZONTAL("sprint-horizontal", Double.class),
+        SPRINT_VERTICAL("sprint-vertical", Double.class),
+        SLOWDOWN("slowdown", Double.class),
+        HIT_DELAY("hit-delay", Integer.class),
+        ENABLE_VERTICAL_LIMIT("enable-vertical-limit", Boolean.class),
+        STOP_SPRINT("stop-sprint", Boolean.class),
+        INHERIT_HORIZONTAL("inherit-horizontal", Boolean.class),
+        INHERIT_VERTICAL("inherit-vertical", Boolean.class),
+        INHERIT_HORIZONTAL_VALUE("inherit-horizontal-value", Double.class),
+        INHERIT_VERTICAL_VALUE("inherit-vertical-value", Double.class);
+
+        private final String key;
+        private final Class<?> type;
+
+ 
+
+        public boolean isBoolean() {
+            return type == Boolean.class;
+        }
+
+        public boolean isDouble() {
+            return type == Double.class;
+        }
+
+        public boolean isInteger() {
+            return type == Integer.class;
+        }
+
+        @Override
+        public String toString() {
+            return key;
+        }
+        public static DetailedValues getValueByKey(String key) {
+            for (DetailedValues value : values()) {
+                if(value.key.equalsIgnoreCase(key)) return value;
+            }
+            return null;
+        }
+    }
+    public Object getValueByKey(DetailedValues val) {
+        switch (val) {
+            case FRICTION_HORIZONTAL:
+                return frictionH;
+            case FRICTION_VERTICAL:
+                return frictionY;
+            case HORIZONTAL:
+                return horizontal;
+            case VERTICAL:
+                return vertical;
+            case VERTICAL_LIMIT:
+                return verticalLimit;
+            case GROUND_HORIZONTAL:
+                return groundH;
+            case GROUND_VERTICAL:
+                return groundV;
+            case SPRINT_HORIZONTAL:
+                return sprintH;
+            case SPRINT_VERTICAL:
+                return sprintV;
+            case SLOWDOWN:
+                return slowdown;
+            case HIT_DELAY:
+                return hitDelay;
+            case ENABLE_VERTICAL_LIMIT:
+                return enableVerticalLimit;
+            case STOP_SPRINT:
+                return stopSprint;
+            case INHERIT_HORIZONTAL:
+                return inheritH;
+            case INHERIT_VERTICAL:
+                return inheritY;
+            case INHERIT_HORIZONTAL_VALUE:
+                return inheritHValue;
+            case INHERIT_VERTICAL_VALUE:
+                return inheritYValue;
+            default:
+                return 0.0;  // or some default value
+        }
+    }
+
+    public void setValueByKey(DetailedValues val, Object value) {
+        switch (val) {
+            case FRICTION_HORIZONTAL:
+                frictionH = (Double) value;
+                break;
+            case FRICTION_VERTICAL:
+                frictionY = (Double) value;
+                break;
+            case HORIZONTAL:
+                horizontal = (Double) value;
+                break;
+            case VERTICAL:
+                vertical = (Double) value;
+                break;
+            case VERTICAL_LIMIT:
+                verticalLimit = (Double) value;
+                break;
+            case GROUND_HORIZONTAL:
+                groundH = (Double) value;
+                break;
+            case GROUND_VERTICAL:
+                groundV = (Double) value;
+                break;
+            case SPRINT_HORIZONTAL:
+                sprintH = (Double) value;
+                break;
+            case SPRINT_VERTICAL:
+                sprintV = (Double) value;
+                break;
+            case SLOWDOWN:
+                slowdown = (Double) value;
+                break;
+            case HIT_DELAY:
+                hitDelay = (Integer) value;
+                break;
+            case ENABLE_VERTICAL_LIMIT:
+                enableVerticalLimit = (Boolean) value;
+                break;
+            case STOP_SPRINT:
+                stopSprint = (Boolean) value;
+                break;
+            case INHERIT_HORIZONTAL:
+                inheritH = (Boolean) value;
+                break;
+            case INHERIT_VERTICAL:
+                inheritY = (Boolean) value;
+                break;
+            case INHERIT_HORIZONTAL_VALUE:
+                inheritHValue = (Double) value;
+                break;
+            case INHERIT_VERTICAL_VALUE:
+                inheritYValue = (Double) value;
+                break;
+        }
+    }
+
+
 }

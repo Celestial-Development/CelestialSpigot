@@ -2,11 +2,15 @@ package com.kaydeesea.spigot.knockback.impl;
 
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.knockback.BedWarsKnockbackProfile;
+import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -29,39 +33,149 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
         this.name = name;
     }
 
-    @Override
-    public ArrayList<String> getValues() {
-        String[] keys = new String[]{
-                "friction", "horizontal", "vertical", "vertical-limit",
-                "max-range-reduction", "range-factor", "start-range-reduction",
-                "hit-delay", "slowdown-value",
-                "w-tap", "slowdown-boolean", "friction-boolean"
-        };
-        return new ArrayList<>(Arrays.asList(keys));
-    }
-    public boolean isValueBoolean(String s) {
-        return s.equalsIgnoreCase("w-tap") ||
-                s.equalsIgnoreCase("slowdown-boolean") ||
-                s.equalsIgnoreCase("friction-boolean");
-    }
 
     @Override
+    public @NotNull List<String> getValues() {
+        return Arrays
+                .stream(BedWarsValues.values())
+                .map(BedWarsValues::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public boolean isValueBoolean(String key) {
+        return Arrays.stream(BedWarsValues.values())
+                .filter(BedWarsValues::isBoolean)
+                .anyMatch(v -> v.getKey().equalsIgnoreCase(key));
+    }
+
     public void save() {
         final String path = "knockback.profiles." + this.name;
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".type", this.getType().name());
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction", this.frictionValue);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".horizontal", this.horizontal);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical", this.vertical);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".vertical-limit", this.verticalLimit);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".max-range-reduction", this.maxRangeReduction);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".range-factor", this.rangeFactor);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".start-range-reduction", this.startRangeReduction);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".hit-delay", this.hitDelay);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown-value", this.slowdownValue);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".w-tap", this.wTap);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".slowdown-boolean", this.slowdownBoolean);
-        CelestialSpigot.INSTANCE.getKnockBack().getConfig().set(path + ".friction-boolean", this.friction);
+        var config = CelestialSpigot.INSTANCE.getKnockBack().getConfig();
+
+        config.set(path + ".type", ProfileType.BEDWARS.name());
+
+        for (BedWarsValues val : BedWarsValues.values()) {
+            String key = path + "." + val.getKey();
+            Object value = getValueByKey(val);
+            config.set(key, value);
+        }
+
         CelestialSpigot.INSTANCE.getKnockBack().save();
     }
 
+    public Object getValueByKey(BedWarsValues val) {
+        switch (val) {
+            case FRICTION:
+                return frictionValue;
+            case HORIZONTAL:
+                return horizontal;
+            case VERTICAL:
+                return vertical;
+            case VERTICAL_LIMIT:
+                return verticalLimit;
+            case MAX_RANGE_REDUCTION:
+                return maxRangeReduction;
+            case RANGE_FACTOR:
+                return rangeFactor;
+            case START_RANGE_REDUCTION:
+                return startRangeReduction;
+            case HIT_DELAY:
+                return hitDelay;
+            case SLOWDOWN_VALUE:
+                return slowdownValue;
+            case W_TAP:
+                return wTap;
+            case SLOWDOWN_BOOLEAN:
+                return slowdownBoolean;
+            case FRICTION_BOOLEAN:
+                return friction;
+            default:
+                return 0.0;
+        }
+    }
+
+    public void setValueByKey(BedWarsValues val, Object value) {
+        switch (val) {
+            case FRICTION:
+                frictionValue = (Double) value;
+                break;
+            case HORIZONTAL:
+                horizontal = (Double) value;
+                break;
+            case VERTICAL:
+                vertical = (Double) value;
+                break;
+            case VERTICAL_LIMIT:
+                verticalLimit = (Double) value;
+                break;
+            case MAX_RANGE_REDUCTION:
+                maxRangeReduction = (Double) value;
+                break;
+            case RANGE_FACTOR:
+                rangeFactor = (Double) value;
+                break;
+            case START_RANGE_REDUCTION:
+                startRangeReduction = (Double) value;
+                break;
+            case HIT_DELAY:
+                hitDelay = (Integer) value;
+                break;
+            case SLOWDOWN_VALUE:
+                slowdownValue = (Double) value;
+                break;
+            case W_TAP:
+                wTap = (Boolean) value;
+                break;
+            case SLOWDOWN_BOOLEAN:
+                slowdownBoolean = (Boolean) value;
+                break;
+            case FRICTION_BOOLEAN:
+                friction = (Boolean) value;
+                break;
+        }
+    }
+
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum BedWarsValues {
+        FRICTION("friction", Double.class),
+        HORIZONTAL("horizontal", Double.class),
+        VERTICAL("vertical", Double.class),
+        VERTICAL_LIMIT("vertical-limit", Double.class),
+        MAX_RANGE_REDUCTION("max-range-reduction", Double.class),
+        RANGE_FACTOR("range-factor", Double.class),
+        START_RANGE_REDUCTION("start-range-reduction", Double.class),
+        HIT_DELAY("hit-delay", Integer.class),
+        SLOWDOWN_VALUE("slowdown-value", Double.class),
+        W_TAP("w-tap", Boolean.class),
+        SLOWDOWN_BOOLEAN("slowdown-boolean", Boolean.class),
+        FRICTION_BOOLEAN("friction-boolean", Boolean.class);
+
+        private final String key;
+        private final Class<?> type;
+
+        public boolean isBoolean() {
+            return type == Boolean.class;
+        }
+
+        public boolean isDouble() {
+            return type == Double.class;
+        }
+
+        public boolean isInteger() {
+            return type == Integer.class;
+        }
+
+        @Override
+        public String toString() {
+            return key;
+        }
+        public static BedWarsValues getValueByKey(String key) {
+            for (BedWarsValues value : values()) {
+                if(value.key.equalsIgnoreCase(key)) return value;
+            }
+            return null;
+        }
+    }
 }

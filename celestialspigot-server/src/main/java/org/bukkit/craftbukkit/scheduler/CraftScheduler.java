@@ -142,13 +142,13 @@ public class CraftScheduler implements BukkitScheduler {
 
     public BukkitTask runTaskTimerAsynchronously(Plugin plugin, Runnable runnable, long delay, long period) {
         validate(plugin, runnable);
-        if (delay < 0l) {
+        if (delay < 0L) {
             delay = 0;
         }
-        if (period == 0l) {
-            period = 1l;
-        } else if (period < -1l) {
-            period = -1l;
+        if (period == 0L) {
+            period = 1L;
+        } else if (period < -1L) {
+            period = -1L;
         }
         return handle(new CraftAsyncTask(runners, plugin, runnable, nextId(), period), delay);
     }

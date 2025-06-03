@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +24,33 @@ import java.util.Set;
 import java.util.logging.Level;
 
 public class CelestialKnockBack {
-    @Setter
     @Getter
     private KnockBackProfile currentKb;
+    private final YamlCommenter c;
 
+
+    public void setCurrentKb(KnockBackProfile currentKb) {
+        getConfig().set("knockback.current", currentKb.getName());
+        for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+            if(onlinePlayer.getKnockbackProfile() == this.currentKb) onlinePlayer.setKnockbackProfile(currentKb);
+        }
+        save();
+
+        this.currentKb = currentKb;
+    }
+    public void createKB(KnockBackProfile profile) {
+        getKbProfiles().add(profile);
+        profile.save();
+    }
+    public void deleteKB(KnockBackProfile knockBackProfile) {
+        if(getCurrentKb() == knockBackProfile) return;
+        getKbProfiles().remove(knockBackProfile);
+        for (String value : knockBackProfile.getValues()) {
+            getConfig().set("knockback.profiles." + knockBackProfile.getName()+"."+value, null);
+        }
+        getConfig().set("knockback.profiles." + knockBackProfile.getName(), null);
+        save();
+    }
 
     @Getter
     private Set<KnockBackProfile> kbProfiles = new HashSet<>();
@@ -46,6 +70,7 @@ public class CelestialKnockBack {
     public CelestialKnockBack() {
         knockbackFile = new File("knockback.yml");
         config = new YamlConfiguration();
+        c = new YamlCommenter();
         try {
             config.load(this.knockbackFile);
         } catch (IOException ex) {
@@ -64,7 +89,7 @@ public class CelestialKnockBack {
         try {
             config.load(this.knockbackFile);
         } catch (IOException ignored) {
-
+            return false;
         } catch (InvalidConfigurationException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Could not load knockback.yml, please correct your syntax errors", ex);
             return false;
@@ -86,6 +111,8 @@ public class CelestialKnockBack {
     private void loadConfig() {
         final NormalKnockbackProfile defaultProfile = new NormalTypeKnockbackProfile("default");
 
+        this.c.setHeader(HEADER);
+
         this.kbProfiles = new HashSet<>();
         this.kbProfiles.add(defaultProfile);
         if(!this.config.isConfigurationSection("knockback.profiles")) {
@@ -101,7 +128,7 @@ public class CelestialKnockBack {
             try {
                 type = ProfileType.valueOf(this.config.getString(path+".type", "NORMAL"));
             } catch (Exception ex) {
-                System.out.println("No profile type set for profile "+key);
+                Bukkit.getLogger().log(Level.INFO, "No profile type set for profile "+key);
             }
             if(type == ProfileType.NORMAL) {
                 NormalTypeKnockbackProfile profile = (NormalTypeKnockbackProfile) getKbProfileByName(key);
@@ -110,22 +137,14 @@ public class CelestialKnockBack {
                     profile = new NormalTypeKnockbackProfile(key);
                     this.kbProfiles.add(profile);
                 }
-                for (String value : profile.getValues()) {
-                    String a = path + "." + value;
-                    if (value.equalsIgnoreCase("friction"))
-                        profile.setFriction(this.config.getDouble(a, profile.getFriction()));
-                    else if (value.equalsIgnoreCase("horizontal"))
-                        profile.setHorizontal(this.config.getDouble(a, profile.getHorizontal()));
-                    else if (value.equalsIgnoreCase("vertical"))
-                        profile.setVertical(this.config.getDouble(a, profile.getVertical()));
-                    else if (value.equalsIgnoreCase("vertical-limit"))
-                        profile.setVerticalLimit(this.config.getDouble(a, profile.getVerticalLimit()));
-                    else if (value.equalsIgnoreCase("extra-horizontal"))
-                        profile.setExtraHorizontal(this.config.getDouble(a, profile.getExtraHorizontal()));
-                    else if (value.equalsIgnoreCase("extra-vertical"))
-                        profile.setExtraVertical(this.config.getDouble(a, profile.getExtraVertical()));
-                    else if (value.equalsIgnoreCase("hit-delay"))
-                        profile.setHitDelay(this.config.getInt(a, profile.getHitDelay()));
+
+                for (NormalTypeKnockbackProfile.NormalValues value : NormalTypeKnockbackProfile.NormalValues.values()) {
+                    String a = path + "." + value.getKey();
+                    if (value.isDouble()) {
+                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
+                    } else if (value.isInteger()) {
+                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
+                    }
                 }
             }
             else if(type.equals(ProfileType.BEDWARS)) {
@@ -135,32 +154,14 @@ public class CelestialKnockBack {
                     profile = new BedWarsTypeKnockbackProfile(key);
                     this.kbProfiles.add(profile);
                 }
-                for (String value : profile.getValues()) {
-                    String a = path + "." + value;
-                    if(value.equalsIgnoreCase("friction"))
-                        profile.setFrictionValue(this.config.getDouble(a, profile.getFrictionValue()));
-                    else if(value.equalsIgnoreCase("horizontal"))
-                        profile.setHorizontal(this.config.getDouble(a, profile.getHorizontal()));
-                    else if(value.equalsIgnoreCase("vertical"))
-                        profile.setVertical(this.config.getDouble(a, profile.getVertical()));
-                    else if (value.equalsIgnoreCase("vertical-limit"))
-                        profile.setVerticalLimit(this.config.getDouble(a, profile.getVerticalLimit()));
-                    else if(value.equalsIgnoreCase("max-range-reduction"))
-                        profile.setMaxRangeReduction(this.config.getDouble(a, profile.getMaxRangeReduction()));
-                    else if(value.equalsIgnoreCase("range-factor"))
-                        profile.setRangeFactor(this.config.getDouble(a, profile.getRangeFactor()));
-                    else if(value.equalsIgnoreCase("start-range-reduction"))
-                        profile.setStartRangeReduction(this.config.getDouble(a, profile.getStartRangeReduction()));
-                    else if(value.equalsIgnoreCase("w-tap"))
-                        profile.setWTap(this.config.getBoolean(a, profile.isWTap()));
-                    else if(value.equalsIgnoreCase("slowdown-boolean"))
-                        profile.setSlowdownBoolean(this.config.getBoolean(a, profile.isSlowdownBoolean()));
-                    else if(value.equalsIgnoreCase("friction-boolean"))
-                        profile.setFriction(this.config.getBoolean(a, profile.isFriction()));
-                    else if (value.equalsIgnoreCase("hit-delay"))
-                        profile.setHitDelay(this.config.getInt(a, profile.getHitDelay()));
-                    else if (value.equalsIgnoreCase("slowdown-value")) {
-                        profile.setSlowdownValue(this.config.getDouble(a, profile.getSlowdownValue()));
+                for (BedWarsTypeKnockbackProfile.BedWarsValues value : BedWarsTypeKnockbackProfile.BedWarsValues.values()) {
+                    String a = path + "." + value.getKey();
+                    if(value.isBoolean()) {
+                        profile.setValueByKey(value, this.config.getBoolean(a, (Boolean) profile.getValueByKey(value)));
+                    } else if(value.isDouble()) {
+                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
+                    } else if(value.isInteger()) {
+                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
                     }
                 }
             }
@@ -172,46 +173,17 @@ public class CelestialKnockBack {
                     this.kbProfiles.add(profile);
                 }
 
-                for (String value : profile.getValues()) {
-                    String configPath = path + "." + value;
-
-                    if (value.equalsIgnoreCase("friction-horizontal"))
-                        profile.setFrictionH(this.config.getDouble(configPath, profile.getFrictionH()));
-                    else if (value.equalsIgnoreCase("friction-vertical"))
-                        profile.setFrictionY(this.config.getDouble(configPath, profile.getFrictionY()));
-                    else if (value.equalsIgnoreCase("horizontal"))
-                        profile.setHorizontal(this.config.getDouble(configPath, profile.getHorizontal()));
-                    else if (value.equalsIgnoreCase("vertical"))
-                        profile.setVertical(this.config.getDouble(configPath, profile.getVertical()));
-                    else if (value.equalsIgnoreCase("vertical-limit"))
-                        profile.setVerticalLimit(this.config.getDouble(configPath, profile.getVerticalLimit()));
-                    else if (value.equalsIgnoreCase("ground-horizontal"))
-                        profile.setGroundH(this.config.getDouble(configPath, profile.getGroundH()));
-                    else if (value.equalsIgnoreCase("ground-vertical"))
-                        profile.setGroundV(this.config.getDouble(configPath, profile.getGroundV()));
-                    else if (value.equalsIgnoreCase("sprint-horizontal"))
-                        profile.setSprintH(this.config.getDouble(configPath, profile.getSprintH()));
-                    else if (value.equalsIgnoreCase("sprint-vertical"))
-                        profile.setSprintV(this.config.getDouble(configPath, profile.getSprintV()));
-                    else if (value.equalsIgnoreCase("slowdown"))
-                        profile.setSlowdown(this.config.getDouble(configPath, profile.getSlowdown()));
-                    else if (value.equalsIgnoreCase("enable-vertical-limit"))
-                        profile.setEnableVerticalLimit(this.config.getBoolean(configPath, profile.isEnableVerticalLimit()));
-                    else if (value.equalsIgnoreCase("stop-sprint"))
-                        profile.setStopSprint(this.config.getBoolean(configPath, profile.isStopSprint()));
-                    else if (value.equalsIgnoreCase("inherit-horizontal"))
-                        profile.setInheritH(this.config.getBoolean(configPath, profile.isInheritH()));
-                    else if (value.equalsIgnoreCase("inherit-vertical"))
-                        profile.setInheritY(this.config.getBoolean(configPath, profile.isInheritY()));
-                    else if (value.equalsIgnoreCase("inherit-horizontal-value"))
-                        profile.setInheritHValue(this.config.getDouble(configPath, profile.getInheritHValue()));
-                    else if (value.equalsIgnoreCase("inherit-vertical-value"))
-                        profile.setInheritYValue(this.config.getDouble(configPath, profile.getInheritYValue()));
-                    else if (value.equalsIgnoreCase("hit-delay"))
-                        profile.setHitDelay(this.config.getInt(configPath, profile.getHitDelay()));
+                for (DetailedTypeKnockbackProfile.DetailedValues value : DetailedTypeKnockbackProfile.DetailedValues.values()) {
+                    String a = path + "." + value.getKey();
+                    if (value.isBoolean()) {
+                        profile.setValueByKey(value, this.config.getBoolean(a, (Boolean) profile.getValueByKey(value)));
+                    } else if (value.isDouble()) {
+                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
+                    } else if (value.isInteger()) {
+                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
+                    }
                 }
             }
-
         }
 
         this.currentKb = this.getKbProfileByName(this.config.getString("knockback.current", "default"));
@@ -224,11 +196,14 @@ public class CelestialKnockBack {
         save();
     }
     public void save() {
-        try {
-            this.config.save(this.knockbackFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        new Thread(() -> {
+            try {
+                this.config.save(this.knockbackFile);
+                this.c.saveComments(this.knockbackFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
 

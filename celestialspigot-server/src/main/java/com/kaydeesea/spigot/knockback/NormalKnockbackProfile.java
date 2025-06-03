@@ -73,8 +73,4 @@ public interface NormalKnockbackProfile extends KnockBackProfile {
         }
 
     }
-
-    default ProfileType getType() {
-        return ProfileType.NORMAL;
-    }
 }

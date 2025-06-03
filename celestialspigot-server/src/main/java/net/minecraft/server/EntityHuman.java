@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 // CraftBukkit start
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -71,6 +73,7 @@ public abstract class EntityHuman extends EntityLiving {
     @Override
     public void setKnockbackProfile(KnockBackProfile knockbackProfile) {
         super.setKnockbackProfile(knockbackProfile);
+        if(bH != null) Bukkit.getLogger().log(Level.INFO, bH.getName()+"'s Knockback Profile has been changed to "+knockbackProfile.getName());
     }
 
     @Override
@@ -91,7 +94,7 @@ public abstract class EntityHuman extends EntityLiving {
         this.activeContainer = this.defaultContainer;
         BlockPosition blockposition = world.getSpawn();
 
-        this.setPositionRotation((double) blockposition.getX() + 0.5D, (double) (blockposition.getY() + 1), (double) blockposition.getZ() + 0.5D, 0.0F, 0.0F);
+        this.setPositionRotation((double) blockposition.getX() + 0.5D, blockposition.getY() + 1, (double) blockposition.getZ() + 0.5D, 0.0F, 0.0F);
         this.aV = 180.0F;
         this.maxFireTicks = 20;
     }
