@@ -26,7 +26,7 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
     private double maxVertical = 0.36;
     private long comboResetMS = 2000;
 
-    private int hitDelay;
+    private int hitDelay = 16;
 
     public ComboTypeKnockbackProfile(String name) {
         this.name = name;

@@ -66,25 +66,26 @@ public class CelestialKnockBack {
 
 
     @Getter
-    private final YamlConfiguration config;
+    private YamlConfiguration config;
 
     public CelestialKnockBack() {
         knockbackFile = new File("knockback.yml");
         config = new YamlConfiguration();
         c = new YamlCommenter();
-        try {
-            config.load(this.knockbackFile);
-        } catch (IOException ex) {
-            System.out.println("Generating a new knockback.yml file.");
-        } catch (InvalidConfigurationException ex) {
-            System.out.println("Could not load knockback.yml, please correct your syntax errors");
-            ex.printStackTrace();
-            throw Throwables.propagate(ex);
+        if(!knockbackFile.exists()) {
+            try {
+                this.knockbackFile.createNewFile();
+            } catch (Exception ex) {
+                System.out.println("Could not load knockback.yml, please correct your syntax errors");
+                ex.printStackTrace();
+                throw Throwables.propagate(ex);
+            }
         }
+        this.config = YamlConfiguration.loadConfiguration(knockbackFile);
+
         this.config.options().copyDefaults(true);
 
-        this.loadConfig();
-
+        new Thread(this::loadConfig).start();
     }
 
     public boolean reload() {
@@ -148,6 +149,9 @@ public class CelestialKnockBack {
                     } else if (value.isInteger()) {
                         profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
                     }
+                }
+                if(key.equalsIgnoreCase("default")) {
+                    profile.save();
                 }
             }
             else if(type.equals(ProfileType.COMBO)) {
