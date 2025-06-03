@@ -1,12 +1,14 @@
 package com.kaydeesea.spigot.knockback;
 
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.ComboTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 
 public enum ProfileType {
     NORMAL("normal", NormalTypeKnockbackProfile.class),
     DETAILED("detailed", DetailedTypeKnockbackProfile.class),
+    COMBO("combo", ComboTypeKnockbackProfile.class),
     BEDWARS("bedwars", BedWarsTypeKnockbackProfile.class);
 
     public final String raw;

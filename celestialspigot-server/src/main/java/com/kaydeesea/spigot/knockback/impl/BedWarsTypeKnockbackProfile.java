@@ -42,12 +42,6 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
                 .collect(Collectors.toList());
     }
 
-    public boolean isValueBoolean(String key) {
-        return Arrays.stream(BedWarsValues.values())
-                .filter(BedWarsValues::isBoolean)
-                .anyMatch(v -> v.getKey().equalsIgnoreCase(key));
-    }
-
     public void save() {
         final String path = "knockback.profiles." + this.name;
         var config = CelestialSpigot.INSTANCE.getKnockBack().getConfig();

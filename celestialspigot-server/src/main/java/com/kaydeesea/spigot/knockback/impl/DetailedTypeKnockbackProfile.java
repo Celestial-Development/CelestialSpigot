@@ -47,12 +47,6 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
                 .collect(Collectors.toList());
     }
 
-    public boolean isValueBoolean(String key) {
-        return Arrays.stream(DetailedValues.values())
-                .filter(DetailedValues::isBoolean)
-                .anyMatch(v -> v.getKey().equalsIgnoreCase(key));
-    }
-
     public void save() {
         final String path = "knockback.profiles." + this.name;
         var config = CelestialSpigot.INSTANCE.getKnockBack().getConfig();

@@ -2,6 +2,7 @@ package com.kaydeesea.spigot.command;
 
 import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.ComboTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import net.md_5.bungee.api.ChatColor;
@@ -118,6 +119,7 @@ public class KnockbackCommand extends Command {
                 }
                 CelestialSpigot.INSTANCE.getKnockBack().setCurrentKb(profile);
                 sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been loaded.");
+                sender.sendMessage("§2The profile has been applied to all players. §b(besides players with KB-overrides per world.)");
                 return true;
             } else {
                 sender.sendMessage("§cThis profile doesn't exist.");
@@ -239,9 +241,9 @@ public class KnockbackCommand extends Command {
                     }
 
                     modifyDetailedTypeProfile(dkb, v, parsedValue);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + "§a setting to §b" + parsedValue.toString() + "§a.");
                 }
-                if (profile instanceof NormalTypeKnockbackProfile) {
+                else if (profile instanceof NormalTypeKnockbackProfile) {
                     NormalTypeKnockbackProfile nkb = (NormalTypeKnockbackProfile) profile;
 
                     NormalTypeKnockbackProfile.NormalValues v = NormalTypeKnockbackProfile.NormalValues.getValueByKey(s);
@@ -267,9 +269,9 @@ public class KnockbackCommand extends Command {
                     }
 
                     modifyNormalTypeProfile(nkb, v, parsedValue);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + "§a setting to §b" + parsedValue.toString() + "§a.");
                 }
-                if (profile instanceof BedWarsTypeKnockbackProfile) {
+                else if (profile instanceof BedWarsTypeKnockbackProfile) {
                     BedWarsTypeKnockbackProfile bkb = (BedWarsTypeKnockbackProfile) profile;
 
                     BedWarsTypeKnockbackProfile.BedWarsValues v = BedWarsTypeKnockbackProfile.BedWarsValues.getValueByKey(s);
@@ -297,7 +299,38 @@ public class KnockbackCommand extends Command {
                     }
 
                     modifyBedWarsTypeProfile(bkb, v, parsedValue);
-                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + " §asetting to §b" + parsedValue.toString() + "§a.");
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + "§a setting to §b" + parsedValue.toString() + "§a.");
+                }
+                else if (profile instanceof ComboTypeKnockbackProfile) {
+                    ComboTypeKnockbackProfile ckb = (ComboTypeKnockbackProfile) profile;
+
+                    ComboTypeKnockbackProfile.ComboValues v = ComboTypeKnockbackProfile.ComboValues.getValueByKey(s);
+                    if(v == null) {
+                        sender.sendMessage("§4A wierd error occurred.");
+                        sender.sendMessage("§4Please contact the developer KayDeeSea.");
+                        return true;
+                    }
+                    Object parsedValue;
+
+                    try {
+                        if (v.isLong()) {
+                            parsedValue = Long.parseLong(args[3]);
+                        } else if (v.isDouble()) {
+                            parsedValue = Double.parseDouble(args[3]);
+                        } else if (v.isInteger()) {
+                            parsedValue = Integer.parseInt(args[3]);
+                        } else {
+                            sender.sendMessage("§cUnsupported value type for " + v.getKey());
+                            return true;
+                        }
+                    } catch (Exception ex) {
+                        sender.sendMessage("§4" + args[3] + " §c is not a valid " + v.getType().getSimpleName() + ".");
+                        return true;
+                    }
+
+                    modifyComboTypeProfile(ckb, v, parsedValue);
+                    sender.sendMessage("§aChanged §b" + profile.getName() + "§a's §b" + s + "§a setting to §b" + parsedValue.toString() + "§a.");
+
                 }
             } else {
                 sender.sendMessage("§cCouldn't find a §4" + args[2] + "§c property in knockback profile " + profile.getName() + ".");
@@ -317,7 +350,7 @@ public class KnockbackCommand extends Command {
     private static void modifyDetailedTypeProfile(DetailedTypeKnockbackProfile profile, DetailedTypeKnockbackProfile.DetailedValues v, Object value) {
         profile.setValueByKey(v, value);
         profile.save();
-        if (v.getKey().equalsIgnoreCase("hit-delay")) {
+        if (v == DetailedTypeKnockbackProfile.DetailedValues.HIT_DELAY) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
                 if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
@@ -328,7 +361,7 @@ public class KnockbackCommand extends Command {
     private static void modifyBedWarsTypeProfile(BedWarsTypeKnockbackProfile profile, BedWarsTypeKnockbackProfile.BedWarsValues v, Object value) {
         profile.setValueByKey(v, value);
         profile.save();
-        if (v.getKey().equalsIgnoreCase("hit-delay")) {
+        if (v == BedWarsTypeKnockbackProfile.BedWarsValues.HIT_DELAY) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
                 if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
@@ -339,7 +372,18 @@ public class KnockbackCommand extends Command {
     private static void modifyNormalTypeProfile(NormalTypeKnockbackProfile profile, NormalTypeKnockbackProfile.NormalValues v, Object value) {
         profile.setValueByKey(v, value);
         profile.save();
-        if (v.getKey().equalsIgnoreCase("hit-delay")) {
+        if (v == NormalTypeKnockbackProfile.NormalValues.HIT_DELAY) {
+            for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if (onlinePlayer.getKnockbackProfile() == profile) {
+                    ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
+                }
+            }
+        }
+    }
+    private static void modifyComboTypeProfile(ComboTypeKnockbackProfile profile, ComboTypeKnockbackProfile.ComboValues v, Object value) {
+        profile.setValueByKey(v, value);
+        profile.save();
+        if (v == ComboTypeKnockbackProfile.ComboValues.HIT_DELAY) {
             for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
                 if (onlinePlayer.getKnockbackProfile() == profile) {
                     ((CraftPlayer) onlinePlayer).getHandle().maxNoDamageTicks = profile.getHitDelay();
@@ -402,6 +446,21 @@ public class KnockbackCommand extends Command {
                 }
             }
         }
+        else if(profile instanceof ComboTypeKnockbackProfile) {
+            ComboTypeKnockbackProfile prf = (ComboTypeKnockbackProfile) profile;
+            for (ComboTypeKnockbackProfile.ComboValues value : ComboTypeKnockbackProfile.ComboValues.values()) {
+                String msg = getComboKnockbackInfo(value, prf);
+                TextComponent message = new TextComponent(msg);
+                BaseComponent[] component = new ComponentBuilder("Click to edit "+value).color(ChatColor.AQUA).create();
+                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component));
+                message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/knockback edit "+profile.getName()+" "+value+" "));
+                if(sender instanceof  Player) {
+                    ((Player)sender).spigot().sendMessage(message);
+                } else {
+                    sender.sendMessage(msg);
+                }
+            }
+        }
         sender.sendMessage(separator);
     }
 
@@ -412,6 +471,9 @@ public class KnockbackCommand extends Command {
         return "§b"+ value +": §3"+prf.getValueByKey(value);
     }
     private static String getBedWarsKnockbackInfo(BedWarsTypeKnockbackProfile.BedWarsValues value, BedWarsTypeKnockbackProfile prf) {
+        return "§b"+ value +": §3"+prf.getValueByKey(value);
+    }
+    private static String getComboKnockbackInfo(ComboTypeKnockbackProfile.ComboValues value, ComboTypeKnockbackProfile prf) {
         return "§b"+ value +": §3"+prf.getValueByKey(value);
     }
 

@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.knockback.*;
+import com.kaydeesea.spigot.knockback.impl.ComboTypeKnockbackProfile;
 import com.mojang.authlib.GameProfile;
 import java.util.Collection;
 import java.util.Iterator;
@@ -1024,6 +1025,7 @@ public abstract class EntityHuman extends EntityLiving {
 
                     if (flag2) {
                         if (entity instanceof EntityPlayer) {
+                            // TODO knockback 2
                             KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() : this.getKnockbackProfile();
 
                             if(profile instanceof NormalKnockbackProfile) {
@@ -1032,6 +1034,8 @@ public abstract class EntityHuman extends EntityLiving {
                                 ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                             } else if(profile instanceof DetailedKnockbackProfile) {
                                 ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
+                            } else if(profile instanceof ComboKnockbackProfile) {
+                                ((ComboKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                             }
                         }
 

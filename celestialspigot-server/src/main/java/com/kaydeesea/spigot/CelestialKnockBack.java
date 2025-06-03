@@ -5,6 +5,7 @@ import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.NormalKnockbackProfile;
 import com.kaydeesea.spigot.knockback.ProfileType;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.impl.ComboTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import com.kaydeesea.spigot.util.YamlCommenter;
@@ -143,6 +144,24 @@ public class CelestialKnockBack {
                     if (value.isDouble()) {
                         profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
                     } else if (value.isInteger()) {
+                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
+                    }
+                }
+            }
+            else if(type.equals(ProfileType.COMBO)) {
+                ComboTypeKnockbackProfile profile = (ComboTypeKnockbackProfile) getKbProfileByName(key);
+
+                if (profile == null) {
+                    profile = new ComboTypeKnockbackProfile(key);
+                    this.kbProfiles.add(profile);
+                }
+                for (ComboTypeKnockbackProfile.ComboValues value : ComboTypeKnockbackProfile.ComboValues.values()) {
+                    String a = path + "." + value.getKey();
+                    if(value.isLong()) {
+                        profile.setValueByKey(value, this.config.getLong(a, (Long) profile.getValueByKey(value)));
+                    } else if(value.isDouble()) {
+                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
+                    } else if(value.isInteger()) {
                         profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
                     }
                 }
