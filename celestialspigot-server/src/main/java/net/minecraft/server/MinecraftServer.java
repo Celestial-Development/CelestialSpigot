@@ -538,11 +538,11 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     }
 
     // PaperSpigot start - Further improve tick loop
-    private static final int TPS = 20;
-    private static final long SEC_IN_NANO = 1000000000;
-    private static final long TICK_TIME = SEC_IN_NANO / TPS;
+    public static final long SEC_IN_NANO = 1000000000;
+    public static final int SAMPLE_INTERVAL = 20; // Paper
+    public static int TPS = 20;
+    public static int TICK_TIME = 1000000000 / TPS;
     private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
-    private static final int SAMPLE_INTERVAL = 20;
     public final RollingAverage tps1 = new RollingAverage(60);
     public final RollingAverage tps5 = new RollingAverage(60 * 5);
     public final RollingAverage tps15 = new RollingAverage(60 * 15);

@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface ComboKnockbackProfile extends KnockBackProfile {
 
     // Constants — you can make them configurable
-    long getComboResetMS();
+    int getComboResetMS();
 
     // These could be configured from file or overridden by implementation
     double getBaseHorizontal();

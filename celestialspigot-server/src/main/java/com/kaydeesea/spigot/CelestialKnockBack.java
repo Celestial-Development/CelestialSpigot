@@ -163,9 +163,7 @@ public class CelestialKnockBack {
                 }
                 for (ComboTypeKnockbackProfile.ComboValues value : ComboTypeKnockbackProfile.ComboValues.values()) {
                     String a = path + "." + value.getKey();
-                    if(value.isLong()) {
-                        profile.setValueByKey(value, this.config.getLong(a, (Long) profile.getValueByKey(value)));
-                    } else if(value.isDouble()) {
+                    if(value.isDouble()) {
                         profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
                     } else if(value.isInteger()) {
                         profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
@@ -214,8 +212,7 @@ public class CelestialKnockBack {
         this.currentKb = this.getKbProfileByName(this.config.getString("knockback.current", "default"));
 
         if (this.currentKb == null) {
-            this.currentKb = defaultProfile;
-            this.config.set("knockback.current", "default");
+            setCurrentKb(defaultProfile);
         }
 
         save();

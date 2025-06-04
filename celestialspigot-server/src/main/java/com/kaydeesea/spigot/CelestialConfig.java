@@ -15,6 +15,7 @@ import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
 import lombok.Setter;
 
+import net.minecraft.server.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -97,6 +98,19 @@ public class CelestialConfig {
     private int maxNearbyEntities;
     private int requiredPlayerRange;
 
+    private double criticalDamageMultiplier;
+    private boolean relativeMoveFix;
+    private boolean fixArmorDamage;
+    private boolean fixArrowBounceGlitch;
+    private boolean toggleFallDamageKB;
+    private boolean fixSuffocationGlitch;
+    private boolean fixDoubleHitBug;
+    private boolean fixBlockHitGlitch;
+    private boolean fixBlockHitAnimationGlitch;
+    private boolean toggleArmAnimationEvent;
+    private boolean optimizeArmSwings;
+
+    private int targetTPS;
     private int pickupDelay;
     private int chunkLoadingThreads;
     private int playersPerThread;
@@ -109,6 +123,7 @@ public class CelestialConfig {
     private float pearlGravity;
     private float pearlVerticalOffset;
     private boolean pearlDamage;
+
 
     public CelestialConfig() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -239,6 +254,19 @@ public class CelestialConfig {
         this.tcpNoDelay = this.getBoolean("tcp-no-delay", true);
         this.usePandaWire = this.getBoolean("use-panda-wire", true);
 
+        this.criticalDamageMultiplier = this.getDouble("critical-damage-multiplier", 1.5);
+        this.relativeMoveFix = this.getBoolean("relative-move-fix", true);
+        this.fixArmorDamage = this.getBoolean("fix-armor-damage", true);
+        this.fixArrowBounceGlitch = this.getBoolean("fix-arrow-bounce-glitch", true);
+        this.toggleFallDamageKB = this.getBoolean("toggle-fall-damage-kb", false);
+        this.fixSuffocationGlitch = this.getBoolean("fix-suffocation-glitch", true);
+        this.targetTPS = this.getInt("target-tps", 20);
+        this.fixDoubleHitBug = this.getBoolean("fix-double-hit-bug", true);
+        this.fixBlockHitGlitch = this.getBoolean("fix-block-hit-glitch", true);
+        this.fixBlockHitAnimationGlitch = this.getBoolean("fix-block-hit-animation", true);
+        this.toggleArmAnimationEvent = this.getBoolean("toggle-arm-animation-event", true);
+        this.optimizeArmSwings = this.getBoolean("optimize-arm-swings", true);
+
         this.pickupDelay = this.getInt("pickup-delay", 40);
         this.chunkLoadingThreads = this.getInt("chunk-loading-threads", 2);
         this.playersPerThread = this.getInt("players-per-thread", 50);
@@ -273,6 +301,9 @@ public class CelestialConfig {
     public void setVariables() {
         ChunkIOExecutor.BASE_THREADS = chunkLoadingThreads;
         ChunkIOExecutor.PLAYERS_PER_THREAD = playersPerThread;
+
+        MinecraftServer.TPS = getTargetTPS();
+        MinecraftServer.TICK_TIME = 1000000000 / MinecraftServer.TPS;
 
         if (asyncKnockback) {
             this.knockbackThread = new KnockbackThread();
@@ -347,6 +378,18 @@ public class CelestialConfig {
         c.addComment("pickup-delay", "Change the dropped item pickup delay");
         c.addComment("chunk-loading-threads", "Change the chunk loading threads");
         c.addComment("players-per-thread", "Change the max players per chunk thread");
+        c.addComment("critical-damage-multiplier", "Critical damage multiplier. This is part of the new spigot's damage calculations");
+        c.addComment("relative-move-fix", "Fixes a calculation bug where MathHelper#floor was being used for an entity's placement (Credits: JT - PvPLand Developer)");
+        c.addComment("fix-armor-damage", "This option fixes the armor damage to be less than expected");
+        c.addComment("fix-arrow-bounce-glitch", "Fixes the arrow bounce glitch that comes from disable 'keep-spawn-in-memory' for a certain world.");
+        c.addComment("target-tps", "What TPS should the server target? 'Do not set this above 200 unless you want your server to explode.' - CarbonSpigot");
+        c.addComment("toggle-fall-damage-kb", "Toggles fall damage knockback");
+        c.addComment("fix-suffocation-glitch", "When you pearl inside a block/get stuck inside a block while falling, you get damaged and you fall faster.");
+        c.addComment("fix-double-hit-bug", "Toggle to fix the \"double hit\" (or \"high damage\") bug that allows damage during no-damage ticks, causing excessive knockback and unintended fly-outs.");
+        c.addComment("fix-block-hit-glitch", "This fixes block hit glitch server side when you attack a player.");
+        c.addComment("fix-block-hit-animation", "This fixes block hit glitch client-side when you swing your arm");
+        c.addComment("toggle-arm-animation-event", "Toggles the PlayerArmAnimationEvent.");
+        c.addComment("optimize-arm-swings", "Optimizes arm swings. (Credit: CarbonSpigot)");
 
         // Section: Async configuration
         c.addComment("async", "Configuration settings for asynchronous features");

@@ -23,8 +23,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import net.minecraft.server.*;
@@ -312,6 +310,36 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         return uuidEquals && idEquals;
     }
 
+    @Override
+    public boolean canSeeEntity(org.bukkit.entity.Entity entity) {
+        Entity nmsEntity = ((CraftEntity) entity).getHandle();
+
+        if (nmsEntity instanceof EntityProjectile) {
+            EntityProjectile project = (EntityProjectile) nmsEntity;
+            if (project.shooter instanceof EntityPlayer) {
+                if (this.getUniqueId().equals(project.shooter.getUniqueID())) return true;
+                return !this.hiddenPlayers.contains(project.shooter.getUniqueID());
+            }
+        }
+
+        if (nmsEntity instanceof EntityItem) {
+            EntityItem item = (EntityItem) nmsEntity;
+            if (item.owner != null) {
+                if (this.getUniqueId().equals(item.owner)) return true;
+                return !this.hiddenPlayers.contains(item.owner);
+            }
+        }
+
+        if (nmsEntity instanceof EntityArrow) {
+            EntityArrow arrow = (EntityArrow) nmsEntity;
+            if (arrow.shooter instanceof EntityPlayer) {
+                if (this.getUniqueId().equals(arrow.shooter.getUniqueID())) return true;
+                return !this.hiddenPlayers.contains(arrow.shooter.getUniqueID());
+            }
+        }
+
+        return !(entity instanceof Player) || this.canSee((Player) entity);
+    }
     @Override
     public void kickPlayer(String message) {
         org.spigotmc.AsyncCatcher.catchOp( "player kick"); // Spigot

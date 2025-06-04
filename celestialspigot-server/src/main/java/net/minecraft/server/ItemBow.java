@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.event.entity.EntityCombustEvent; // CraftBukkit
 
 public class ItemBow extends Item {
@@ -59,6 +60,13 @@ public class ItemBow extends Item {
 
             // CraftBukkit start
             org.bukkit.event.entity.EntityShootBowEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityShootBowEvent(entityhuman, itemstack, entityarrow, f);
+
+            // Carbon start - Fix this gay glitch
+            if (CelestialSpigot.INSTANCE.getConfig().isFixArrowBounceGlitch()) {
+                event.getProjectile().setVelocity(event.getProjectile().getVelocity());
+            }
+            // Carbon end
+
             if (event.isCancelled()) {
                 event.getProjectile().remove();
                 return;

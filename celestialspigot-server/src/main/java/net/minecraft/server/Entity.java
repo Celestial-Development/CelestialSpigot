@@ -42,6 +42,15 @@ public abstract class Entity implements ICommandListener {
 
     // CraftBukkit start
     private static final int CURRENT_LEVEL = 2;
+
+    // Spigot
+    public boolean velocityChanged;
+    // Carbon Start
+    public boolean fallDamageKB;
+    public boolean stuckKB;
+    public boolean criticalHit;
+    // Carbon end
+
     static boolean isLevelAtLeast(NBTTagCompound tag, int level) {
         return tag.hasKey("Bukkit.updateLevel") && tag.getInt("Bukkit.updateLevel") >= level;
     }
@@ -88,7 +97,6 @@ public abstract class Entity implements ICommandListener {
     public boolean positionChanged;
     public boolean E;
     public boolean F;
-    public boolean velocityChanged;
     protected boolean H;
     private boolean g;
     public boolean dead;
@@ -1467,6 +1475,7 @@ public abstract class Entity implements ICommandListener {
             }
             // CraftBukkit end
             EntityItem entityitem = new EntityItem(this.world, this.locX, this.locY + (double) f, this.locZ, itemstack);
+            entityitem.setDropper(this.getUniqueID());
 
             entityitem.p();
             this.world.addEntity(entityitem);

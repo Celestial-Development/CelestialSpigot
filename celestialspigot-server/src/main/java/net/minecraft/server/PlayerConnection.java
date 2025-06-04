@@ -115,6 +115,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private final org.bukkit.craftbukkit.CraftServer server;
     private int lastTick = MinecraftServer.currentTick;
     private int lastDropTick = MinecraftServer.currentTick;
+    private long nextValidSwingTick = MinecraftServer.currentTick;
     private int lastBookTick = MinecraftServer.currentTick; // PandaSpigot
     private int dropCount = 0;
     private static final int SURVIVAL_PLACE_DISTANCE_SQUARED = 6 * 6;
@@ -1286,13 +1287,28 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
             }
         }
 
+        // Carbon start - Optimize Arm Swing
         // Arm swing animation
-        PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());
-        this.server.getPluginManager().callEvent(event);
+        if (CelestialSpigot.INSTANCE.getConfig().isToggleArmAnimationEvent()) {
+            PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());
+            this.server.getPluginManager().callEvent(event);
 
-        if (event.isCancelled()) return;
-        // CraftBukkit end
-        this.player.bw();
+            if (event.isCancelled()) return;
+        }
+
+        // Only send swings to client every 5 ticks (current tick + 5)
+        if (CelestialSpigot.INSTANCE.getConfig().isOptimizeArmSwings() && (MinecraftServer.currentTick >= this.nextValidSwingTick)) {
+            this.player.bw();
+            this.nextValidSwingTick = MinecraftServer.currentTick + 5;
+        } else {
+            this.player.bw();
+        }
+
+        // stop blocking after swinging in case the state was wrong
+        if (this.player.isBlocking() && CelestialSpigot.INSTANCE.getConfig().isFixBlockHitAnimationGlitch()) {
+            this.player.bU();
+        }
+        // Carbon end
     }
 
     public void a(PacketPlayInEntityAction packetplayinentityaction) {
@@ -1321,42 +1337,52 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         }
         // CraftBukkit end
         this.player.resetIdleTimer();
-        switch (PlayerConnection.SyntheticClass_1.b[packetplayinentityaction.b().ordinal()]) {
-        case 1:
-            this.player.setSneaking(true);
-            break;
+        switch (packetplayinentityaction.b()) {
+            case START_SNEAKING:
+                this.player.setSneaking(true);
+                break;
 
-        case 2:
-            this.player.setSneaking(false);
-            break;
+            case STOP_SNEAKING:
+                this.player.setSneaking(false);
+                break;
 
-        case 3:
-            this.player.setSprinting(true);
-            break;
+            case START_SPRINTING:
+                this.player.setSprinting(true);
 
-        case 4:
-            this.player.setSprinting(false);
-            break;
+                // Carbon start - Fix the sneak sprinting glitch lmao
+                this.player.setSneaking(false);
 
-        case 5:
-            this.player.a(false, true, true);
-            // this.checkMovement = false; // CraftBukkit - this is handled in teleport
-            break;
+                // Fix Block hit glitch
+                if (this.player.sU()) {
+                    this.player.bU();
+                }
+                // Carbon end
 
-        case 6:
-            if (this.player.vehicle instanceof EntityHorse) {
-                ((EntityHorse) this.player.vehicle).v(packetplayinentityaction.c());
-            }
-            break;
+                break;
 
-        case 7:
-            if (this.player.vehicle instanceof EntityHorse) {
-                ((EntityHorse) this.player.vehicle).g((EntityHuman) this.player);
-            }
-            break;
+            case STOP_SPRINTING:
+                this.player.setSprinting(false);
+                break;
 
-        default:
-            throw new IllegalArgumentException("Invalid client command!");
+            case STOP_SLEEPING:
+                this.player.a(false, true, true);
+                // this.checkMovement = false; // CraftBukkit - this is handled in teleport
+                break;
+
+            case RIDING_JUMP:
+                if (this.player.vehicle instanceof EntityHorse) {
+                    ((EntityHorse) this.player.vehicle).v(packetplayinentityaction.c());
+                }
+                break;
+
+            case OPEN_INVENTORY:
+                if (this.player.vehicle instanceof EntityHorse) {
+                    ((EntityHorse) this.player.vehicle).g(this.player);
+                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid client command!");
         }
 
     }
@@ -1442,6 +1468,13 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                     }
 
                     this.player.attack(entity);
+
+                    // Carbon start - Fix Block hit glitch
+                    if (CelestialSpigot.INSTANCE.getConfig().isFixBlockHitGlitch() && this.player.isBlocking()) {
+                        this.player.bU();
+                    }
+                    // Carbon end
+
 
                     // CraftBukkit start
                     if (itemInHand != null && itemInHand.count <= -1) {

@@ -549,9 +549,9 @@ public class CraftEventFactory {
     private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, Map<DamageModifier, Double> modifiers, Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
         EntityDamageEvent event;
         if (damager != null) {
-            event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), damagee.getBukkitEntity(), cause, modifiers, modifierFunctions);
+            event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), damagee.getBukkitEntity(), damagee.criticalHit, cause, modifiers, modifierFunctions);
         } else {
-            event = new EntityDamageEvent(damagee.getBukkitEntity(), cause, modifiers, modifierFunctions);
+            event = new EntityDamageEvent(damagee.getBukkitEntity(), damagee.criticalHit, cause, modifiers, modifierFunctions);
         }
 
         callEvent(event);

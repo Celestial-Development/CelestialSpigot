@@ -313,9 +313,7 @@ public class KnockbackCommand extends Command {
                     Object parsedValue;
 
                     try {
-                        if (v.isLong()) {
-                            parsedValue = Long.parseLong(args[3]);
-                        } else if (v.isDouble()) {
+                        if (v.isDouble()) {
                             parsedValue = Double.parseDouble(args[3]);
                         } else if (v.isInteger()) {
                             parsedValue = Integer.parseInt(args[3]);

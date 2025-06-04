@@ -95,6 +95,8 @@ public abstract class EntityLiving extends Entity {
     // CraftBukkit start
     public int expToDrop;
     public int maxAirTicks = 300;
+    public boolean lastPlayerAttack; // Carbon - Track previous player attack
+
     ArrayList<org.bukkit.inventory.ItemStack> drops = null;
     // CraftBukkit end
     // Spigot start
@@ -742,13 +744,20 @@ public abstract class EntityLiving extends Entity {
                         this.forceExplosionKnockback = true; // CraftBukkit - SPIGOT-949 - for vanilla consistency, cooldown does not prevent explosion knockback
                         return false;
                     }
-
+                    // Carbon start - Don't allow player attacks while no damage ticks are active
+                    // This fixes the long-standing pvp bug of double hits or knockback suddenly turning combo mode
+                    if (CelestialSpigot.INSTANCE.getConfig().isFixDoubleHitBug() && lastPlayerAttack && ipa(damagesource)) {
+                        System.out.println("[CelestialSpigot] Blocking attack for double hit bug.");
+                        return false;
+                    }
+                    // Carbon end
                     // CraftBukkit start
                     if (!this.d(damagesource, f - this.lastDamage)) {
                         return false;
                     }
                     // CraftBukkit end
                     this.lastDamage = f;
+                    this.lastPlayerAttack = ipa(damagesource); // Carbon
                     flag = false;
                 } else {
                     // CraftBukkit start
@@ -758,6 +767,7 @@ public abstract class EntityLiving extends Entity {
                     }
                     this.lastDamage = f;
                     this.noDamageTicks = this.maxNoDamageTicks;
+                    this.lastPlayerAttack = ipa(damagesource); // Carbon
                     // CraftBukkit end
                     this.hurtTicks = this.av = 10;
                 }
@@ -797,6 +807,12 @@ public abstract class EntityLiving extends Entity {
                 if (flag && !(knockbackCancelled = world.paperSpigotConfig.disableExplosionKnockback && damagesource.isExplosion() && this instanceof EntityHuman)) {
                 // PaperSpigot end
                     this.world.broadcastEntityEffect(this, (byte) 2);
+
+                    // Carbon start - Toggleable fall damage kb and stuck damage kb
+                    this.fallDamageKB = damagesource == DamageSource.FALL;
+                    this.stuckKB = damagesource == DamageSource.STUCK;
+                    // Carbon end
+
                     if (damagesource != DamageSource.DROWN) {
                         this.ac();
                     }
@@ -1215,7 +1231,8 @@ public abstract class EntityLiving extends Entity {
             this.as = -1;
             this.ar = true;
             if (this.world instanceof WorldServer) {
-                ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutAnimation(this, 0)));
+                EntityTracker entityTracker = ((WorldServer) this.world).getTracker();
+                entityTracker.a(this, new PacketPlayOutAnimation(this, 0));
             }
         }
 
@@ -1910,9 +1927,23 @@ public abstract class EntityLiving extends Entity {
     }
 
     public boolean a(ScoreboardTeamBase scoreboardteambase) {
-        return this.getScoreboardTeam() != null ? this.getScoreboardTeam().isAlly(scoreboardteambase) : false;
+        return this.getScoreboardTeam() != null && this.getScoreboardTeam().isAlly(scoreboardteambase);
     }
 
+    public boolean ipa(DamageSource f) {
+        if (!(f instanceof EntityDamageSource) || f instanceof EntityDamageSourceIndirect) {
+            return false;
+        }
+
+        EntityDamageSource eds = (EntityDamageSource) f;
+        String type = eds.p();
+
+        if (type != null && type.contains("explosion")) {
+            return false;
+        }
+
+        return eds.getEntity() instanceof EntityPlayer;
+    }
     public void enterCombat() {}
 
     public void exitCombat() {}

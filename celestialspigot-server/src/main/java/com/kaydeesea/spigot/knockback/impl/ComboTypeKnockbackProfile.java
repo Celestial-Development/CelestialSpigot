@@ -24,7 +24,7 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
     private double verticalScalePerHit = 0.003;
     private double maxHorizontal = 0.43;
     private double maxVertical = 0.36;
-    private long comboResetMS = 2000;
+    private int comboResetMS = 2000;
 
     private int hitDelay = 16;
 
@@ -64,17 +64,13 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
         VERTICAL_SCALE_PER_HIT("vertical-scale-per-hit", Double.class),
         MAX_HORIZONTAL("max-horizontal", Double.class),
         MAX_VERTICAL("max-vertical", Double.class),
-        COMBO_RESET_MS("combo-reset-ms", Long.class),
+        COMBO_RESET_MS("combo-reset-ms", Integer.class),
         HIT_DELAY("hit-delay", Integer.class);
 
         private final String key;
         private final Class<?> type;
 
 
-
-        public boolean isLong() {
-            return type == Long.class;
-        }
 
         public boolean isDouble() {
             return type == Double.class;
@@ -143,7 +139,7 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
             case HIT_DELAY:
                 hitDelay = (Integer) value;
             case COMBO_RESET_MS:
-                comboResetMS = (Long) value;
+                comboResetMS = (Integer) value;
                 break;
         }
     }

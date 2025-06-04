@@ -25,6 +25,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     private final Map<DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions;
     private final Map<DamageModifier, Double> originals;
     private boolean cancelled;
+    private boolean critical;
     private final DamageCause cause;
 
     @Deprecated
@@ -50,12 +51,30 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         this.modifierFunctions = modifierFunctions;
     }
 
+    public EntityDamageEvent(final Entity damagee, final boolean critical, final DamageCause cause, final Map<DamageModifier, Double> modifiers, final Map<DamageModifier, ? extends Function<? super Double, Double>> modifierFunctions) {
+        super(damagee);
+        Validate.isTrue(modifiers.containsKey(DamageModifier.BASE), "BASE DamageModifier missing");
+        Validate.isTrue(!modifiers.containsKey(null), "Cannot have null DamageModifier");
+        Validate.noNullElements(modifiers.values(), "Cannot have null modifier values");
+        Validate.isTrue(modifiers.keySet().equals(modifierFunctions.keySet()), "Must have a modifier function for each DamageModifier");
+        Validate.noNullElements(modifierFunctions.values(), "Cannot have null modifier function");
+        this.originals = new EnumMap<DamageModifier, Double>(modifiers);
+        this.cause = cause;
+        this.modifiers = modifiers;
+        this.critical = critical;
+        this.modifierFunctions = modifierFunctions;
+    }
+
     public boolean isCancelled() {
         return cancelled;
     }
 
     public void setCancelled(boolean cancel) {
         cancelled = cancel;
+    }
+
+    public boolean isCritical() {
+        return critical;
     }
 
     /**
@@ -153,7 +172,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
      * This method exists for legacy reasons to provide backwards
      * compatibility. It will not exist at runtime and should not be used
      * under any circumstances.
-     * 
+     *
      * @return the (rounded) damage
      */
     @Deprecated
@@ -202,7 +221,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
      * This method exists for legacy reasons to provide backwards
      * compatibility. It will not exist at runtime and should not be used
      * under any circumstances.
-     * 
+     *
      * @param damage the new damage value
      */
     @Deprecated

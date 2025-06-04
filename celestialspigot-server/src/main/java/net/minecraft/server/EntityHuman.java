@@ -301,10 +301,41 @@ public abstract class EntityHuman extends EntityLiving {
 
     }
 
+    public boolean sU() {
+        if (!this.bS()) return false;
+        EnumAnimation animation = this.g.getItem().e(this.g);
+        switch (animation) {
+            case BLOCK:
+            case DRINK:
+            case EAT: {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected void s() {
         if (this.g != null) {
             this.b(this.g, 16);
             int i = this.g.count;
+
+            // Carbon start - Fix run while eating/eating while gui open
+            if (CelestialSpigot.INSTANCE.getConfig().isFixEatWhileRunning() && this instanceof EntityPlayer) {
+                EntityPlayer entityPlayer = ((EntityPlayer) this);
+                if (this.g.m() == EnumAnimation.EAT) {
+                    // Block if there is a gui open or if the player is sprinting
+                    if (this.activeContainer != defaultContainer || entityPlayer.isSprinting()) {
+                        ((EntityPlayer) this).playerConnection.sendPacket(new PacketPlayOutSetSlot((byte) 0, activeContainer.getSlot(this.inventory, this.inventory.itemInHandIndex).index, this.g));
+                        // Spigot Start
+                        ((EntityPlayer) this).getBukkitEntity().updateInventory();
+                        ((EntityPlayer) this).getBukkitEntity().updateScaledHealth();
+                        // Spigot End
+                        return;
+                    }
+                }
+            }
+            // Carbon end
 
             // CraftBukkit start - fire PlayerItemConsumeEvent
             org.bukkit.inventory.ItemStack craftItem = CraftItemStack.asBukkitCopy(this.g);
@@ -631,6 +662,7 @@ public abstract class EntityHuman extends EntityLiving {
                 return null;
             }
             // CraftBukkit end
+            entityitem.setDropper(this.getUniqueID());
 
             this.a(entityitem);
             if (flag1) {
@@ -967,18 +999,15 @@ public abstract class EntityHuman extends EntityLiving {
     public double am() {
         return -0.35D;
     }
-
     public void attack(Entity entity) {
-        // PandaSpigot start - PrePlayerAttackEntityEvent
-        boolean willAttack = entity.aD() && !entity.l(this); // Vanilla logic
-        io.papermc.paper.event.player.PrePlayerAttackEntityEvent playerAttackEntityEvent = new io.papermc.paper.event.player.PrePlayerAttackEntityEvent(
-            (org.bukkit.entity.Player) this.getBukkitEntity(),
-            entity.getBukkitEntity(),
-            willAttack
-        );
-        if (playerAttackEntityEvent.callEvent() && willAttack) { // Logic moved to willAttack local variable.
-            {
-        // PandaSpigot end
+        // Carbon start - Fix killing at the same time
+        if (!this.isAlive()) {
+            return;
+        }
+        // Carbon end
+
+        if (entity.aD()) {
+            if (!entity.l(this)) {
                 float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
                 byte b0 = 0;
                 float f1 = 0.0F;
@@ -999,9 +1028,8 @@ public abstract class EntityHuman extends EntityLiving {
                     boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
 
                     if (flag && f > 0.0F) {
-                        f *= 1.5F;
+                        f *= (float) CelestialSpigot.INSTANCE.getConfig().getCriticalDamageMultiplier();
                     }
-
                     f += f1;
                     boolean flag1 = false;
                     int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
@@ -1018,26 +1046,52 @@ public abstract class EntityHuman extends EntityLiving {
                         // CraftBukkit end
                     }
 
-                    double victimMotX = entity.motX;
-                    double victimMotY = entity.motY;
-                    double victimMotZ = entity.motZ;
+                    // Carbon start
+                    entity.criticalHit = flag; // Track critical hits for EntityDamageEvent
+
                     boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f);
 
-                    if (flag2) {
-                        if (entity instanceof EntityPlayer) {
-                            // TODO knockback 2
-                            KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() : this.getKnockbackProfile();
+                    entity.criticalHit = false; // Already read, so now reset it.
 
-                            if(profile instanceof NormalKnockbackProfile) {
-                                ((NormalKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
-                            } else if(profile instanceof BedWarsKnockbackProfile) {
-                                ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
-                            } else if(profile instanceof DetailedKnockbackProfile) {
-                                ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
-                            } else if(profile instanceof ComboKnockbackProfile) {
-                                ((ComboKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                    if (flag2) {
+                        boolean custom = false;
+                        double victimMotX = entity.motX;
+                        double victimMotY = entity.motY;
+                        double victimMotZ = entity.motZ;
+                        if (this instanceof EntityPlayer && entity instanceof EntityPlayer) {
+                            custom = true;
+                            try {
+                                KnockBackProfile profile = this.getKnockbackProfile() == null ? CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb() : this.getKnockbackProfile();
+
+                                if(profile instanceof NormalKnockbackProfile) {
+                                    ((NormalKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                                } else if(profile instanceof BedWarsKnockbackProfile) {
+                                    ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                                } else if(profile instanceof DetailedKnockbackProfile) {
+                                    ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
+                                } else if(profile instanceof ComboKnockbackProfile) {
+                                    ((ComboKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
+                                }
+                            } catch (Exception e) {
+                                System.out.println("[CelestialSpigot] An error occurred while handling knockback!");
+                                System.out.println("[CelestialSpigot] Error: " + e.getMessage());
+                                e.printStackTrace();
                             }
                         }
+
+                        if (!custom) {
+                            if (i > 0) {
+                                entity.g(
+                                        -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * 0.5F,
+                                        0.1D,
+                                        MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * 0.5F
+                                );
+                                this.motX *= 0.6D;
+                                this.motZ *= 0.6D;
+                                this.setSprinting(false);
+                            }
+                        }
+                        // Carbon end
 
                         if (flag) {
                             this.b(entity);
@@ -1048,12 +1102,12 @@ public abstract class EntityHuman extends EntityLiving {
                         }
 
                         if (f >= 18.0F) {
-                            this.b((Statistic) AchievementList.F);
+                            this.b(AchievementList.F);
                         }
 
                         this.p(entity);
                         if (entity instanceof EntityLiving) {
-                            EnchantmentManager.a((EntityLiving) entity, (Entity) this);
+                            EnchantmentManager.a((EntityLiving) entity, this);
                         }
 
                         EnchantmentManager.b(this, entity);
@@ -1064,7 +1118,7 @@ public abstract class EntityHuman extends EntityLiving {
                             IComplex icomplex = ((EntityComplexPart) entity).owner;
 
                             if (icomplex instanceof EntityLiving) {
-                                object = (EntityLiving) icomplex;
+                                object = icomplex;
                             }
                         }
 

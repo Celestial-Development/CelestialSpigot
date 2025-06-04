@@ -430,6 +430,12 @@ public class EntityArrow extends Entity implements IProjectile {
 
     public void d(EntityHuman entityhuman) {
         if (!this.world.isClientSide && this.inGround && this.shake <= 0) {
+            // Carbon start  - Entity Hider
+            if (!((EntityPlayer) entityhuman).getBukkitEntity().canSeeEntity(this.getBukkitEntity())) {
+                return;
+            }
+            // Carbon end
+
             // CraftBukkit start
             ItemStack itemstack = new ItemStack(Items.ARROW);
             if (this.fromPlayer == 1 && entityhuman.inventory.canHold(itemstack) > 0) {
@@ -461,8 +467,10 @@ public class EntityArrow extends Entity implements IProjectile {
             }
 
             if (flag) {
-                this.makeSound("random.pop", 0.2F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                entityhuman.receive(this, 1);
+                if (((EntityPlayer) entityhuman).getBukkitEntity().canSeeEntity(this.getBukkitEntity())) {
+                    this.makeSound("random.pop", 0.2F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    entityhuman.receive(this, 1);
+                }
                 this.die();
             }
 

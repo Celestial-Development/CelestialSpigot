@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,9 +53,15 @@ public class EntityTrackerEntry {
         this.b = i;
         this.c = j;
         this.u = flag;
-        this.xLoc = MathHelper.floor(entity.locX * 32.0D);
-        this.yLoc = MathHelper.floor(entity.locY * 32.0D);
-        this.zLoc = MathHelper.floor(entity.locZ * 32.0D);
+        if (entity instanceof EntityPlayer && CelestialSpigot.INSTANCE.getConfig().isRelativeMoveFix()) {
+            this.xLoc = (int) Math.round(entity.locX * 32.0D);
+            this.yLoc = (int) Math.round(entity.locY * 32.0D);
+            this.zLoc = (int) Math.round(entity.locZ * 32.0D);
+        } else {
+            this.xLoc = MathHelper.floor(entity.locX * 32.0D);
+            this.yLoc = MathHelper.floor(entity.locY * 32.0D);
+            this.zLoc = MathHelper.floor(entity.locZ * 32.0D);
+        }
         this.yRot = MathHelper.d(entity.yaw * 256.0F / 360.0F);
         this.xRot = MathHelper.d(entity.pitch * 256.0F / 360.0F);
         this.i = MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
@@ -61,7 +69,7 @@ public class EntityTrackerEntry {
     }
 
     public boolean equals(Object object) {
-        return object instanceof EntityTrackerEntry ? ((EntityTrackerEntry) object).tracker.getId() == this.tracker.getId() : false;
+        return object instanceof EntityTrackerEntry && ((EntityTrackerEntry) object).tracker.getId() == this.tracker.getId();
     }
 
     public int hashCode() {
@@ -90,17 +98,15 @@ public class EntityTrackerEntry {
 
             if (this.m % 10 == 0 && itemstack != null && itemstack.getItem() instanceof ItemWorldMap) { // CraftBukkit - Moved this.m % 10 logic here so item frames do not enter the other blocks
                 WorldMap worldmap = Items.FILLED_MAP.getSavedMap(itemstack, this.tracker.world);
-                Iterator iterator = this.trackedPlayers.iterator(); // CraftBukkit
+                // CraftBukkit
 
-                while (iterator.hasNext()) {
-                    EntityHuman entityhuman = (EntityHuman) iterator.next();
-                    EntityPlayer entityplayer = (EntityPlayer) entityhuman;
+                for (EntityPlayer trackedPlayer : this.trackedPlayers) {
 
-                    worldmap.a(entityplayer, itemstack);
-                    Packet packet = Items.FILLED_MAP.c(itemstack, this.tracker.world, entityplayer);
+                    worldmap.a(trackedPlayer, itemstack);
+                    Packet packet = Items.FILLED_MAP.c(itemstack, this.tracker.world, (EntityPlayer) trackedPlayer);
 
                     if (packet != null) {
-                        entityplayer.playerConnection.sendPacket(packet);
+                        trackedPlayer.playerConnection.sendPacket(packet);
                     }
                 }
             }
@@ -111,12 +117,23 @@ public class EntityTrackerEntry {
         if (this.m % this.c == 0 || this.tracker.ai || this.tracker.getDataWatcher().a()) {
             int i;
             int j;
+            int k;
 
             if (this.tracker.vehicle == null) {
                 ++this.v;
-                i = MathHelper.floor(this.tracker.locX * 32.0D);
-                j = MathHelper.floor(this.tracker.locY * 32.0D);
-                int k = MathHelper.floor(this.tracker.locZ * 32.0D);
+
+                // Carbon start - Relative Move Fix
+                if (this.tracker instanceof EntityPlayer && CelestialSpigot.INSTANCE.getConfig().isRelativeMoveFix()) {
+                    i = (int) Math.round(this.tracker.locX * 32.0D);
+                    j = (int) Math.round(this.tracker.locY * 32.0D);
+                    k = (int) Math.round(this.tracker.locZ * 32.0D);
+                } else {
+                    i = MathHelper.floor(this.tracker.locX * 32.0D);
+                    j = MathHelper.floor(this.tracker.locY * 32.0D);
+                    k = MathHelper.floor(this.tracker.locZ * 32.0D);
+                }
+                // Carbon end
+
                 int l = MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
                 int i1 = MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
                 int j1 = i - this.xLoc;
@@ -155,7 +172,7 @@ public class EntityTrackerEntry {
                         this.v = 0;
                         // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
                         if (this.tracker instanceof EntityPlayer) {
-                            this.scanPlayers(new java.util.ArrayList(this.trackedPlayers));
+                            this.scanPlayers(new java.util.ArrayList<>(this.trackedPlayers));
                         }
                         // CraftBukkit end
                         object = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
@@ -243,21 +260,42 @@ public class EntityTrackerEntry {
         }
 
         ++this.m;
+
         if (this.tracker.velocityChanged) {
             // CraftBukkit start - Create PlayerVelocity event
             boolean cancelled = false;
 
             if (this.tracker instanceof EntityPlayer) {
+                // Carbon start - Disable fall damage knockback
+                if (this.tracker.fallDamageKB) {
+                    this.tracker.fallDamageKB = false;
+
+                    if (!CelestialSpigot.INSTANCE.getConfig().isToggleFallDamageKB()) {
+                        this.tracker.velocityChanged = false;
+                        return;
+                    }
+                }
+
+                if (this.tracker.stuckKB) {
+                    this.tracker.stuckKB = false;
+                    if (CelestialSpigot.INSTANCE.getConfig().isFixSuffocationGlitch()) {
+                        this.tracker.velocityChanged = false;
+                        return;
+                    }
+                }
+
+                // Carbon end
+
                 Player player = (Player) this.tracker.getBukkitEntity();
                 org.bukkit.util.Vector velocity = player.getVelocity();
 
-                PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
+                PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity);
                 this.tracker.world.getServer().getPluginManager().callEvent(event);
 
                 if (event.isCancelled()) {
                     cancelled = true;
                 } else if (!velocity.equals(event.getVelocity())) {
-                    player.setVelocity(event.getVelocity());
+                    player.setVelocity(event.getVelocity()); // Carbon - Fix knockback not registering here
                 }
             }
 
@@ -267,6 +305,7 @@ public class EntityTrackerEntry {
             // CraftBukkit end
             this.tracker.velocityChanged = false;
         }
+
 
     }
 

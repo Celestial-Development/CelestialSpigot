@@ -86,12 +86,12 @@ public class PlayerInventory implements IInventory {
     // CraftBukkit start - Watch method above! :D
     public int canHold(ItemStack itemstack) {
         int remains = itemstack.count;
-        for (int i = 0; i < this.items.length; ++i) {
-            if (this.items[i] == null) return itemstack.count;
+        for (ItemStack item : this.items) {
+            if (item == null) return itemstack.count;
 
             // Taken from firstPartial(ItemStack)
-            if (this.items[i] != null && this.items[i].getItem() == itemstack.getItem() && this.items[i].isStackable() && this.items[i].count < this.items[i].getMaxStackSize() && this.items[i].count < this.getMaxStackSize() && (!this.items[i].usesData() || this.items[i].getData() == itemstack.getData()) && ItemStack.equals(this.items[i], itemstack)) {
-                remains -= (this.items[i].getMaxStackSize() < this.getMaxStackSize() ? this.items[i].getMaxStackSize() : this.getMaxStackSize()) - this.items[i].count;
+            if (item.getItem() == itemstack.getItem() && item.isStackable() && item.count < item.getMaxStackSize() && item.count < this.getMaxStackSize() && (!item.usesData() || item.getData() == itemstack.getData()) && ItemStack.equals(item, itemstack)) {
+                remains -= (Math.min(item.getMaxStackSize(), this.getMaxStackSize())) - item.count;
             }
             if (remains <= 0) return itemstack.count;
         }
@@ -478,7 +478,7 @@ public class PlayerInventory implements IInventory {
     }
 
     public void a(float f) {
-        f /= 4.0F;
+        f /= SettingsConfig.FIX_ARMOR_DAMAGE ? 8.0F : 4.0F; // MineHQ
         if (f < 1.0F) {
             f = 1.0F;
         }

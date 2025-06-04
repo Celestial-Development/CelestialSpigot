@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import java.util.Iterator;
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.event.player.PlayerPickupItemEvent; // CraftBukkit
@@ -14,6 +16,7 @@ public class EntityItem extends Entity {
     private String f;
     private String g;
     public float a;
+    public UUID owner; // Carbon - Add tracking back to the owner
     private int lastTick = MinecraftServer.currentTick; // CraftBukkit
 
     public EntityItem(World world, double d0, double d1, double d2) {
@@ -142,6 +145,9 @@ public class EntityItem extends Entity {
         }
     }
     // Spigot end
+    public void setDropper(UUID uuid) {
+        this.owner = uuid;
+    }
 
     private void w() {
         // Spigot start
@@ -302,6 +308,13 @@ public class EntityItem extends Entity {
         if (!this.world.isClientSide) {
             ItemStack itemstack = this.getItemStack();
             int i = itemstack.count;
+
+            // Carbon start - Entity Hider
+            if (this.owner != null && !((EntityPlayer)entityhuman).getBukkitEntity().canSeeEntity(this.getBukkitEntity())) {
+                itemstack.count = i; // SPIGOT-5294 - restore count
+                return;
+            }
+            // Carbon end
 
             // CraftBukkit start - fire PlayerPickupItemEvent
             int canHold = entityhuman.inventory.canHold(itemstack);
