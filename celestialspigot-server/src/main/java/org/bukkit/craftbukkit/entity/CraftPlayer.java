@@ -310,7 +310,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         return uuidEquals && idEquals;
     }
 
-    @Override
     public boolean canSeeEntity(org.bukkit.entity.Entity entity) {
         Entity nmsEntity = ((CraftEntity) entity).getHandle();
 

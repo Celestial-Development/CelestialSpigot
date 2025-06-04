@@ -1308,6 +1308,10 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        boolean canSeeEntity(org.bukkit.entity.Entity entity) {
+            return false;
+        }
+
         /**
          * Sends an array of components as a single message to the player
          *

@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 // CraftBukkit start
 import java.util.List;
 
+import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
 // CraftBukkit end
@@ -478,7 +479,7 @@ public class PlayerInventory implements IInventory {
     }
 
     public void a(float f) {
-        f /= SettingsConfig.FIX_ARMOR_DAMAGE ? 8.0F : 4.0F; // MineHQ
+        f /= CelestialSpigot.INSTANCE.getConfig().isFixArmorDamage() ? 8.0F : 4.0F; // MineHQ
         if (f < 1.0F) {
             f = 1.0F;
         }

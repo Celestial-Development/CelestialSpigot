@@ -28,7 +28,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-public abstract class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
     private final CraftInventory enderChest;
     protected final PermissibleBase perm = new PermissibleBase(this);
@@ -142,8 +142,6 @@ public abstract class CraftHumanEntity extends CraftLivingEntity implements Huma
     public GameMode getGameMode() {
         return mode;
     }
-
-    public abstract boolean canSeeEntity(org.bukkit.entity.Entity entity);
 
     public void setGameMode(GameMode mode) {
         if (mode == null) {
