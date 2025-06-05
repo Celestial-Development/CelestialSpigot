@@ -1,7 +1,6 @@
 package com.kaydeesea.spigot.util;
 
 import lombok.Setter;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.FileWriter;

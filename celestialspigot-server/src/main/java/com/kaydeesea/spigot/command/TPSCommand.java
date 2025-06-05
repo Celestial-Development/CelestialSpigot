@@ -1,7 +1,6 @@
 package com.kaydeesea.spigot.command;
 
 import com.kaydeesea.spigot.CelestialSpigot;
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
 import java.lang.management.*;

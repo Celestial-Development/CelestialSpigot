@@ -6,6 +6,5 @@ package com.kaydeesea.spigot;
 public class CelestialBridge {
 
     public static String version = "Unknown";
-    public static Boolean disableOpPermissions = Boolean.FALSE;
 
 }

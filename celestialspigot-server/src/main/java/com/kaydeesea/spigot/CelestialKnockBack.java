@@ -10,7 +10,6 @@ import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
 import com.kaydeesea.spigot.knockback.impl.NormalTypeKnockbackProfile;
 import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,9 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class CelestialKnockBack {
     @Getter
@@ -138,18 +135,10 @@ public class CelestialKnockBack {
                 NormalTypeKnockbackProfile profile = (NormalTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
-                    profile = new NormalTypeKnockbackProfile(key);
+                    profile = new NormalTypeKnockbackProfile(key, path, this.config);
                     this.kbProfiles.add(profile);
                 }
 
-                for (NormalTypeKnockbackProfile.NormalValues value : NormalTypeKnockbackProfile.NormalValues.values()) {
-                    String a = path + "." + value.getKey();
-                    if (value.isDouble()) {
-                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
-                    } else if (value.isInteger()) {
-                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
-                    }
-                }
                 if(key.equalsIgnoreCase("default")) {
                     profile.save();
                 }
@@ -158,54 +147,27 @@ public class CelestialKnockBack {
                 ComboTypeKnockbackProfile profile = (ComboTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
-                    profile = new ComboTypeKnockbackProfile(key);
+                    profile = new ComboTypeKnockbackProfile(key, path, this.config);
                     this.kbProfiles.add(profile);
-                }
-                for (ComboTypeKnockbackProfile.ComboValues value : ComboTypeKnockbackProfile.ComboValues.values()) {
-                    String a = path + "." + value.getKey();
-                    if(value.isDouble()) {
-                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
-                    } else if(value.isInteger()) {
-                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
-                    }
                 }
             }
             else if(type.equals(ProfileType.BEDWARS)) {
                 BedWarsTypeKnockbackProfile profile = (BedWarsTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
-                    profile = new BedWarsTypeKnockbackProfile(key);
+                    profile = new BedWarsTypeKnockbackProfile(key, path, this.config);
                     this.kbProfiles.add(profile);
-                }
-                for (BedWarsTypeKnockbackProfile.BedWarsValues value : BedWarsTypeKnockbackProfile.BedWarsValues.values()) {
-                    String a = path + "." + value.getKey();
-                    if(value.isBoolean()) {
-                        profile.setValueByKey(value, this.config.getBoolean(a, (Boolean) profile.getValueByKey(value)));
-                    } else if(value.isDouble()) {
-                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
-                    } else if(value.isInteger()) {
-                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
-                    }
                 }
             }
             else if (type.equals(ProfileType.DETAILED)) {
                 DetailedTypeKnockbackProfile profile = (DetailedTypeKnockbackProfile) getKbProfileByName(key);
 
                 if (profile == null) {
-                    profile = new DetailedTypeKnockbackProfile(key);
+                    profile = new DetailedTypeKnockbackProfile(key, path, this.config);
                     this.kbProfiles.add(profile);
                 }
 
-                for (DetailedTypeKnockbackProfile.DetailedValues value : DetailedTypeKnockbackProfile.DetailedValues.values()) {
-                    String a = path + "." + value.getKey();
-                    if (value.isBoolean()) {
-                        profile.setValueByKey(value, this.config.getBoolean(a, (Boolean) profile.getValueByKey(value)));
-                    } else if (value.isDouble()) {
-                        profile.setValueByKey(value, this.config.getDouble(a, (Double) profile.getValueByKey(value)));
-                    } else if (value.isInteger()) {
-                        profile.setValueByKey(value, this.config.getInt(a, (Integer) profile.getValueByKey(value)));
-                    }
-                }
+
             }
         }
 

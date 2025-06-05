@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
 
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import com.kaydeesea.spigot.threads.impl.HitDetectionThread;
@@ -17,7 +16,6 @@ import lombok.Setter;
 
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -70,26 +68,22 @@ public class CelestialConfig {
     private boolean optimizeTNTMovement;
     private boolean optimizeLiquidExplosions;
     private int timeUpdateFrequency;
+
     private boolean firePlayerMoveEvent;
     private boolean fireLeftClickAir;
     private boolean fireLeftClickBlock;
     private boolean fireLeafDecayEvent;
     private boolean fireEntityExplodeEvent;
+
     private boolean entityActivation;
     private boolean invalidArmAnimationKick;
     private boolean mobAIEnabled;
-    private boolean doChunkUnload;
     private boolean blockOperations;
     private boolean disableJoinMessage;
     private boolean disableLeaveMessage;
-    private boolean fixEatWhileRunning;
     private boolean tabCompletePlugins;
     private boolean tcpNoDelay;
     private boolean usePandaWire;
-
-    private int asyncThreadTPS;
-    private boolean asyncHits;
-    private boolean asyncKnockback;
 
     private int minSpawnDelay;
     private int maxSpawnDelay;
@@ -98,21 +92,25 @@ public class CelestialConfig {
     private int maxNearbyEntities;
     private int requiredPlayerRange;
 
-    private double criticalDamageMultiplier;
+    private boolean fixEatWhileRunning;
     private boolean relativeMoveFix;
     private boolean fixArmorDamage;
     private boolean fixArrowBounceGlitch;
-    private boolean toggleFallDamageKB;
     private boolean fixSuffocationGlitch;
     private boolean fixDoubleHitBug;
     private boolean fixBlockHitGlitch;
     private boolean fixBlockHitAnimationGlitch;
-    private boolean toggleArmAnimationEvent;
+
+    private double criticalDamageMultiplier;
+    private boolean toggleFallDamageKB;
+    private boolean fireArmAnimationEvent;
     private boolean optimizeArmSwings;
 
     private int targetTPS;
     private int pickupDelay;
+
     private int chunkLoadingThreads;
+    private boolean doChunkUnload;
     private int playersPerThread;
 
     private float potionThrowMultiplier;
@@ -197,7 +195,7 @@ public class CelestialConfig {
 
         ArrayList<String> opCMD = new ArrayList<>();
         opCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
-        opCMD.add("&3CelestialSpigot &7(OP Commands)");
+        opCMD.add("&b&lCelestial&3&lSpigot &7(OP Commands)");
         opCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
         opCMD.add("&7 * &3/op &8<&7player&8> &8(&7&oGives a player operator status&8)");
         opCMD.add("&7 * &3/deop &8<&7player&8> &8(&7&oRemoves a player's operator status&8)");
@@ -215,11 +213,18 @@ public class CelestialConfig {
         this.setSlotsCommand = this.getString("messages.set-slots-command", "&6Slots updated to &e%slots%");
         this.killEntitiesCommand = this.getString("messages.kill-entities-command", "&aYou have removed a total of &7%entities% &aentities");
 
-        this.threadAffinity = this.getBoolean("thread-affinity", false);
-        this.checkForMalware = this.getBoolean("check-for-malware", true);
-        this.kickForSpam = this.getBoolean("kick-for-spam", false);
+        this.mobAIEnabled = this.getBoolean("server.mob-ai", true);
+        this.targetTPS = this.getInt("server.target-tps", 20);
+        this.threadAffinity = this.getBoolean("server.thread-affinity", false);
+        this.checkForMalware = this.getBoolean("server.check-for-malware", true);
+        this.showPlayerIps = this.getBoolean("server.show-player-ips", true);
+        this.disableJoinMessage = this.getBoolean("server.disable-join-message", false);
+        this.disableLeaveMessage = this.getBoolean("server.disable-leave-message", false);
+        this.smoothTeleportation = this.getBoolean("server.smooth-teleportation", true);
+
+
         this.instantRespawn = this.getBoolean("instant-respawn", true);
-        this.showPlayerIps = this.getBoolean("show-player-ips", true);
+        this.kickForSpam = this.getBoolean("kick-for-spam", false);
 
         this.enableNightCommand = this.getBoolean("commands.enable-night-command", true);
         this.enablePingCommand = this.getBoolean("commands.enable-ping-command", true);
@@ -233,47 +238,43 @@ public class CelestialConfig {
         this.enableShrugCommand = this.getBoolean("commands.enable-shrug-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
-        this.smoothTeleportation = this.getBoolean("smooth-teleportation", true);
         this.optimizeTNTMovement = this.getBoolean("optimize-tnt-movement", true);
         this.optimizeLiquidExplosions = this.getBoolean("optimize-liquid-explosions", true);
         this.timeUpdateFrequency = this.getInt("time-update-frequency", 100);
-        this.firePlayerMoveEvent = this.getBoolean("fire-player-move-event", true);
-        this.fireLeftClickAir = this.getBoolean("fire-left-click-air", true);
-        this.fireLeftClickBlock = this.getBoolean("fire-left-click-block", true);
-        this.fireLeafDecayEvent = this.getBoolean("fire-leaf-decay-event", true);
-        this.fireEntityExplodeEvent = this.getBoolean("fire-entity-explode-event", true);
+
         this.entityActivation = this.getBoolean("entity-activation", false);
         this.invalidArmAnimationKick = this.getBoolean("invalid-arm-animation-kick", true);
-        this.mobAIEnabled = this.getBoolean("mob-ai", true);
-        this.doChunkUnload = this.getBoolean("do-chunk-unload", true);
         this.blockOperations = this.getBoolean("block-operations", false);
-        this.disableJoinMessage = this.getBoolean("disable-join-message", false);
-        this.disableLeaveMessage = this.getBoolean("disable-leave-message", false);
-        this.fixEatWhileRunning = this.getBoolean("fix-eat-while-running", true);
         this.tabCompletePlugins = this.getBoolean("tab-complete-plugins", false);
         this.tcpNoDelay = this.getBoolean("tcp-no-delay", true);
         this.usePandaWire = this.getBoolean("use-panda-wire", true);
 
+        this.firePlayerMoveEvent = this.getBoolean("fire.player-move-event", true);
+        this.fireLeftClickAir = this.getBoolean("fire.left-click-air", true);
+        this.fireLeftClickBlock = this.getBoolean("fire.left-click-block", true);
+        this.fireLeafDecayEvent = this.getBoolean("fire.leaf-decay-event", true);
+        this.fireEntityExplodeEvent = this.getBoolean("fire.entity-explode-event", true);
+        this.fireArmAnimationEvent = this.getBoolean("fire.arm-animation-event", true);
+
+
+        this.fixEatWhileRunning = this.getBoolean("fix.eat-while-running", true);
+        this.relativeMoveFix = this.getBoolean("fix.relative-move", true);
+        this.fixArmorDamage = this.getBoolean("fix.armor-damage", true);
+        this.fixArrowBounceGlitch = this.getBoolean("fix.arrow-bounce-glitch", true);
+        this.fixDoubleHitBug = this.getBoolean("fix.double-hit-bug", true);
+        this.fixBlockHitGlitch = this.getBoolean("fix.block-hit-glitch", true);
+        this.fixBlockHitAnimationGlitch = this.getBoolean("fix.block-hit-animation", true);
+        this.fixSuffocationGlitch = this.getBoolean("fix.suffocation-glitch", true);
+
+
         this.criticalDamageMultiplier = this.getDouble("critical-damage-multiplier", 1.5);
-        this.relativeMoveFix = this.getBoolean("relative-move-fix", true);
-        this.fixArmorDamage = this.getBoolean("fix-armor-damage", true);
-        this.fixArrowBounceGlitch = this.getBoolean("fix-arrow-bounce-glitch", true);
         this.toggleFallDamageKB = this.getBoolean("toggle-fall-damage-kb", false);
-        this.fixSuffocationGlitch = this.getBoolean("fix-suffocation-glitch", true);
-        this.targetTPS = this.getInt("target-tps", 20);
-        this.fixDoubleHitBug = this.getBoolean("fix-double-hit-bug", true);
-        this.fixBlockHitGlitch = this.getBoolean("fix-block-hit-glitch", true);
-        this.fixBlockHitAnimationGlitch = this.getBoolean("fix-block-hit-animation", true);
-        this.toggleArmAnimationEvent = this.getBoolean("toggle-arm-animation-event", true);
         this.optimizeArmSwings = this.getBoolean("optimize-arm-swings", true);
-
         this.pickupDelay = this.getInt("pickup-delay", 40);
-        this.chunkLoadingThreads = this.getInt("chunk-loading-threads", 2);
-        this.playersPerThread = this.getInt("players-per-thread", 50);
 
-        this.asyncHits = this.getBoolean("async.hits", false);
-        this.asyncKnockback = this.getBoolean("async.knockback", false);
-        this.asyncThreadTPS = this.getInt("async.thread-tps", 60);
+        this.chunkLoadingThreads = this.getInt("chunks.chunk-loading-threads", 2);
+        this.doChunkUnload = this.getBoolean("chunks.do-chunk-unload", true);
+        this.playersPerThread = this.getInt("chunks.players-per-thread", 50);
 
         this.minSpawnDelay = this.getInt("spawners.min-spawn-delay", 200);
         this.maxSpawnDelay = this.getInt("spawners.max-spawn-delay", 800);
@@ -290,7 +291,6 @@ public class CelestialConfig {
         this.pearlGravity = this.getFloat("pearls.pearl-gravity", 0.03F);
         this.pearlSpeed = this.getFloat("pearls.pearl-speed", 1.5F);
         this.pearlVerticalOffset = this.getFloat("pearls.vertical-offset", 0.0F);
-        CelestialBridge.disableOpPermissions = this.getBoolean("disable-op", false);
 
         setVariables();
         save();
@@ -303,16 +303,7 @@ public class CelestialConfig {
         ChunkIOExecutor.PLAYERS_PER_THREAD = playersPerThread;
 
         MinecraftServer.TPS = getTargetTPS();
-        MinecraftServer.TICK_TIME = 1000000000 / MinecraftServer.TPS;
-
-        if (asyncKnockback) {
-            this.knockbackThread = new KnockbackThread();
-            System.out.println("Loaded Knockback Thread.");
-        }
-        if (asyncHits) {
-            this.hitDetectionThread = new HitDetectionThread();
-            System.out.println("Loaded HitDetection Thread.");
-        }
+        MinecraftServer.TICK_TIME = 1_000_000_000 / MinecraftServer.TPS;
     }
     public void loadComments() {
         c.setHeader(HEADER);
@@ -331,12 +322,15 @@ public class CelestialConfig {
         c.addComment("messages.kill-entities-command", "Modify kill entities command message");
 
         // Add comments for mob AI setting
-        c.addComment("mob-ai", "Setting to enable or disable mob artificial intelligence");
-        c.addComment("thread-affinity", "When this is true, it allocates an entire cpu core to the server, it improves performance but uses more cpu.");
-        c.addComment("check-for-malware", "Enables checking for malwares");
-        c.addComment("kick-for-spam", "Setting to disable disconnect.spam message when spamming");
-        c.addComment("instant-respawn", "Enable or disable instant respawning");
-        c.addComment("show-player-ips", "Enable or disable showing player ips in console.");
+        c.addComment("server", "Some settings about spigot features.");
+        c.addComment("server.mob-ai", "Setting to enable or disable mob artificial intelligence");
+        c.addComment("server.target-tps", "What TPS should the server target? 'Do not set this above 200 unless you want your server to explode.' - CarbonSpigot");
+        c.addComment("server.thread-affinity", "When this is true, it allocates an entire cpu core to the server, it improves performance but uses more cpu.");
+        c.addComment("server.check-for-malware", "Enables checking for malwares");
+        c.addComment("server.show-player-ips", "Enable or disable showing player ips in console.");
+        c.addComment("server.disable-join-message", "Enable or disable join messages");
+        c.addComment("server.disable-leave-message", "Enable or disable leave messages");
+        c.addComment("server.smooth-teleportation", "Should smooth teleportation be enabled? (PandaSpigot)");
 
         // Add comments for command-related settings
         c.addComment("commands", "Toggle commands");
@@ -351,51 +345,49 @@ public class CelestialConfig {
         c.addComment("commands.enable-plugin-command", "Enable or disable the plugin command (command that lets you manage plugins ingame)");
         c.addComment("commands.enable-shrug-command", "Enable or disable the shrug command (¯\\_(ツ)_/¯)");
 
-        // Add comments for player event-related settings
-        c.addComment("fire-player-move-event", "Enable firing events when players move");
-        c.addComment("fire-left-click-air", "Enable firing events when players left-click air");
-        c.addComment("fire-left-click-block", "Enable firing events when players left-click blocks");
-        c.addComment("fire-leaf-decay-event", "Enable firing events when leaf decays");
-        c.addComment("fire-entity-explode-event", "Enable firing events when a TNT/Fireball/creeper explodes");
+        // Event related Settings
+        c.addComment("fire", "Controls whether certain performance-intensive events are enabled. Disabling them may improve server performance.");
+        c.addComment("fire.player-move-event", "Enable firing events when players move");
+        c.addComment("fire.left-click-air", "Enable firing events when players left-click air");
+        c.addComment("fire.left-click-block", "Enable firing events when players left-click blocks");
+        c.addComment("fire.leaf-decay-event", "Enable firing events when leaf decays");
+        c.addComment("fire.entity-explode-event", "Enable firing events when a TNT/Fireball/creeper explodes");
+        c.addComment("fire.arm-animation-event", "Toggles the PlayerArmAnimationEvent.");
 
         // Add comments for entity and game settings
+        c.addComment("instant-respawn", "Enable or disable instant respawning");
+        c.addComment("kick-for-spam", "Setting to disable disconnect.spam message when spamming");
         c.addComment("entity-activation", "Enable or disable entity activation rules");
         c.addComment("invalid-arm-animation-kick", "Kick players for invalid arm animations");
-        c.addComment("do-chunk-unload", "Enable or disable chunk unloading");
-        c.addComment("smooth-teleportation", "Should smooth-teleportation be enabled?");
         c.addComment("optimize-tnt-movement", "Should we use panda spigot optimizations for tnt movement?");
         c.addComment("time-update-frequency", "How many ticks in between sending time updates to players? (PandaSpigot)");
         c.addComment("optimize-liquid-explosions", "Should we use panda spigot optimizations for liquid explosions?");
         c.addComment("block-operations", "Enable or disable block operations");
-        c.addComment("disable-join-message", "Enable or disable join messages");
-        c.addComment("disable-leave-message", "Enable or disable leave messages");
         c.addComment("improved-hit-detection", "Toggle improved hit detection, This makes the calculation of locations faster while PvPing.");
-        c.addComment("fix-eat-while-running", "Fixes the bug that makes players eat while running");
         c.addComment("tab-complete-plugins", "Should plugins be tab completed when /version?");
         c.addComment("tcp-no-delay", "Should tcp no delay be enabled in minecraft server connection?");
         c.addComment("use-panda-wire", "Should we use the panda wire algorithm to handle redstone wires?");
 
-        c.addComment("pickup-delay", "Change the dropped item pickup delay");
-        c.addComment("chunk-loading-threads", "Change the chunk loading threads");
-        c.addComment("players-per-thread", "Change the max players per chunk thread");
-        c.addComment("critical-damage-multiplier", "Critical damage multiplier. This is part of the new spigot's damage calculations");
-        c.addComment("relative-move-fix", "Fixes a calculation bug where MathHelper#floor was being used for an entity's placement (Credits: JT - PvPLand Developer)");
-        c.addComment("fix-armor-damage", "This option fixes the armor damage to be less than expected");
-        c.addComment("fix-arrow-bounce-glitch", "Fixes the arrow bounce glitch that comes from disable 'keep-spawn-in-memory' for a certain world.");
-        c.addComment("target-tps", "What TPS should the server target? 'Do not set this above 200 unless you want your server to explode.' - CarbonSpigot");
-        c.addComment("toggle-fall-damage-kb", "Toggles fall damage knockback");
-        c.addComment("fix-suffocation-glitch", "When you pearl inside a block/get stuck inside a block while falling, you get damaged and you fall faster.");
-        c.addComment("fix-double-hit-bug", "Toggle to fix the \"double hit\" (or \"high damage\") bug that allows damage during no-damage ticks, causing excessive knockback and unintended fly-outs.");
-        c.addComment("fix-block-hit-glitch", "This fixes block hit glitch server side when you attack a player.");
-        c.addComment("fix-block-hit-animation", "This fixes block hit glitch client-side when you swing your arm");
-        c.addComment("toggle-arm-animation-event", "Toggles the PlayerArmAnimationEvent.");
-        c.addComment("optimize-arm-swings", "Optimizes arm swings. (Credit: CarbonSpigot)");
+        c.addComment("chunks.chunk-loading-threads", "Change the chunk loading threads");
+        c.addComment("chunks.players-per-thread", "Change the max players per chunk thread");
+        c.addComment("chunks.do-chunk-unload", "Enable or disable chunk unloading");
 
-        // Section: Async configuration
-        c.addComment("async", "Configuration settings for asynchronous features");
-        c.addComment("async.hits", "Enable async hit detection");
-        c.addComment("async.knockback", "Enable async knockback");
-        c.addComment("async.thread-tps", "Modify async thread's tps");
+        c.addComment("pickup-delay", "Change the dropped item pickup delay");
+        c.addComment("critical-damage-multiplier", "Critical damage multiplier. This is part of the new spigot's damage calculations");
+
+        // Section: Fixes.
+        c.addComment("fix", "Toggles a list of available patches");
+        c.addComment("fix.eat-while-running", "Fixes the bug that makes players eat while running");
+        c.addComment("fix.relative-move", "Fixes a calculation bug where MathHelper#floor was being used for an entity's placement (Credits: JT - PvPLand Developer)");
+        c.addComment("fix.armor-damage", "This option fixes the armor damage to be less than expected");
+        c.addComment("fix.arrow-bounce-glitch", "Fixes the arrow bounce glitch that comes from disable 'keep-spawn-in-memory' for a certain world.");
+        c.addComment("fix.suffocation-glitch", "When you pearl inside a block/get stuck inside a block while falling, you get damaged and you fall faster.");
+        c.addComment("fix.double-hit-bug", "Toggle to fix the \"double hit\" (or \"high damage\") bug that allows damage during no-damage ticks, causing excessive knockback and unintended fly-outs.");
+        c.addComment("fix.block-hit-glitch", "This fixes block hit glitch server side when you attack a player.");
+        c.addComment("fix.block-hit-animation", "This fixes block hit glitch client-side when you swing your arm");
+
+        c.addComment("toggle-fall-damage-kb", "Toggles fall damage knockback");
+        c.addComment("optimize-arm-swings", "Optimizes arm swings. (Credit: CarbonSpigot)");
 
         // Section: Spawners configuration
         c.addComment("spawners", "Configuration settings for entity spawners.");
@@ -418,8 +410,6 @@ public class CelestialConfig {
         c.addComment("pearls.pearl-gravity", "Gravity of pearls");
         c.addComment("pearls.pearl-speed", "Speed of pearls");
         c.addComment("pearls.vertical-offset", "Pearls vertical offset");
-        // Add comments for CelestialBridge settings
-        c.addComment("disable-op", "Enable or disable operator permissions");
     }
 
     public void save() {
@@ -455,12 +445,12 @@ public class CelestialConfig {
 
     public boolean getBoolean(String path, boolean def) {
         this.config.addDefault(path, def);
-        return this.config.getBoolean(path, this.config.getBoolean(path));
+        return this.config.getBoolean(path, def);
     }
 
     public double getDouble(String path, double def) {
         this.config.addDefault(path, def);
-        return this.config.getDouble(path, this.config.getDouble(path));
+        return this.config.getDouble(path, def);
     }
 
     public float getFloat(String path, float def) {
@@ -469,7 +459,7 @@ public class CelestialConfig {
 
     public int getInt(String path, int def) {
         this.config.addDefault(path, def);
-        return config.getInt(path, this.config.getInt(path));
+        return config.getInt(path, def);
     }
 
     public <T> List getList(String path, T def) {
@@ -479,7 +469,7 @@ public class CelestialConfig {
 
     public String getString(String path, String def) {
         this.config.addDefault(path, def);
-        return this.config.getString(path, this.config.getString(path));
+        return this.config.getString(path, def);
     }
 
 }

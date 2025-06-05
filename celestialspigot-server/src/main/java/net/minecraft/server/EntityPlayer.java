@@ -668,6 +668,19 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         return containerCounter; // CraftBukkit
     }
 
+
+    public void setSprinting(boolean flag) {
+        if (flag) {
+            if (!this.isSprinting()) {
+                this.shouldDealSprintKnockback = true;
+            }
+        } else {
+            this.shouldDealSprintKnockback = false;
+        }
+
+        super.setSprinting(flag);
+    }
+
     public void openTileEntity(ITileEntityContainer itileentitycontainer) {
         // CraftBukkit start - Inventory open hook
         Container container = CraftEventFactory.callInventoryOpenEvent(this, itileentitycontainer.createContainer(this.inventory, this));

@@ -6,6 +6,7 @@ import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -20,16 +21,27 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
 
     private double baseHorizontal = 0.32;
     private double horizontalScalePerHit = 0.008;
+
     private double baseVertical = 0.28;
     private double verticalScalePerHit = 0.003;
+
     private double maxHorizontal = 0.43;
     private double maxVertical = 0.36;
+
     private int comboResetMS = 2000;
 
     private int hitDelay = 16;
 
-    public ComboTypeKnockbackProfile(String name) {
+    public ComboTypeKnockbackProfile(String name, String path, YamlConfiguration config) {
         this.name = name;
+        for (ComboTypeKnockbackProfile.ComboValues value : ComboTypeKnockbackProfile.ComboValues.values()) {
+            String a = path + "." + value.getKey();
+            if(value.isDouble()) {
+                setValueByKey(value, config.getDouble(a, (Double) getValueByKey(value)));
+            } else if(value.isInteger()) {
+                setValueByKey(value, config.getInt(a, (Integer) getValueByKey(value)));
+            }
+        }
     }
 
     @Override

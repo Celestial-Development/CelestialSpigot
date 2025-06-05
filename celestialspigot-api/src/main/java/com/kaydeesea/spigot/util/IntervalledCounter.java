@@ -3,13 +3,13 @@ package com.kaydeesea.spigot.util;
 // Originally from PaperMC
 public final class IntervalledCounter {
 
-    protected long[] times;
-    protected long[] counts;
-    protected final long interval;
-    protected long minTime;
-    protected long sum;
-    protected int head; // inclusive
-    protected int tail; // exclusive
+    private long[] times;
+    private long[] counts;
+    private final long interval;
+    private long minTime;
+    private long sum;
+    private int head; // inclusive
+    private int tail; // exclusive
 
     public IntervalledCounter(final long interval) {
         this.times = new long[8];

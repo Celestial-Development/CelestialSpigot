@@ -6,6 +6,7 @@ import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,13 +20,28 @@ public class NormalTypeKnockbackProfile implements NormalKnockbackProfile {
 
     private String name;
     private double friction = 2.0D;
+
     private double horizontal = 0.35D;
+
     private double vertical = 0.35D;
     private double verticalLimit = 0.4D;
+
     private double extraHorizontal = 0.425D;
     private double extraVertical = 0.085D;
+
     private int hitDelay = 20;
 
+    public NormalTypeKnockbackProfile(String name, String path, YamlConfiguration config) {
+        this.name = name;
+        for (NormalTypeKnockbackProfile.NormalValues value : NormalTypeKnockbackProfile.NormalValues.values()) {
+            String a = path + "." + value.getKey();
+            if (value.isDouble()) {
+                setValueByKey(value, config.getDouble(a, (Double) getValueByKey(value)));
+            } else if (value.isInteger()) {
+                setValueByKey(value, config.getInt(a, (Integer) getValueByKey(value)));
+            }
+        }
+    }
     public NormalTypeKnockbackProfile(String name) {
         this.name = name;
     }

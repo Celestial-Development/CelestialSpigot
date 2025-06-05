@@ -1289,7 +1289,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
         // Carbon start - Optimize Arm Swing
         // Arm swing animation
-        if (CelestialSpigot.INSTANCE.getConfig().isToggleArmAnimationEvent()) {
+        if (CelestialSpigot.INSTANCE.getConfig().isFireArmAnimationEvent()) {
             PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());
             this.server.getPluginManager().callEvent(event);
 

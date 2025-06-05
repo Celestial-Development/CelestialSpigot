@@ -65,6 +65,7 @@ public abstract class EntityHuman extends EntityLiving {
     private boolean bI = false;
     public EntityFishingHook hookedFish;
     public boolean affectsSpawning = true; // PaperSpigot
+    public boolean shouldDealSprintKnockback = false; // Carbon - Add a boolean to check when to deal sprint kb
 
     // CraftBukkit start
     public boolean fauxSleeping;

@@ -301,7 +301,7 @@ public final class MoreObjects {
                 return ((Collection<?>) value).isEmpty();
             } else if (value instanceof Map) {
                 return ((Map<?, ?>) value).isEmpty();
-            } else if (value instanceof java.util.Optional) {
+            } else if (value instanceof Optional) {
                 return !((java.util.Optional<?>) value).isPresent();
             } else if (value instanceof OptionalInt) {
                 return !((OptionalInt) value).isPresent();

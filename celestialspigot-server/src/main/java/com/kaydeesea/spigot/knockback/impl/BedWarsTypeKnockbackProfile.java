@@ -6,6 +6,7 @@ import com.kaydeesea.spigot.knockback.ProfileType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -17,20 +18,39 @@ import java.util.stream.Collectors;
 public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
     private String name;
     private double frictionValue = 2.0D;
+
     private double horizontal = 0.9055D;
+
     private double vertical = 0.8835D;
+
     private double verticalLimit = 0.3534D;
+
     private double maxRangeReduction = 0.4D;
+
     private double rangeFactor = 0.2D;
+
     private double startRangeReduction = 3.0D;
+
     private int hitDelay = 20;
+
     private double slowdownValue = 0.6;
+
     private boolean wTap = false;
     private boolean slowdownBoolean = false;
     private boolean friction = false;
 
-    public BedWarsTypeKnockbackProfile(String name) {
+    public BedWarsTypeKnockbackProfile(String name, String path, YamlConfiguration config) {
         this.name = name;
+        for (BedWarsTypeKnockbackProfile.BedWarsValues value : BedWarsTypeKnockbackProfile.BedWarsValues.values()) {
+            String a = path + "." + value.getKey();
+            if(value.isBoolean()) {
+                setValueByKey(value, config.getBoolean(a, (Boolean) getValueByKey(value)));
+            } else if(value.isDouble()) {
+                setValueByKey(value, config.getDouble(a, (Double) getValueByKey(value)));
+            } else if(value.isInteger()) {
+                setValueByKey(value, config.getInt(a, (Integer) getValueByKey(value)));
+            }
+        }
     }
 
 
