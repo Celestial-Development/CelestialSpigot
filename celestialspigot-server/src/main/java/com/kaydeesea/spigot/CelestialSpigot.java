@@ -1,11 +1,18 @@
 package com.kaydeesea.spigot;
 
 import com.kaydeesea.spigot.command.*;
+import com.kaydeesea.spigot.command.emojis.ShrugCommand;
+import com.kaydeesea.spigot.command.emojis.TableFlipCommand;
+import com.kaydeesea.spigot.command.op.DeopCommand;
+import com.kaydeesea.spigot.command.op.OpCommand;
+import com.kaydeesea.spigot.command.player.DayCommand;
+import com.kaydeesea.spigot.command.player.NightCommand;
+import com.kaydeesea.spigot.command.player.PingCommand;
+import com.kaydeesea.spigot.command.server.*;
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
 import lombok.Getter;
 import lombok.Setter;
 import com.kaydeesea.spigot.handler.MovementHandler;
-import com.kaydeesea.spigot.handler.PacketHandler;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,13 +41,7 @@ public class CelestialSpigot {
 	private LagCompensator lagCompensator;
 
 	public static String version = "1.5.0";
-    private final Set<PacketHandler> packetHandlers = new HashSet<>();
     private final Set<MovementHandler> movementHandlers = new HashSet<>();
-
-    public void addPacketHandler(PacketHandler handler) {
-		this.packetHandlers.add(handler);
-	}
-
 	public void addMovementHandler(MovementHandler handler) {
 		this.movementHandlers.add(handler);
 	}
@@ -76,6 +77,9 @@ public class CelestialSpigot {
 		}
 		if(getConfig().isEnableShrugCommand()) {
 			commands.put("shrug", new ShrugCommand());
+		}
+		if(getConfig().isEnableTableFlipCommand()) {
+			commands.put("tableflip", new TableFlipCommand());
 		}
 		for (Map.Entry<String, Command> entry : commands.entrySet()) {
 			MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());

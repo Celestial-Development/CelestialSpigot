@@ -1,9 +1,8 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.server;
 
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.kaydeesea.spigot.CelestialSpigot;
 import org.apache.commons.lang.Validate;

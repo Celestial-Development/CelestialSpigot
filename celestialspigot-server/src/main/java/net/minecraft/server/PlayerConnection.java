@@ -86,7 +86,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private long k;
     // CraftBukkit start - multithreaded fields
     private volatile int chatThrottle;
-    private static final AtomicIntegerFieldUpdater chatSpamField = AtomicIntegerFieldUpdater.newUpdater(PlayerConnection.class, "chatThrottle");
+    private static final AtomicIntegerFieldUpdater<PlayerConnection> chatSpamField = AtomicIntegerFieldUpdater.newUpdater(PlayerConnection.class, "chatThrottle");
     // CraftBukkit end
     private int m;
     private IntHashMap<Short> n = new IntHashMap();
@@ -97,7 +97,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private int swings;
     private int sequentialSwingRateLimits;
     private int lastSequentialSwingTick;
-    private int forwardSwingTick;
+
+    public long lastMotionTick = 0L;
     private boolean checkMovement = true;
     private boolean processedDisconnect; // CraftBukkit - added
 
@@ -149,7 +150,11 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
         this.minecraftServer.methodProfiler.b();
         // CraftBukkit start
-        for (int spam; (spam = this.chatThrottle) > 0 && !chatSpamField.compareAndSet(this, spam, spam - 1); ) ;
+
+        // CelestialSpigot start - performance chatspamfield.
+        chatSpamField.getAndUpdate(this, current -> current > 0 ? current - 1 : current);
+        // CelestialSpigot end
+
         /* Use thread-safe field access instead
         if (this.chatThrottle > 0) {
             --this.chatThrottle;
@@ -1084,10 +1089,13 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
             // this.chatThrottle += 20;
             if (counted && chatSpamField.addAndGet(this, 20) > 200 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) { // Spigot
                 if (!isSync) {
+                    // Async handling
                     Waitable waitable = new Waitable() {
                         @Override
                         protected Object evaluate() {
-                            if(CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) PlayerConnection.this.disconnect("disconnect.spam");
+                            if (CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) {
+                                PlayerConnection.this.disconnect("disconnect.spam");
+                            }
                             return null;
                         }
                     };
@@ -1102,7 +1110,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                         throw new RuntimeException(e);
                     }
                 } else {
-                    if(CelestialSpigot.INSTANCE.getConfig().isKickForSpam())  this.disconnect("disconnect.spam");
+                    // Sync handling
+                    if (CelestialSpigot.INSTANCE.getConfig().isKickForSpam()) {
+                        this.disconnect("disconnect.spam");
+                    }
                 }
                 // CraftBukkit end
             }

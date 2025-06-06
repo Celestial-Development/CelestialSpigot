@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 // CraftBukkit start
 import com.kaydeesea.spigot.CelestialSpigot;
+import com.kaydeesea.spigot.knockback.projectiles.CelestialProjectiles;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -24,15 +25,15 @@ public class EntityEnderPearl extends EntityProjectile {
 
 
     protected float m() {
-        return CelestialSpigot.INSTANCE.getConfig().getPearlGravity();
+        return CelestialProjectiles.getPearlGravity();
     }
 
     protected float j() {
-        return CelestialSpigot.INSTANCE.getConfig().getPearlSpeed();
+        return CelestialProjectiles.getPearlSpeed();
     }
 
     protected float l() {
-        return CelestialSpigot.INSTANCE.getConfig().getPearlVerticalOffset();
+        return CelestialProjectiles.getPearlVerticalOffset();
     }
 
     protected void a(MovingObjectPosition movingobjectposition) {
@@ -86,7 +87,7 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
                         CelestialSpigot.INSTANCE.getLagCompensator().registerMovement(player, location); // Nacho
                         entityliving.fallDistance = 0.0F;
-                        if (CelestialSpigot.INSTANCE.getConfig().isPearlDamage()) {
+                        if (CelestialProjectiles.isPearlDamage()) {
                             CraftEventFactory.entityDamage = this;
                             entityliving.damageEntity(DamageSource.FALL, 5.0F);
                             CraftEventFactory.entityDamage = null;

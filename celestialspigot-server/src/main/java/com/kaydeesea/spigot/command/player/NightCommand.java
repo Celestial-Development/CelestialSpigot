@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.player;
 
 import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.ChatColor;
@@ -7,13 +7,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class DayCommand extends Command {
+public class NightCommand extends Command {
 
-    public DayCommand() {
-        super("day");
-        setDescription("Changes the world time to day");
-        setUsage("/day");
-        setPermission("celestial.day");
+    public NightCommand() {
+        super("night");
+        setDescription("Changes the world time to night");
+        setUsage("/night");
+        setPermission("celestial.night");
     }
 
     @Override
@@ -29,9 +29,9 @@ public class DayCommand extends Command {
             return true;
         }
         World world = player.getWorld();
-        world.setTime(1000L);
+        world.setTime(13000L);
         player.sendMessage(
-                ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getDayCommand())
+                ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getNightCommand())
         );
         return true;
 

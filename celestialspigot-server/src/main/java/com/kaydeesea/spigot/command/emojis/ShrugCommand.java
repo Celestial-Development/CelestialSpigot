@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.emojis;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

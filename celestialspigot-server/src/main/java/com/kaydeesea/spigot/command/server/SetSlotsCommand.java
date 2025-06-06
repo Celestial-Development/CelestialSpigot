@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.server;
 
 import com.kaydeesea.spigot.CelestialSpigot;
 import org.bukkit.Bukkit;

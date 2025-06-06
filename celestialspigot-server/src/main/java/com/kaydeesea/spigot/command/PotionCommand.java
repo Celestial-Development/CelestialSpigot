@@ -1,6 +1,7 @@
 package com.kaydeesea.spigot.command;
 
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
+import com.kaydeesea.spigot.knockback.projectiles.CelestialProjectiles;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,20 +50,20 @@ public class PotionCommand extends Command {
             } else if(args.length >= 2) {
                 switch (args[0].toLowerCase()) {
                     case "multiplier": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-throw-multiplier", Float.valueOf(args[1]));
-                        CelestialSpigot.INSTANCE.getConfig().setPotionFallSpeed(Float.parseFloat(args[1]));
+                        CelestialProjectiles.getConfig().set("potions.potion-throw-multiplier", Float.valueOf(args[1]));
+                        CelestialProjectiles.setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw multiplier to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "offset": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-throw-offset", Float.valueOf(args[1]));
-                        CelestialSpigot.INSTANCE.getConfig().setPotionThrowOffset(Float.parseFloat(args[1]));
+                        CelestialProjectiles.getConfig().set("potions.potion-throw-offset", Float.valueOf(args[1]));
+                        CelestialProjectiles.setPotionThrowOffset(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw offset to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "speed": {
-                        CelestialSpigot.INSTANCE.getConfig().set("potions.potion-fall-speed", Float.valueOf(args[1]));
-                        CelestialSpigot.INSTANCE.getConfig().setPotionFallSpeed(Float.parseFloat(args[1]));
+                        CelestialProjectiles.getConfig().set("potions.potion-fall-speed", Float.valueOf(args[1]));
+                        CelestialProjectiles.setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion fall speed to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }

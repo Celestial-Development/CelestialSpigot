@@ -8,8 +8,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import com.kaydeesea.spigot.hitdetection.LagCompensator;
-import com.kaydeesea.spigot.threads.impl.HitDetectionThread;
-import com.kaydeesea.spigot.threads.impl.KnockbackThread;
+import com.kaydeesea.spigot.knockback.projectiles.CelestialProjectiles;
 import com.kaydeesea.spigot.util.YamlCommenter;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,73 +32,85 @@ public class CelestialConfig {
 
     private YamlCommenter c;
     // from
-    private String pingCommandSelf;
-    private String pingCommandOther;
-    private String nightCommand;
-    private String dayCommand;
-    private String opGiveCommand;
-    private String opTakeCommand;
-    private String setSlotsCommand;
-    private String killEntitiesCommand;
+    private String
+            pingCommandSelf,
+            pingCommandOther,
+            nightCommand,
+            dayCommand,
+            opGiveCommand,
+            opTakeCommand,
+            setSlotsCommand,
+            killEntitiesCommand;
 
-    private ArrayList<String> tpsCommand;
-    private ArrayList<String> versionCommand;
-    private ArrayList<String> opCommand;
+    private ArrayList<String>
+            tpsCommand,
+            versionCommand,
+            opCommand;
 
-    private boolean threadAffinity;
-    private boolean checkForMalware;
-    private boolean kickForSpam;
-    private boolean showPlayerIps;
-    private boolean instantRespawn;
+    private boolean
+            threadAffinity,
+            checkForMalware,
+            kickForSpam,
+            showPlayerIps,
+            instantRespawn;
 
-    private boolean enableDayCommand;
-    private boolean enableNightCommand;
-    private boolean enablePluginsCommand;
-    private boolean enableVersionCommand;
-    private boolean enableKillEntitiesCommand;
-    private boolean enableReloadCommand;
-    private boolean enablePingCommand;
-    private boolean enableSetSlotsCommand;
-    private boolean enablePluginCommand;
-    private boolean enableShrugCommand;
+    private boolean
+            enableDayCommand,
+            enableNightCommand,
+            enablePluginsCommand,
+            enableVersionCommand,
+            enableKillEntitiesCommand,
+            enableReloadCommand,
+            enablePingCommand,
+            enableSetSlotsCommand,
+            enablePluginCommand,
+            enableShrugCommand,
+            enableTableFlipCommand;
 
-    private boolean improvedHitDetection;
-    private boolean smoothTeleportation;
-    private boolean optimizeTNTMovement;
-    private boolean optimizeLiquidExplosions;
-    private int timeUpdateFrequency;
+    private boolean
+            improvedHitDetection,
+            smoothTeleportation,
+            optimizeTNTMovement,
+            optimizeLiquidExplosions;
 
-    private boolean firePlayerMoveEvent;
-    private boolean fireLeftClickAir;
-    private boolean fireLeftClickBlock;
-    private boolean fireLeafDecayEvent;
-    private boolean fireEntityExplodeEvent;
+    private int
+            timeUpdateFrequency;
 
-    private boolean entityActivation;
-    private boolean invalidArmAnimationKick;
-    private boolean mobAIEnabled;
-    private boolean blockOperations;
-    private boolean disableJoinMessage;
-    private boolean disableLeaveMessage;
-    private boolean tabCompletePlugins;
-    private boolean tcpNoDelay;
-    private boolean usePandaWire;
+    private boolean
+            firePlayerMoveEvent,
+            fireLeftClickAir,
+            fireLeftClickBlock,
+            fireLeafDecayEvent,
+            fireEntityExplodeEvent;
 
-    private int minSpawnDelay;
-    private int maxSpawnDelay;
-    private int spawnCount;
-    private int spawnRange;
-    private int maxNearbyEntities;
-    private int requiredPlayerRange;
+    private boolean
+            entityActivation,
+            invalidArmAnimationKick,
+            mobAIEnabled,
+            blockOperations,
+            disableJoinMessage,
+            disableLeaveMessage,
+            tabCompletePlugins,
+            tcpNoDelay,
+            usePandaWire;
 
-    private boolean fixEatWhileRunning;
-    private boolean relativeMoveFix;
-    private boolean fixArmorDamage;
-    private boolean fixArrowBounceGlitch;
-    private boolean fixSuffocationGlitch;
-    private boolean fixDoubleHitBug;
-    private boolean fixBlockHitGlitch;
-    private boolean fixBlockHitAnimationGlitch;
+    private int
+            minSpawnDelay,
+            maxSpawnDelay,
+            spawnCount,
+            spawnRange,
+            maxNearbyEntities,
+            requiredPlayerRange;
+
+    private boolean
+            fixEatWhileRunning,
+            relativeMoveFix,
+            fixArmorDamage,
+            fixArrowBounceGlitch,
+            fixSuffocationGlitch,
+            fixDoubleHitBug,
+            fixBlockHitGlitch,
+            fixBlockHitAnimationGlitch;
 
     private double criticalDamageMultiplier;
     private boolean toggleFallDamageKB;
@@ -112,15 +123,6 @@ public class CelestialConfig {
     private int chunkLoadingThreads;
     private boolean doChunkUnload;
     private int playersPerThread;
-
-    private float potionThrowMultiplier;
-    private float potionThrowOffset;
-    private float potionFallSpeed;
-
-    private float pearlSpeed;
-    private float pearlGravity;
-    private float pearlVerticalOffset;
-    private boolean pearlDamage;
 
 
     public CelestialConfig() {
@@ -236,6 +238,7 @@ public class CelestialConfig {
         this.enableSetSlotsCommand = this.getBoolean("commands.enable-set-slots-command", true);
         this.enablePluginCommand = this.getBoolean("commands.enable-plugin-command", true);
         this.enableShrugCommand = this.getBoolean("commands.enable-shrug-command", true);
+        this.enableTableFlipCommand = this.getBoolean("commands.enable-table-flip-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);
         this.optimizeTNTMovement = this.getBoolean("optimize-tnt-movement", true);
@@ -283,20 +286,11 @@ public class CelestialConfig {
         this.maxNearbyEntities = this.getInt("spawners.max-nearby-entities", 6);
         this.requiredPlayerRange = this.getInt("spawners.required-player-range", 16);
 
-        this.potionThrowMultiplier = this.getFloat("potions.potion-throw-multiplier", 0.5f);
-        this.potionThrowOffset = this.getFloat("potions.potion-throw-offset", -10.0f);
-        this.potionFallSpeed = this.getFloat("potions.potion-fall-speed", 0.05f);
 
-        this.pearlDamage = this.getBoolean("pearls.pearl-damage", true);
-        this.pearlGravity = this.getFloat("pearls.pearl-gravity", 0.03F);
-        this.pearlSpeed = this.getFloat("pearls.pearl-speed", 1.5F);
-        this.pearlVerticalOffset = this.getFloat("pearls.vertical-offset", 0.0F);
-
+        CelestialProjectiles.load(config);
         setVariables();
         save();
     }
-    private KnockbackThread knockbackThread;
-    private HitDetectionThread hitDetectionThread;
 
     public void setVariables() {
         ChunkIOExecutor.BASE_THREADS = chunkLoadingThreads;
@@ -344,6 +338,7 @@ public class CelestialConfig {
         c.addComment("commands.enable-set-slots-command", "Enable or disable the set slots command (command that changes the player slots ingame)");
         c.addComment("commands.enable-plugin-command", "Enable or disable the plugin command (command that lets you manage plugins ingame)");
         c.addComment("commands.enable-shrug-command", "Enable or disable the shrug command (¯\\_(ツ)_/¯)");
+        c.addComment("commands.enable-table-flip-command", "Enable or disable the tableflip (╯°□°)╯︵ ┻━┻");
 
         // Event related Settings
         c.addComment("fire", "Controls whether certain performance-intensive events are enabled. Disabling them may improve server performance.");
@@ -398,18 +393,47 @@ public class CelestialConfig {
         c.addComment("spawners.max-nearby-entities", "Maximum number of entities near the spawner. Spawner stops if exceeded.");
         c.addComment("spawners.required-player-range", "Distance (in blocks) players must be from the spawner for it to activate.");
 
+        c.addComment("projectiles", "Settings with all types of projectile's knockback");
+
         // Add comments for potion-related settings
-        c.addComment("potions", "Change the potions settings (/potion)");
-        c.addComment("potions.potion-throw-multiplier", "Set the multiplier for potion throwing speed");
-        c.addComment("potions.potion-throw-offset", "Set the offset angle for potion throws");
-        c.addComment("potions.potion-fall-speed", "Set the falling speed for potions");
+        c.addComment("projectiles.potions", "Change the potions settings (/potion)");
+        c.addComment("projectiles.potions.potion-throw-multiplier", "Set the multiplier for potion throwing speed");
+        c.addComment("projectiles.potions.potion-throw-offset", "Set the offset angle for potion throws");
+        c.addComment("projectiles.potions.potion-fall-speed", "Set the falling speed for potions");
 
         // add Comments for pearls
-        c.addComment("pearls", "Edit pearls settings");
-        c.addComment("pearls.pearl-damage", "Should pearls do damage?");
-        c.addComment("pearls.pearl-gravity", "Gravity of pearls");
-        c.addComment("pearls.pearl-speed", "Speed of pearls");
-        c.addComment("pearls.vertical-offset", "Pearls vertical offset");
+        c.addComment("projectiles.pearls", "Edit pearls settings");
+        c.addComment("projectiles.pearls.pearl-damage", "Should pearls do damage?");
+        c.addComment("projectiles.pearls.pearl-gravity", "Gravity of pearls");
+        c.addComment("projectiles.pearls.pearl-speed", "Speed of pearls");
+        c.addComment("projectiles.pearls.vertical-offset", "Pearls vertical offset");
+
+        c.addComment("projectiles.pearls.enabled", "Enable the modification of pearls knockback?");
+        c.addComment("projectiles.pearls.horizontal", "Edit pearls horizontal knockback");
+        c.addComment("projectiles.pearls.vertical", "Edit pearls vertical knockback");
+
+        c.addComment("projectiles.rod.enabled", "Enable the modification of rod knockback?");
+        c.addComment("projectiles.rod.horizontal", "Edit rod horizontal knockback");
+        c.addComment("projectiles.rod.vertical", "Edit rod vertical knockback");
+
+        c.addComment("projectiles.bow.enabled", "Enable the modification of bow knockback?");
+        c.addComment("projectiles.bow.horizontal", "Edit bow horizontal knockback");
+        c.addComment("projectiles.bow.vertical", "Edit bow vertical knockback");
+
+        c.addComment("projectiles.snowball.enabled", "Enable the modification of snowball knockback?");
+        c.addComment("projectiles.snowball.horizontal", "Edit snowball horizontal knockback");
+        c.addComment("projectiles.snowball.vertical", "Edit snowball vertical knockback");
+
+        c.addComment("projectiles.egg.enabled", "Enable the modification of egg knockback?");
+        c.addComment("projectiles.egg.horizontal", "Edit egg horizontal knockback");
+        c.addComment("projectiles.egg.vertical", "Edit egg vertical knockback");
+
+        c.addComment("projectiles.explosion.enabled", "Enable the modification of explosion knockback?");
+        c.addComment("projectiles.explosion.horizontal", "Edit explosion horizontal knockback");
+        c.addComment("projectiles.explosion.vertical", "Edit explosion vertical knockback");
+
+        c.addComment("projectiles.limit-vertical.enabled", "Enable/Disable the vertical limit of projectile knockback?");
+        c.addComment("projectiles.limit-vertical.value", "Change the vertical limit of projectile knockback");
     }
 
     public void save() {

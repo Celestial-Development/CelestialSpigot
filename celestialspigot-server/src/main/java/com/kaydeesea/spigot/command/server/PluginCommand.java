@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.server;
 
 import com.google.common.collect.ImmutableList;
 import com.kaydeesea.spigot.command.utils.PluginCommandUtils;

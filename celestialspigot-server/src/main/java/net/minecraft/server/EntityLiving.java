@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.kaydeesea.spigot.CelestialSpigot;
 import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.DetailedTypeKnockbackProfile;
+import com.kaydeesea.spigot.knockback.projectiles.CelestialProjectiles;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -92,6 +93,8 @@ public abstract class EntityLiving extends Entity {
     private float bm;
     private int bn;
     private float bo;
+    public Random random;
+
     // CraftBukkit start
     public int expToDrop;
     public int maxAirTicks = 300;
@@ -918,11 +921,79 @@ public abstract class EntityLiving extends Entity {
 
     protected void dropEquipment(boolean flag, int i) {}
 
+    /**
+     * Handle and edit projectile knockback here
+     */
+    protected double[] handleProjectileKnockback(DamageSource source) {
+        double[] original = new double[2];
+
+        original[0] = 0.4D;
+        original[1] = 0.4D;
+
+        if (source instanceof EntityDamageSourceIndirect) {
+            Entity indirect = ((EntityDamageSourceIndirect) source).getProximateDamageSource();
+            if (indirect instanceof EntityFishingHook) {
+                if (!CelestialProjectiles.isRodEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getRodHorizontal();
+                original[1] = CelestialProjectiles.getRodVertical();
+            } else if (indirect instanceof EntityArrow || source.translationIndex.equalsIgnoreCase("arrow")) {
+                if (!CelestialProjectiles.isBowEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getBowHorizontal();
+                original[1] = CelestialProjectiles.getBowVertical();
+            } else if (indirect instanceof EntityEnderPearl) {
+                if (!CelestialProjectiles.isPearlEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getPearlHorizontal();
+                original[1] = CelestialProjectiles.getPearlVertical();
+            } else if (indirect instanceof EntitySnowball) {
+                if (!CelestialProjectiles.isSnowballEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getSnowballHorizontal();
+                original[1] = CelestialProjectiles.getSnowballVertical();
+            } else if (indirect instanceof EntityEgg) {
+                if (!CelestialProjectiles.isEggEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getEggHorizontal();
+                original[1] = CelestialProjectiles.getEggVertical();
+            } else if (source.isExplosion()) {
+                if (!CelestialProjectiles.isExplosionEnabled()) return original;
+
+                original[0] = CelestialProjectiles.getExplosionHorizontal();
+                original[1] = CelestialProjectiles.getExplosionVertical();
+            }
+        }
+        return original;
+    }
+
     public void a(Entity entity, float f, double d0, double d1, DamageSource source) {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
 
 
-            // TODO KNOCKBACK
+            // Projectile knockback handled
+            if (source instanceof EntityDamageSourceIndirect) {
+                float magnitude = MathHelper.sqrt((d0 * d0) + (d1 * d1));
+                double[] doubles = this.handleProjectileKnockback(source);
+
+                double h = doubles[0];
+                double v = doubles[1];
+
+                entity.motX /= 2.0D;
+                entity.motY /= 2.0D;
+                entity.motZ /= 2.0D;
+
+                entity.motX -= d0 / (double) magnitude * h;
+                entity.motY += v;
+                entity.motZ -= d1 / (double) magnitude * h;
+
+                if (CelestialProjectiles.isLimitVertical() && entity.motY > CelestialProjectiles.getVerticalLimit()) {
+                    entity.motY = CelestialProjectiles.getVerticalLimit();
+                }
+                return;
+            }
+
+
 
             if (this instanceof EntityPlayer && entity instanceof EntityPlayer) {
                 if(getKnockbackProfile() == null) setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());

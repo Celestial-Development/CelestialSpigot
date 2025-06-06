@@ -216,17 +216,22 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         this.a(packet, null, (GenericFutureListener<? extends Future<? super Void>>) null); // PandaSpigot
     }
     public void a(Packet packet, GenericFutureListener<? extends Future<? super Void>> genericfuturelistener, GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
-        if (CelestialSpigot.INSTANCE.getConfig().isAsyncHits() && g() && packet instanceof PacketPlayInUseEntity) {
-            PacketPlayInUseEntity pI = (PacketPlayInUseEntity)packet;
-            if (pI.a() == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
-                CelestialSpigot.INSTANCE.getConfig().getHitDetectionThread().addPacket(packet, this, agenericfuturelistener);
-                return;
-            }
-        }
-        if (CelestialSpigot.INSTANCE.getConfig().isAsyncKnockback() && g() && (packet instanceof PacketPlayOutEntityVelocity || packet instanceof PacketPlayOutPosition || packet instanceof PacketPlayInFlying)) {
-            CelestialSpigot.INSTANCE.getConfig().getKnockbackThread().addPacket(packet, this, agenericfuturelistener);
-            return;
-        }
+        // Trying to make async knockback // async hits
+        // is like killing yourself
+        // at a birthday party
+
+        //        if (CelestialSpigot.INSTANCE.getConfig().isAsyncHits() && g() && packet instanceof PacketPlayInUseEntity) {
+        //            PacketPlayInUseEntity pI = (PacketPlayInUseEntity)packet;
+        //            if (pI.a() == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
+        //                CelestialSpigot.INSTANCE.getConfig().getHitDetectionThread().addPacket(packet, this, agenericfuturelistener);
+        //                return;
+        //            }
+        //        }
+        //        if (CelestialSpigot.INSTANCE.getConfig().isAsyncKnockback() && g() && (packet instanceof PacketPlayOutEntityVelocity || packet instanceof PacketPlayOutPosition || packet instanceof PacketPlayInFlying)) {
+        //            CelestialSpigot.INSTANCE.getConfig().getKnockbackThread().addPacket(packet, this, agenericfuturelistener);
+        //            return;
+        //        }
+
         // PandaSpigot start - handle oversized packets better
         GenericFutureListener<? extends Future<? super Void>>[] listeners = null;
         if (genericfuturelistener != null || agenericfuturelistener != null) { // cannot call ArrayUtils.add with both null arguments

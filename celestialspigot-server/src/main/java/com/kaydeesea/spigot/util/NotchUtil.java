@@ -1,11 +1,15 @@
 package com.kaydeesea.spigot.util;
 
-import net.minecraft.server.EnumDirection;
-import net.minecraft.server.MathHelper;
-import net.minecraft.server.Vec3D;
-import net.minecraft.server.WorldSettings;
+import net.minecraft.server.*;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 public class NotchUtil {
+
+    public static CraftPlayer getLastAttacker(Player p) {
+        EntityLiving lastAttacker = ((CraftPlayer)p).getHandle().lastDamager;
+        return !(lastAttacker instanceof EntityPlayer) ? null : ((EntityPlayer)lastAttacker).getBukkitEntity();
+    }
 
     // Stitched this together from old source lol
     // NOTE: y is locY + headHeight

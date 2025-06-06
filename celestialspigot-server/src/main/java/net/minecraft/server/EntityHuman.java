@@ -71,6 +71,7 @@ public abstract class EntityHuman extends EntityLiving {
     public boolean fauxSleeping;
     public String spawnWorld = "";
     public int oldLevel = -1;
+    public int ticksDown;
 
     @Override
     public void setKnockbackProfile(KnockBackProfile knockbackProfile) {
@@ -1069,7 +1070,7 @@ public abstract class EntityHuman extends EntityLiving {
                                 } else if(profile instanceof BedWarsKnockbackProfile) {
                                     ((BedWarsKnockbackProfile) profile).handleEntityHuman(this,(EntityPlayer)  entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                                 } else if(profile instanceof DetailedKnockbackProfile) {
-                                    ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity);
+                                    ((DetailedKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer)  entity, new Vector(victimMotX, victimMotY, victimMotZ));
                                 } else if(profile instanceof ComboKnockbackProfile) {
                                     ((ComboKnockbackProfile) profile).handleEntityHuman(this, (EntityPlayer) entity, i, new Vector(victimMotX, victimMotY, victimMotZ));
                                 }
