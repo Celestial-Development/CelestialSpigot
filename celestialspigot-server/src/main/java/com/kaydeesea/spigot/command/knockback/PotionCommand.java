@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.knockback;
 
 import com.kaydeesea.spigot.knockback.KnockBackProfile;
 import com.kaydeesea.spigot.knockback.projectiles.CelestialProjectiles;
@@ -11,27 +11,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PotionCommand extends Command {
 
-    private final String separator = "§7§m-----------------------------";
 
-    private final String[] help = Stream.of(
-                    "",
-                    "§3Potion Commands:",
-                    " * §b/potion §fspeed §7<value>",
-                    " * §b/potion §fmultiplier §7<value>",
-                    " * §b/potion §foffset §7<value>",
-                    ""
-            )
-            .toArray(String[]::new);
     private final List<String> SUB_COMMANDS = Arrays.asList(
             "list",
             "speed",
             "multiplier",
-            "offset",
-            "smooth"
+            "offset"
     );
 
     public PotionCommand() {
@@ -49,20 +37,30 @@ public class PotionCommand extends Command {
                 return true;
             } else if(args.length >= 2) {
                 switch (args[0].toLowerCase()) {
+                    case "list": {
+                        for (String s1 : CelestialSpigot.INSTANCE.getConfig().getPotionInfoCommand()) {
+                            s.sendMessage(
+                                    org.bukkit.ChatColor.translateAlternateColorCodes('&', s1)
+                                            .replaceAll("%multiplier%", CelestialProjectiles.getPotionThrowMultiplier()+"")
+                                            .replaceAll("%offset%", CelestialProjectiles.getPotionThrowOffset()+"")
+                                            .replaceAll("%speed%", CelestialProjectiles.getPotionFallSpeed()+"")
+                            );
+                        }
+                    }
                     case "multiplier": {
-                        CelestialProjectiles.getConfig().set("potions.potion-throw-multiplier", Float.valueOf(args[1]));
+                        CelestialProjectiles.getConfig().set("projectiles.potions.potion-throw-multiplier", Float.valueOf(args[1]));
                         CelestialProjectiles.setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw multiplier to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "offset": {
-                        CelestialProjectiles.getConfig().set("potions.potion-throw-offset", Float.valueOf(args[1]));
+                        CelestialProjectiles.getConfig().set("projectiles.potions.potion-throw-offset", Float.valueOf(args[1]));
                         CelestialProjectiles.setPotionThrowOffset(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion throw offset to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
                     }
                     case "speed": {
-                        CelestialProjectiles.getConfig().set("potions.potion-fall-speed", Float.valueOf(args[1]));
+                        CelestialProjectiles.getConfig().set("projectiles.potions.potion-fall-speed", Float.valueOf(args[1]));
                         CelestialProjectiles.setPotionFallSpeed(Float.parseFloat(args[1]));
                         s.sendMessage(ChatColor.WHITE + "You've set potion fall speed to: " + ChatColor.AQUA + Float.valueOf(args[1]));
                         break;
@@ -81,7 +79,11 @@ public class PotionCommand extends Command {
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(help);
+        for (String s1 : CelestialSpigot.INSTANCE.getConfig().getPotionCommand()) {
+            sender.sendMessage(
+                    org.bukkit.ChatColor.translateAlternateColorCodes('&', s1)
+            );
+        }
     }
 
     @Override

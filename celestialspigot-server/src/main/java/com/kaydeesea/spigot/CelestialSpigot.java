@@ -1,8 +1,9 @@
 package com.kaydeesea.spigot;
 
-import com.kaydeesea.spigot.command.*;
 import com.kaydeesea.spigot.command.emojis.ShrugCommand;
 import com.kaydeesea.spigot.command.emojis.TableFlipCommand;
+import com.kaydeesea.spigot.command.knockback.KnockbackCommand;
+import com.kaydeesea.spigot.command.knockback.PotionCommand;
 import com.kaydeesea.spigot.command.op.DeopCommand;
 import com.kaydeesea.spigot.command.op.OpCommand;
 import com.kaydeesea.spigot.command.player.DayCommand;

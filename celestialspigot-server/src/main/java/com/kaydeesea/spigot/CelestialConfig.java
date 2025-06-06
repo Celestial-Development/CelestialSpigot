@@ -45,6 +45,8 @@ public class CelestialConfig {
     private ArrayList<String>
             tpsCommand,
             versionCommand,
+            potionInfoCommand,
+            potionCommand,
             opCommand;
 
     private boolean
@@ -206,6 +208,33 @@ public class CelestialConfig {
 
         this.opCommand = new ArrayList<String>(this.getList("messages.op-command", opCMD));
 
+        ArrayList<String> potionInfoCMD = new ArrayList<>();
+        potionInfoCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
+        potionInfoCMD.add("&b&lCelestial&3&lSpigot &7Potion Values");
+        potionInfoCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
+        potionInfoCMD.add("&7 * &3&lMultiplier: &b&l%multiplier%");
+        potionInfoCMD.add("&7 * &3&lOffset: &b&l%offset%");
+        potionInfoCMD.add("&7 * &3&lSpeed: &b&l%speed%");
+        potionInfoCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
+
+        this.potionInfoCommand = new ArrayList<String>(this.getList("messages.potion-info-command", potionInfoCMD));
+
+
+        ArrayList<String> potionCMD = new ArrayList<>();
+        potionCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
+        potionCMD.add("&b");
+        potionCMD.add("&b&lCelestial&3&lSpigot &3Potion Commands:");
+        potionCMD.add("&a");
+        potionCMD.add("&7 * §b/potion§f speed §7<value>");
+        potionCMD.add("&7 * §b/potion§f multiplier §7<value>");
+        potionCMD.add("&7 * §b/potion§f offset §7<value>");
+        potionCMD.add("&7 * §b/potion§f list");
+        potionCMD.add("&c");
+        potionCMD.add("&3&m--------&7&m" + StringUtils.repeat("-", 37) + "&3&m--------");
+
+        this.potionCommand = new ArrayList<String>(this.getList("messages.potion-command", potionCMD));
+
+
         this.pingCommandSelf = this.getString("messages.ping-command-self", "&bYour ping is: &3%ping%");
         this.pingCommandOther = this.getString("messages.ping-command-other", "&b%player%'s ping is: &3%ping%");
         this.nightCommand = this.getString("messages.night-command", "&bTime has been set to &3night &b in your world.");
@@ -314,6 +343,8 @@ public class CelestialConfig {
         c.addComment("messages.op-command-take", "Modify op take command message");
         c.addComment("messages.set-slots-command", "Modify set slots command message");
         c.addComment("messages.kill-entities-command", "Modify kill entities command message");
+        c.addComment("messages.potion-command", "Modify the potion help command");
+        c.addComment("messages.potion-info-command", "Modify the potion values command");
 
         // Add comments for mob AI setting
         c.addComment("server", "Some settings about spigot features.");

@@ -1,4 +1,4 @@
-package com.kaydeesea.spigot.command;
+package com.kaydeesea.spigot.command.knockback;
 
 import com.kaydeesea.spigot.knockback.*;
 import com.kaydeesea.spigot.knockback.impl.BedWarsTypeKnockbackProfile;
