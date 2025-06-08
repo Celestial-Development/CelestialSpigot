@@ -28,4 +28,4 @@ Simply make a pull request and after reviewing it and testing it on a demo serve
  - Sarefine (sarefine.us)
  - MineOrigins (mineorigins.net)
 
-**This spigot is free for everyone, feel free to contribute if you want to!**
+**No one is allowed to use this spigot without permission and no one is allowed to fork it any servers runs it without permission will be reported and blocked by mojang.**
