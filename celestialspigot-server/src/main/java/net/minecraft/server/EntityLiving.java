@@ -93,7 +93,6 @@ public abstract class EntityLiving extends Entity {
     private float bm;
     private int bn;
     private float bo;
-    public Random random;
 
     // CraftBukkit start
     public int expToDrop;

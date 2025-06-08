@@ -129,25 +129,13 @@ public class CelestialConfig {
 
     public CelestialConfig() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream is = classLoader.getResourceAsStream("version.properties");
-        Properties prop = new Properties();
 
-        try {
+        try (InputStream is = classLoader.getResourceAsStream("version.properties")) {
+            Properties prop = new Properties();
             prop.load(is);
             CelestialBridge.version = (String) prop.getOrDefault("version", "Unknown");
-        }
-        catch (IOException io) {
+        } catch (IOException io) {
             io.printStackTrace();
-        }
-        finally {
-            if (is != null) {
-                try {
-                    is.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         CelestialSpigot.INSTANCE.setLagCompensator(new LagCompensator());
@@ -402,7 +390,6 @@ public class CelestialConfig {
         c.addComment("critical-damage-multiplier", "Critical damage multiplier. This is part of the new spigot's damage calculations");
 
         // Section: Fixes.
-        c.addComment("fix", "Toggles a list of available patches");
         c.addComment("fix.eat-while-running", "Fixes the bug that makes players eat while running");
         c.addComment("fix.relative-move", "Fixes a calculation bug where MathHelper#floor was being used for an entity's placement (Credits: JT - PvPLand Developer)");
         c.addComment("fix.armor-damage", "This option fixes the armor damage to be less than expected");

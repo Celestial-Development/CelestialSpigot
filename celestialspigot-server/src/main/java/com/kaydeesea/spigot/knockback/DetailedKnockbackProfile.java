@@ -34,7 +34,6 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
     double getComboHeight();
 
     default void handleEntityLiving(EntityLiving entity, double d0, double d1, DamageSource source) {
-        if (entity.random.nextDouble() >= entity.getAttributeInstance(GenericAttributes.c).getValue()) {
             entity.ai = true;
 
             float magnitude = MathHelper.sqrt((d0 * d0) + (d1 * d1));
@@ -59,7 +58,6 @@ public interface DetailedKnockbackProfile extends KnockBackProfile {
             if (entity.motY > verticalLimit) {
                 entity.motY = verticalLimit;
             }
-        }
     };
 
     default void handleEntityHuman(EntityHuman attacker, EntityPlayer player, Vector vector) {
