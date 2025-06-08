@@ -44,6 +44,12 @@ public class ComboTypeKnockbackProfile implements ComboKnockbackProfile {
         }
     }
 
+    public ComboTypeKnockbackProfile(String name) {
+        this.name = name;
+    }
+
+
+
     @Override
     public @NotNull List<String> getValues() {
         return Arrays

@@ -52,6 +52,9 @@ public class BedWarsTypeKnockbackProfile implements BedWarsKnockbackProfile {
             }
         }
     }
+    public BedWarsTypeKnockbackProfile(String name) {
+        this.name = name;
+    }
 
 
     @Override

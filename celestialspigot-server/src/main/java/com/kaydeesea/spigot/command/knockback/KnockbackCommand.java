@@ -187,7 +187,12 @@ public class KnockbackCommand extends Command {
                 return true;
             }
 
-            KnockBackProfile profile = type.newInstance(name);
+            KnockBackProfile profile;
+            if(type == ProfileType.NORMAL) profile = new NormalTypeKnockbackProfile(name);
+            else if(type == ProfileType.BEDWARS) profile = new BedWarsTypeKnockbackProfile(name);
+            else if(type == ProfileType.COMBO) profile = new ComboTypeKnockbackProfile(name);
+            else if(type == ProfileType.DETAILED) profile = new DetailedTypeKnockbackProfile(name);
+            else return true;
             CelestialSpigot.INSTANCE.getKnockBack().createKB(profile);
             sender.sendMessage("§aThe profile §e" + args[1] + " §ahas been created. §bRemember to set it as active.");
             sendKnockbackInfo(sender, profile);

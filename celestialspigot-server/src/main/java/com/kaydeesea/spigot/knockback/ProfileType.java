@@ -36,12 +36,4 @@ public enum ProfileType {
         }
         return null;
     }
-
-    public KnockBackProfile newInstance(String name) {
-        try {
-            return profileClass.getConstructor(String.class).newInstance(name);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create KnockBackProfile instance for type: " + this.name(), e);
-        }
-    }
 }

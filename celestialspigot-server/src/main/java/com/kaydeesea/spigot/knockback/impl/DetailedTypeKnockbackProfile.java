@@ -64,6 +64,11 @@ public class DetailedTypeKnockbackProfile implements DetailedKnockbackProfile {
         }
     }
 
+    public DetailedTypeKnockbackProfile(String name) {
+        this.name = name;
+    }
+
+
     @Override
     public @NotNull List<String> getValues() {
         return Arrays
