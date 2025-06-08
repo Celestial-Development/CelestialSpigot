@@ -179,7 +179,7 @@ public class CelestialConfig {
         versionCMD.add("&b&lCelestial&3&lSpigot Info");
         versionCMD.add(" ");
         versionCMD.add("&bVersion: &7%version%");
-        versionCMD.add("&bAuthor: &7KayDeeSea");
+        versionCMD.add("&bAuthor: &7KayDeeSea & Zatrex");
         versionCMD.add("&bDiscord: &3https://discord.gg/9cWCcExTWh");
         versionCMD.add(" ");
 
