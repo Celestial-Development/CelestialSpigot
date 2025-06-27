@@ -25,7 +25,6 @@ Contributions of all sorts are welcome. We use GitHub's pull requests to add in 
 Simply make a pull request and after reviewing it and testing it on a demo server it will be added to the repo!
 
 ### Servers that use CelestialSpigot
- - Sarefine (sarefine.us)
- - MineOrigins (mineorigins.net)
+ - Celestial (celestialrbw.it)
 
 **No one is allowed to use this spigot without permission and no one is allowed to fork it any servers runs it without permission will be reported and blocked by mojang.**
