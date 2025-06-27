@@ -749,7 +749,7 @@ public abstract class EntityLiving extends Entity {
                     // Carbon start - Don't allow player attacks while no damage ticks are active
                     // This fixes the long-standing pvp bug of double hits or knockback suddenly turning combo mode
                     if (CelestialSpigot.INSTANCE.getConfig().isFixDoubleHitBug() && lastPlayerAttack && ipa(damagesource)) {
-                        System.out.println("[CelestialSpigot] Blocking attack for double hit bug.");
+                        if(CelestialSpigot.INSTANCE.getConfig().isDebug()) System.out.println("[CelestialSpigot] Blocking attack for double hit bug.");
                         return false;
                     }
                     // Carbon end

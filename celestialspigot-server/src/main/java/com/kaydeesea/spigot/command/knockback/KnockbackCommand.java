@@ -44,21 +44,6 @@ public class KnockbackCommand extends Command {
     }
     private final String separator = "§7§m-----------------------------";
 
-    private final String[] help = Stream.of(
-            "",
-                    "§3Knockback Commands:",
-                    " * §b/knockback §flist",
-                    " * §b/knockback §freload",
-                    " * §b/knockback §fimplementations",
-                    " * §b/knockback §finfo §7<profile>",
-                    " * §b/knockback §fcreate §7<profile> <type>",
-                    " * §b/knockback §fdelete §7<profile>",
-                    " * §b/knockback §fload §7<profile>",
-                    " * §b/knockback §fedit §7<profile> <variable> <value>", // far better than the old system
-                    " * §b/knockback §fset §7<profile> <player>",
-                    ""
-            )
-            .toArray(String[]::new);
     private final List<String> SUB_COMMANDS = Arrays.asList(
             "list",
             "reload",
@@ -627,7 +612,9 @@ public class KnockbackCommand extends Command {
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(help);
+        for (String s : CelestialSpigot.INSTANCE.getConfig().getKnockbackCommand()) {
+            sender.sendMessage(s);
+        }
     }
 
 }

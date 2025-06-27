@@ -47,9 +47,11 @@ public class CelestialConfig {
             versionCommand,
             potionInfoCommand,
             potionCommand,
+            knockbackCommand,
             opCommand;
 
     private boolean
+            debug,
             threadAffinity,
             checkForMalware,
             kickForSpam,
@@ -223,6 +225,25 @@ public class CelestialConfig {
         this.potionCommand = new ArrayList<String>(this.getList("messages.potion-command", potionCMD));
 
 
+        ArrayList<String> knockbackCMD = new ArrayList<>();
+
+        knockbackCMD.add("");
+        knockbackCMD.add("§3Knockback Commands:");
+        knockbackCMD.add(" * §b/knockback §flist");
+        knockbackCMD.add(" * §b/knockback §freload");
+        knockbackCMD.add(" * §b/knockback §fimplementations");
+        knockbackCMD.add(" * §b/knockback §finfo §7<profile>");
+        knockbackCMD.add(" * §b/knockback §fcreate §7<profile> <type>");
+        knockbackCMD.add(" * §b/knockback §fdelete §7<profile>");
+        knockbackCMD.add(" * §b/knockback §fload §7<profile>");
+        knockbackCMD.add(" * §b/knockback §fedit §7<profile> <variable> <value>");
+        knockbackCMD.add(" * §b/knockback §fset §7<profile> <player>");
+        knockbackCMD.add("");
+
+        this.knockbackCommand = new ArrayList<String>(this.getList("messages.knockback-command", knockbackCMD));
+
+
+
         this.pingCommandSelf = this.getString("messages.ping-command-self", "&bYour ping is: &3%ping%");
         this.pingCommandOther = this.getString("messages.ping-command-other", "&b%player%'s ping is: &3%ping%");
         this.nightCommand = this.getString("messages.night-command", "&bTime has been set to &3night &b in your world.");
@@ -232,6 +253,7 @@ public class CelestialConfig {
         this.setSlotsCommand = this.getString("messages.set-slots-command", "&6Slots updated to &e%slots%");
         this.killEntitiesCommand = this.getString("messages.kill-entities-command", "&aYou have removed a total of &7%entities% &aentities");
 
+        this.debug = this.getBoolean("server.debug", true);
         this.mobAIEnabled = this.getBoolean("server.mob-ai", true);
         this.targetTPS = this.getInt("server.target-tps", 20);
         this.threadAffinity = this.getBoolean("server.thread-affinity", false);
@@ -332,10 +354,12 @@ public class CelestialConfig {
         c.addComment("messages.set-slots-command", "Modify set slots command message");
         c.addComment("messages.kill-entities-command", "Modify kill entities command message");
         c.addComment("messages.potion-command", "Modify the potion help command");
+        c.addComment("messages.knockback-command", "Modify the knockback help command");
         c.addComment("messages.potion-info-command", "Modify the potion values command");
 
         // Add comments for mob AI setting
         c.addComment("server", "Some settings about spigot features.");
+        c.addComment("server.debug", "Add debug info of CelestialSpigot.");
         c.addComment("server.mob-ai", "Setting to enable or disable mob artificial intelligence");
         c.addComment("server.target-tps", "What TPS should the server target? 'Do not set this above 200 unless you want your server to explode.' - CarbonSpigot");
         c.addComment("server.thread-affinity", "When this is true, it allocates an entire cpu core to the server, it improves performance but uses more cpu.");
