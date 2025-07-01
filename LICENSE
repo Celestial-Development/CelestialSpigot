@@ -1,21 +1,41 @@
-MIT License
+Copyright © 2024 Ian Rich  
+All rights reserved.
 
-Copyright (c) 2024 Ian Rich
+This Software and all associated documentation files (hereinafter referred to as the “Software”) are the exclusive intellectual property of Ian Rich, and are protected under international copyright laws and intellectual property treaties.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license governs the use of the Software by the licensed end-user (hereinafter referred to as the “User”). By installing, copying, or otherwise using the Software, the User agrees to be bound by the terms and conditions set forth in this license.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Grant of License
+   Subject to the terms of a valid, written license agreement between the User and the copyright holder, limited permission is hereby granted to the User to install and use the Software solely for its intended purpose, within the scope of the granted license.  
+   This license is non-transferable, non-exclusive, and revocable at the sole discretion of the copyright holder.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Restrictions
+   Except as expressly permitted in writing by the copyright holder, the User shall not:
+   - Copy, reproduce, or duplicate the Software in whole or in part;
+   - Modify, adapt, translate, or create derivative works based on the Software;
+   - Reverse-engineer, decompile, or disassemble the Software;
+   - Sell, resell, license, sublicense, distribute, rent, lease, or otherwise commercially exploit the Software;
+   - Publish or disclose any part of the Software to third parties.
+
+   Any unauthorized use of the Software is strictly prohibited and constitutes a violation of this license and applicable law.
+
+3. Ownership
+   The Software is licensed, not sold. All rights, title, and interest in and to the Software, including but not limited to all intellectual property rights, remain solely with the copyright holder, Ian Rich.
+
+4. Termination
+   This license shall immediately terminate upon the User’s breach of any term herein. Upon termination, the User must cease all use of the Software and destroy all copies in their possession or control.
+
+5. Disclaimer of Warranty
+   THE SOFTWARE IS PROVIDED “AS IS” WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, OR NON-INFRINGEMENT.  
+   THE ENTIRE RISK ARISING OUT OF THE USE OR PERFORMANCE OF THE SOFTWARE REMAINS WITH THE USER.
+
+6. Limitation of Liability
+   IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. Governing Law
+   This license shall be governed by and construed in accordance with the laws of the jurisdiction of the copyright holder, without regard to its conflict of law provisions.
+
+
+For licensing requests, inquiries, or to obtain additional rights, please contact:  
+📧 comemache@gmail.com
+
