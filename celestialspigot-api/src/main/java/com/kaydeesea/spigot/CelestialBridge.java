@@ -5,6 +5,6 @@ package com.kaydeesea.spigot;
  */
 public class CelestialBridge {
 
-    public static String version = "Unknown";
+    public static String version = "2.5";
 
 }

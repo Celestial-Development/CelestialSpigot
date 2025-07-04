@@ -130,16 +130,6 @@ public class CelestialConfig {
 
 
     public CelestialConfig() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        try (InputStream is = classLoader.getResourceAsStream("version.properties")) {
-            Properties prop = new Properties();
-            prop.load(is);
-            CelestialBridge.version = (String) prop.getOrDefault("version", "Unknown");
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-
         CelestialSpigot.INSTANCE.setLagCompensator(new LagCompensator());
         this.configFile = new File("settings.yml");
         this.config = new YamlConfiguration();
