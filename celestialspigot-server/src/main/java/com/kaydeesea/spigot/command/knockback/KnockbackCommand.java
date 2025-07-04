@@ -593,21 +593,6 @@ public class KnockbackCommand extends Command {
 
         // ok not lying ChatGPT cooked here
 
-        // If typing the fourth argument for "edit" (i.e. providing a value),
-        // we could optionally suggest allowed values (e.g. "true" / "false" for booleans),
-        // but that requires inspecting the chosen key’s type. For simplicity, return empty:
-//        if (args.length == 4) {
-//            if (base.equalsIgnoreCase("edit") || base.equalsIgnoreCase("modify")) {
-//                // You could do something like:
-//                //   String key = args[2].toLowerCase();
-//                //   DetailedTypeKnockbackProfile prf = (DetailedTypeKnockbackProfile) profile;
-//                //   var enumConstant = DetailedValues.getValueByKey(key);
-//                //   if (enumConstant.isBoolean()) return Arrays.asList("true", "false");
-//                //   …or suggest numeric ranges—but we'll leave it empty by default.
-//                return Collections.emptyList();
-//            }
-//        }
-
         return Collections.emptyList();
     }
 

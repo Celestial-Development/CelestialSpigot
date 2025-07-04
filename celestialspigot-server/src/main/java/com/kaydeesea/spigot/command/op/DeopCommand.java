@@ -36,10 +36,6 @@ public class DeopCommand extends Command {
                 }
             } else {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                if(!player.isOp()) {
-                    sender.sendMessage("§4This player is not OP.");
-                    return true;
-                }
                 player.setOp(false);
                 sender.sendMessage(
                         ChatColor.translateAlternateColorCodes('&', CelestialSpigot.INSTANCE.getConfig().getOpTakeCommand())
