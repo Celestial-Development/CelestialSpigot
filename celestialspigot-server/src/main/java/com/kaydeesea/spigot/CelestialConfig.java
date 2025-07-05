@@ -69,6 +69,7 @@ public class CelestialConfig {
             enableSetSlotsCommand,
             enablePluginCommand,
             enableShrugCommand,
+            enableCryCommand,
             enableTableFlipCommand;
 
     private boolean
@@ -267,6 +268,7 @@ public class CelestialConfig {
         this.enableSetSlotsCommand = this.getBoolean("commands.enable-set-slots-command", true);
         this.enablePluginCommand = this.getBoolean("commands.enable-plugin-command", true);
         this.enableShrugCommand = this.getBoolean("commands.enable-shrug-command", true);
+        this.enableCryCommand = this.getBoolean("commands.enable-cry-command", true);
         this.enableTableFlipCommand = this.getBoolean("commands.enable-table-flip-command", true);
 
         this.improvedHitDetection = this.getBoolean("improved-hit-detection", true);

@@ -1,5 +1,6 @@
 package com.kaydeesea.spigot;
 
+import com.kaydeesea.spigot.command.emojis.CryCommand;
 import com.kaydeesea.spigot.command.emojis.ShrugCommand;
 import com.kaydeesea.spigot.command.emojis.TableFlipCommand;
 import com.kaydeesea.spigot.command.knockback.KnockbackCommand;
@@ -78,6 +79,9 @@ public class CelestialSpigot {
 		}
 		if(getConfig().isEnableShrugCommand()) {
 			commands.put("shrug", new ShrugCommand());
+		}
+		if(getConfig().isEnableCryCommand()) {
+			commands.put("cry", new CryCommand());
 		}
 		if(getConfig().isEnableTableFlipCommand()) {
 			commands.put("tableflip", new TableFlipCommand());
