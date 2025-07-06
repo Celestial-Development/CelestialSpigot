@@ -326,6 +326,25 @@ public abstract class PlayerList {
         // this.sendAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, new EntityPlayer[] { entityplayer})); // CraftBukkit - replaced with loop below
         WorldServer worldserver = this.server.getWorldServer(entityplayer.dimension);
 
+        // Celestial KB Overrides
+
+        String profile = CelestialSpigot.INSTANCE.getKbOverrides().getProfileForWorld(entityplayer.getWorld().getWorld().getName());
+
+        if(profile == null) {
+            // if player was in a world that had kb overrides: Set it to current global KBs
+            entityplayer.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
+        } else {
+            // else just sync it!
+            KnockBackProfile kbProfile = CelestialSpigot.INSTANCE.getKnockBack().getKbProfileByName(profile);
+            if(kbProfile == null) {
+                Bukkit.getLogger().log(Level.INFO, "Couldn't find a knockback with the profile name "+profile+" (set in knockback overrides (kb-per-world.yml))");
+            } else {
+                entityplayer.setKnockbackProfile(kbProfile);
+            }
+        }
+
+
+        // CelestialSpigot end
         // CraftBukkit start
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(cserver.getPlayer(entityplayer), joinMessage);
         cserver.getPluginManager().callEvent(playerJoinEvent);
@@ -678,9 +697,7 @@ public abstract class PlayerList {
 
             if(profile == null) {
                 // if player was in a world that had kb overrides: Set it to current global KBs
-                if (CelestialSpigot.INSTANCE.getKbOverrides().getBinds().containsKey(fromWorld.getName())) {
-                    entityplayer.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
-                }
+                entityplayer.setKnockbackProfile(CelestialSpigot.INSTANCE.getKnockBack().getCurrentKb());
             } else {
                 // else just sync it!
                 KnockBackProfile kbProfile = CelestialSpigot.INSTANCE.getKnockBack().getKbProfileByName(profile);
