@@ -33,6 +33,7 @@ public class CelestialConfig {
     private YamlCommenter c;
     // from
     private String
+            serverName,
             pingCommandSelf,
             pingCommandOther,
             nightCommand,
@@ -234,7 +235,7 @@ public class CelestialConfig {
         this.knockbackCommand = new ArrayList<String>(this.getList("messages.knockback-command", knockbackCMD));
 
 
-
+        this.serverName = this.getString("server-name", "CelestialSpigot");
         this.pingCommandSelf = this.getString("messages.ping-command-self", "&bYour ping is: &3%ping%");
         this.pingCommandOther = this.getString("messages.ping-command-other", "&b%player%'s ping is: &3%ping%");
         this.nightCommand = this.getString("messages.night-command", "&bTime has been set to &3night &b in your world.");
@@ -332,6 +333,8 @@ public class CelestialConfig {
     }
     public void loadComments() {
         c.setHeader(HEADER);
+
+        c.addComment("server-name", "Modify the current spigot showed name");
         // add messages
         c.addComment("messages", "Modify current commands messages");
         c.addComment("messages.tps-command", "Modify current tps command message");
